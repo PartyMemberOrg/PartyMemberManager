@@ -1,0 +1,68 @@
+﻿@model IEnumerable<PartyMemberManager.Dal.Entities.Module>
+
+@{
+    Layout = "_LayoutEdit";
+    ViewData["Title"] = "Index";
+}
+
+@*<p>
+        <a asp-action="Create">+添加</a>
+    </p>*@
+<form asp-action="Create" class="layui-form">
+    <div class="layui-inline">
+        <table class="layui-table" lay-skin="line">
+            <colgroup>
+                <col width="200">
+                @for (int i = 0; i < Enum.GetValues(typeof(Role)).Length; i++)
+                {
+                    <col width="150">
+                }
+                <col>
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    @foreach (Role role in Enum.GetValues(typeof(Role)))
+                    {
+                        <th>@role</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        @foreach (Role role in Enum.GetValues(typeof(Role)))
+                        {
+                            <td>
+                                <input type="checkbox" name="moduleRoles[]" title="@role" lay-skin="primary" value="@(item.Id),@((int)role)" @((item.Roles & role) == role ? "checked" : "")>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div style="margin-top:14px;">
+        <a href="javascript:save('@Url.Action("SaveRights")',function(){})" class="layui-btn layui-btn-primary">保存</a>
+    </div>
+</form>
+
+@section scripts{
+    <script>
+        //Demo
+        layui.use('form', function () {
+            var form = layui.form;
+            //监听提交
+            form.on('submit(formDemo)', function (data) {
+                layer.msg(JSON.stringify(data.field));
+                return false;
+            });
+        });
+    </script>
+}

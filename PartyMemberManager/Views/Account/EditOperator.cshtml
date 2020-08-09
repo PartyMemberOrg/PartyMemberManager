@@ -1,0 +1,69 @@
+﻿@model PartyMemberManager.Dal.Entities.Operator
+
+@{
+    Layout = "_LayoutEdit";
+    ViewData["Title"] = "Create";
+}
+
+<div class="row form-padding-top">
+    <div class="col-md-12">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="LoginName" />
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label class="control-label">账号</label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        @Model.LoginName
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="Password" asp-required="true" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="Password" class="form-control" value="@Model.Password" />
+                        <span asp-validation-for="Password" value="@Model.Password" class="text-danger @ValidateSpanDefaultClass"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="Name" asp-required="true" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger @ValidateSpanDefaultClass"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="Phone" asp-required="false" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger @ValidateSpanDefaultClass"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label class="control-label">角色</label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        @Model.RolesDisplay
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

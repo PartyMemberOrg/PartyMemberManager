@@ -1,0 +1,37 @@
+
+.contextmenu {
+    display: none;
+    position: absolute;
+    min-width: 120px;
+    margin: 0;
+    padding: 0;
+    background: #FFFFFF;
+    border-radius: 2px;
+    list-style: none;
+    border:1px solid #E9E9E9;
+    box-shadow: 0 2px 5px rgba(50,50,90,0.2), 0 5px 5px rgba(0,0,0,0.08);
+    overflow: hidden;
+    z-index: 999999;
+}
+
+    .contextmenu li {
+        border-left: 3px solid transparent;
+        transition: ease .1s;
+        border-bottom: 1px solid #F2F2F2;
+    }
+
+        .contextmenu li a {
+            display: block;
+            padding: 8px;
+            color: #4A8CF6; /*#515253;*/
+            text-decoration: none;
+            transition: ease .1s;
+        }
+
+        .contextmenu li:hover {
+            background: #F2F2F2;
+            border-left: 3px solid #4A8CF6;
+        }
+            .contextmenu li:hover a {
+                font-weight:500;
+            }

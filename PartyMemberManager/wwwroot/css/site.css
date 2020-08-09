@@ -1,0 +1,1023 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+/*申明通用变量*/
+:root {
+    /*系统颜色*/
+    --system-blue-color: #4A8CF6;
+    --system-red-color: #EF4948;
+    --system-green-color: #37BC9B;
+    --system-black-color: #474747;
+    --system-gray-color: #d8d7d7;
+    --system-lightgray-color: #f8f5f5;
+    /*背景颜色*/
+    --back-color: #4A8CF6;
+    --back-color-transparent: rgba(74,140,246,0.5);
+    --back-color-transparent-hover: rgba(74,140,246,0.7);
+    /*边框颜色*/
+    --border-color: #E6E6E6;
+    --border-color-hover: #DBDCDF;
+    --border-color-focus: #4A8CF6;
+    --border-color-active: #4A8CF6;
+    /*控件背景色*/
+    --control-back-color: #FFFFFF;
+    --control-back-color-active: #4A8CF6;
+    /*菜单项目*/
+    --menu-back-color: #F4F8FF;
+    --menu-back-color-active: #FFFFFF;
+    --menu-font-color: #515253;
+    --menu-font-color-active: #4A8CF6;
+    /*表格颜色*/
+    --table-header-color: #474747;
+    --table-body-color: #515253;
+    /*定义字体*/
+    --font-family-sans-serif: "Microsoft YaHei", 微软雅黑, SimSun, 宋体,-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji",'sourcehansanscn';
+    --font-family-monospace: "Microsoft YaHei", 微软雅黑, SimSun, 宋体,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace,'sourcehansanscn';
+    /*定义字体*/
+}
+
+/*字体定义*/
+@font-face {
+    font-family: 'sourcehansanscn';
+    src: url('../font/sourcehansanscn-extralight.otf') format('opentype');
+    font-weight: 100;
+}
+@font-face {
+    font-family: 'sourcehansanscn';
+    src: url('../font/sourcehansanscn-light.otf') format('opentype');
+    font-weight: 200;
+}
+@font-face {
+    font-family: 'sourcehansanscn';
+    src: url('../font/sourcehansanscn-normal.otf') format('opentype');
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: 'sourcehansanscn';
+    src: url('../font/sourcehansanscn-regular.otf') format('opentype');
+    font-weight: 400;
+}
+@font-face {
+    font-family: 'sourcehansanscn';
+    src: url('../font/sourcehansanscn-medium.otf') format('opentype');
+    font-weight: 500;
+}
+@font-face {
+    font-family: 'sourcehansanscn';
+    src: url('../font/sourcehansanscn-bold.otf') format('opentype');
+    font-weight: 700;
+}
+@font-face {
+    font-family: 'sourcehansanscn';
+    src: url('../font/sourcehansanscn-heavy.otf') format('opentype');
+    font-weight: 900;
+}
+
+@font-face {
+    font-family: 'sourcehanserifcn';
+    src: url('../font/sourcehanserifcn-extralight.otf') format('opentype');
+    font-weight: 100;
+}
+@font-face {
+    font-family: 'sourcehanserifcn';
+    src: url('../font/sourcehanserifcn-light.otf') format('opentype');
+    font-weight: 200;
+}
+@font-face {
+    font-family: 'sourcehanserifcn';
+    src: url('../font/sourcehanserifcn-regular.otf') format('opentype');
+    font-weight: 400;
+}
+@font-face {
+    font-family: 'sourcehanserifcn';
+    src: url('../font/sourcehanserifcn-medium.otf') format('opentype');
+    font-weight: 500;
+}
+@font-face {
+    font-family: 'sourcehanserifcn';
+    src: url('../font/sourcehanserifcn-semibold.otf') format('opentype');
+    font-weight: 600;
+}
+@font-face {
+    font-family: 'sourcehanserifcn';
+    src: url('../font/sourcehanserifcn-bold.otf') format('opentype');
+    font-weight:700;
+}
+@font-face {
+    font-family: 'sourcehanserifcn';
+    src: url('../font/sourcehanserifcn-heavy.otf') format('opentype');
+    font-weight: 900;
+}
+/*字体定义*/
+
+body {
+    line-height: 24px;
+    font: 14px "Microsoft YaHei", 微软雅黑, SimSun, 宋体,Helvetica Neue,Helvetica,PingFang SC,Tahoma,Arial,sans-serif,'sourcehansanscn'
+}
+
+
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+    color: #0366d6;
+    text-decoration: none;
+    font-weight: 400;
+}
+
+    a:link, a:hover, a:focus, a:visited, a:active {
+        text-decoration: none;
+    }
+
+    a:hover {
+        font-weight: 700;
+    }
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+/*浏览器滚动条定义*/
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+/* 滑轨 */
+::-webkit-scrollbar-track {
+    /*-webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.2);*/
+    -webkit-border-radius: 0px;
+    border-radius: 0px;
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 0px;
+    border-radius: 0px;
+    background: rgba(74,140,246,0.5);
+    /*-webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.3);*/
+}
+
+    ::-webkit-scrollbar-thumb:window-inactive {
+        background: rgba(74,140,246,0.3);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(74,140,246,1);
+    }
+/*浏览器滚动条定义*/
+
+.border-top {
+    border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+    font-size: 14px;
+}
+
+/*控件通用设置*/
+input, select, textarea {
+    border-color: var(--border-color);
+}
+
+    input:hover, select:hover, textarea:hover {
+        border-color: var(--border-color-hover);
+    }
+
+    input:focus, select:focus, textarea:focus {
+        border-color: var(--border-color-focus);
+    }
+
+    input:active, select:active, textarea:active {
+        border-color: var(--border-color-active);
+    }
+
+    input.input-validation-error, select.input-validation-error, textarea.input-validation-error {
+        border-color: var(--system-red-color);
+    }
+
+select {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: url('../images/downarrow.png') center no-repeat;
+    background-position-x: 95%;
+    background-size: 11px;
+}
+
+input[data-type='date'], input[data-type='date-manual'] {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: url('../images/date.png') center no-repeat;
+    background-position-x: 95%;
+    background-size: 11px;
+}
+
+input[data-type='datetime'], input[data-type='datetime-manual'] {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: url('../images/date.png') center no-repeat;
+    background-position-x: 95%;
+    background-size: 11px;
+}
+
+input[data-type='daterange'] {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: url('../images/date.png') center no-repeat;
+    background-position-x: 95%;
+    background-size: 11px;
+}
+
+.toolbaritem select {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: url('../images/downarrow.png') center no-repeat;
+    background-position-x: 92%;
+    background-size: 8px;
+}
+
+.toolbaritem .search {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    /*background: url('../images/search2x.png') center no-repeat;*/
+    background-position-x: 96%;
+    background-size: 14px;
+}
+
+.toolbaritem input[data-type='date'] {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: url('../images/date.png') center no-repeat;
+    background-position-x: 95%;
+    background-size: 8px;
+}
+
+.toolbaritem input[data-type='datetime'] {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: url('../images/date.png') center no-repeat;
+    background-position-x: 95%;
+    background-size: 8px;
+}
+
+.toolbaritem input[data-type='daterange'] {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: url('../images/date.png') center no-repeat;
+    background-position-x: 95%;
+    background-size: 8px;
+    letter-spacing: -0.5px;
+}
+
+.toolbaritem a.search_button {
+    background: url('../images/search2x.png') center no-repeat;
+    background-position-x: 95%;
+    background-size: 16px;
+    width: 16px;
+    height: 30px;
+}
+
+.form-control:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: var(--border-color-focus);
+    box-shadow: none;
+    outline: 0;
+    /*box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);*/
+}
+/*控件通用设置*/
+
+/*客户端验证*/
+.text-danger {
+    color: var(--system-red-color) !important;
+}
+
+.field-validation-error {
+    font-size: 12px;
+}
+/*客户端验证*/
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px; /* Vertically center the text there */
+}
+
+.required {
+    color: red;
+    display: inline-block;
+    width: 6px;
+}
+
+.form-padding-top {
+    padding-top: 20px;
+}
+
+.block-item {
+    width: 10em;
+    height: 2.5em;
+    border: solid var(--border-color) 1px;
+    margin: 0.3em;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0.45em;
+    border-radius: 2px;
+}
+
+    .block-item:hover {
+        border-color: var(--border-color-hover);
+        border-width: 1.3px;
+    }
+
+    .block-item > a {
+        content: "";
+        visibility: hidden;
+    }
+
+    .block-item:hover > a {
+        content: '×';
+        visibility: visible;
+        font-size: 1em;
+        color: #ffff;
+        display: block;
+        width: 1em;
+        height: 1em;
+        background: var(--border-color-hover);
+        border-bottom-left-radius: 0.8em;
+        border-top-right-radius: 1px;
+        position: absolute;
+        -webkit-transform-origin: left top;
+        -moz-transform-origin: left top;
+        transform-origin: left top;
+        transform: translate(8.4em,-1.8em)
+    }
+
+.block-item-add {
+    width: 10em;
+    height: 2.5em;
+    border: dashed var(--border-color) 1px;
+    margin: 0.3em;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0.45em;
+    border-radius: 2px;
+}
+
+    .block-item-add:hover {
+        border-color: var(--border-color-hover);
+        border-width: 1.3px;
+    }
+
+.validate-message-offset {
+    margin-left: 0px;
+}
+/*工具栏-患者档案*/
+.toolbar-button-flag {
+    width: 80px;
+    height: 13px;
+    text-align: center;
+    vertical-align: middle;
+    margin-top: -5px;
+    margin-bottom: 2px;
+    color: transparent;
+}
+
+.toolbar-button {
+    border: 1px solid var(--back-color);
+    width: 82px;
+    height: 40px;
+    padding: 3px;
+    text-align: center;
+    vertical-align: middle;
+    text-wrap: normal;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+    .toolbar-button.disable {
+        border: 1px solid var(--system-gray-color);
+        background-color: var(--system-lightgray-color);
+        width: 82px;
+        height: 40px;
+        padding: 3px;
+        text-align: center;
+        vertical-align: middle;
+        text-wrap: normal;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+
+.dayindex {
+}
+
+    .dayindex[data-status=has-disease-species-item-completed]:before {
+        content: '●';
+        color: var(--system-green-color);
+    }
+
+    .dayindex[data-status=has-disease-species-item-uncompleted]:before {
+        content: '●';
+        color: var(--system-blue-color);
+    }
+
+    .dayindex[data-status=has-disease-species-item-uncompleted-past]:before {
+        content: '●';
+        color: var(--system-red-color);
+    }
+
+.toolbar-button-current {
+    width: 80px;
+    height: 14px;
+    text-align: center;
+    vertical-align: middle;
+    margin-top: -5px;
+    display: block;
+    color: transparent;
+}
+
+.toolbar-button-radius {
+    border-radius: 50%;
+    border: 1px solid #117FD3;
+    padding: 1px 1px 1px 1px;
+}
+/*按钮激活状态是背景颜色为蓝色，文字为白色*/
+.toolbar-active .toolbar-button {
+    color: white;
+    background-color: var(--control-back-color-active)
+}
+/*按钮激活时显示下面的三角按钮*/
+.toolbar-active .toolbar-button-current {
+    display: block;
+    color: var(--border-color-hover)
+}
+
+/*当天有事项，且已经完成*/
+.toolbar-button-flag[data-status=has-disease-species-item-completed] {
+    width: 80px;
+    height: 13px;
+    text-align: center;
+    vertical-align: middle;
+    margin-top: -5px;
+    margin-bottom: 2px;
+    color: green;
+}
+/*当天有事项，且尚未完成*/
+.toolbar-button-flag[data-status=has-disease-species-item-uncompleted] {
+    width: 80px;
+    height: 13px;
+    text-align: center;
+    vertical-align: middle;
+    margin-top: -5px;
+    margin-bottom: 2px;
+    color: dodgerblue;
+}
+/*之前有事项，且尚未完成*/
+.toolbar-button-flag[data-status=has-disease-species-item-uncompleted-past] {
+    width: 80px;
+    height: 13px;
+    text-align: center;
+    vertical-align: middle;
+    margin-top: -5px;
+    margin-bottom: 2px;
+    color: red;
+}
+
+/*bootstrap样式重写*/
+.form-label {
+    color: #666666;
+}
+
+.form-control {
+    width: 169px;
+    height: 30px;
+    font-size: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+}
+
+.row {
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+/*修改layui中的样式*/
+.layui-table-tips-c {
+    position: absolute;
+    right: 0px;
+    top: -10px;
+    width: 21px;
+    height: 21px;
+    padding: 0px;
+    cursor: pointer;
+    background-color: #666;
+    border-radius: 50%;
+    color: #fff;
+}
+
+.layui-form-item {
+    margin-bottom: 0px;
+}
+
+.layui-table {
+    width: 100%;
+    background-color: #fff;
+    color: var(--table-body-color);
+}
+
+    .layui-table th {
+        color: var(--table-header-color);
+    }
+
+    .layui-table td {
+        color: var(--table-body-color);
+    }
+
+.layui-table, .layui-table-view {
+    margin: 0px;
+    font-size: 12px;
+}
+
+    .layui-table td, .layui-table th {
+        position: relative;
+        padding: 9px 15px;
+        min-height: 20px;
+        line-height: 20px;
+        font-size: 12px;
+    }
+.layui-table-grid-down {
+    display: none;
+}
+
+.layui-table-cell {
+    height: 28px;
+    line-height: 28px;
+    padding: 0 10px;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.layui-laypage-limits {
+    line-height: 20px !important;
+}
+
+    .layui-laypage-limits > select {
+        width: 58px;
+    }
+
+.layui-table-view .layui-table th {
+    text-align: center;
+    font-weight: 700;
+}
+
+.layui-table th {
+    text-align: center;
+    font-weight: 700;
+}
+
+.layui-input, .layui-select, .layui-textarea {
+    height: 30px;
+    /*line-height: 1.3;*/
+    line-height: 30px;
+    border-width: 1px;
+    border-style: solid;
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+    .layui-input:focus, .layui-textarea:focus {
+        border-color: var(--border-color-focus) !important;
+    }
+
+.layui-btn {
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 18px;
+    background-color: var(--active-color);
+    color: #fff;
+    white-space: nowrap;
+    text-align: center;
+    font-size: 14px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+    .layui-btn:hover {
+        opacity: .8;
+        filter: alpha(opacity=80);
+        color: #fff
+    }
+
+    .layui-btn:active {
+        opacity: 1;
+        filter: alpha(opacity=100)
+    }
+
+.layui-layer-btn .layui-layer-btn0 {
+    color: #fff !important;
+}
+
+.layui-layer-btn .layui-layer-btn1 {
+    color: #000 !important;
+}
+
+.layui-btn-hover {
+    display: inline-block;
+    line-height: 30px;
+    background-color: #FFFFFF;
+    color: rgba(42,185,229,1);
+    white-space: nowrap;
+    text-align: center;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0px 18px;
+    height: 30px;
+    border-radius: 4px;
+    border: 1px solid rgba(42,185,229,1);
+}
+
+.layui-colorpicker {
+    width: 26px;
+    height: 26px;
+    border: 1px solid #e6e6e6;
+    padding: 1px;
+    border-radius: 2px;
+    line-height: 24px;
+    display: inline-block;
+    cursor: pointer;
+    transition: all .3s;
+    -webkit-transition: all .3s;
+}
+
+.layui-tab {
+    margin: 0px 0;
+    text-align: left !important;
+}
+
+.layui-tab-content {
+    padding: 0px;
+}
+
+.layui-table-cell .layui-table-link {
+    color: var(--system-blue-color);
+}
+/*.layui-laydate .layui-this {
+    background-color: var(--back-color) !important;
+    color: #fff !important;
+}
+.layui-laydate-content td.laydate-selected {
+    background-color: var(--back-color-transparent) !important;
+}
+.laydate-selected:hover {
+    background-color: var(--back-color-transparent-hover) !important;
+}*/
+/*修改layui中的样式*/
+
+
+/*面板*/
+.panel {
+    background-color: white;
+}
+
+.offset-left {
+    margin-left: 4px;
+}
+
+.offset-top {
+    margin-top: 4px;
+}
+
+.padding-10 {
+    padding: 10px;
+}
+
+.padding-8 {
+    padding: 8px;
+}
+
+.margin-right-10 {
+    margin-right: 10px;
+}
+
+.margin-right-6 {
+    margin-right: 10px;
+}
+/*工具栏样式*/
+.toolbar {
+    line-height: 26px;
+    height: 45px;
+    padding: 10px 10px 9px 10px;
+}
+
+    .toolbar .toolbaritem {
+        margin-right: 10px;
+    }
+
+    .toolbar label {
+        margin-bottom: 0px;
+        margin-right: 8px;
+        font-size: 14px;
+    }
+
+    .toolbar .layui-input, .toolbar .layui-select, .toolbar .layui-textarea {
+        height: 30px;
+        line-height: 30px;
+        border-width: 1px;
+        border-style: solid;
+        background-color: #fff;
+        border-radius: 15px;
+        border-color: var(--border-color);
+        font-size: 12px;
+    }
+    .toolbar .required {
+        color: red;
+        display: inline-block;
+        width: 0px;
+    }
+
+.lineheight-30 {
+    line-height: 30px;
+}
+/*左侧菜单样式*/
+.panelmenu {
+    width: 135px;
+    background: rgba(247,250,253,1);
+    border-right: 5px solid rgba(245,246,251,1);
+    padding-right: 5px;
+}
+
+.menu {
+    width: 130px;
+}
+
+    .menu i {
+        color: var(--menu-font-color);
+        margin-right: 5px;
+    }
+
+    /*.menu > .active:after {
+        position: absolute;
+        content: "◆";
+        font-size: 30px;
+        left: 121px;
+        color: var(--menu-font-color-active);
+        width: 9px;
+        overflow: hidden;
+    }*/
+
+    .menu > .menuitem.active {
+        color: var(--menu-font-color-active);
+        background-color: var(--menu-back-color-active);
+        border-left: 2px solid var(--menu-font-color-active);
+    }
+
+        .menu > .menuitem.active > a {
+            color: var(--menu-font-color-active);
+        }
+
+        .menu > .menuitem.active > img {
+        }
+
+    .menu > .menuitem {
+        border-top: 0px solid var(--menu-back-color);
+        line-height: 45px;
+        height: 45px;
+        font-size: 12px;
+        background-color: transparent;
+        color: var(--menu-font-color);
+        padding-left: 20px;
+    }
+
+        .menu > .menuitem:hover {
+            color: var(--menu-font-color-active);
+            background-color: var(--menu-back-color-active);
+        }
+
+            .menu > .menuitem:hover > a {
+                color: var(--menu-font-color-active);
+            }
+
+            .menu > .menuitem:hover > i {
+                color: var(--menu-font-color-active);
+            }
+
+        /*.menu > .menuitem:first-child {
+            border-top: 0px;
+        }*/
+
+        .menu > .menuitem > a {
+            color: var(--menu-font-color);
+            line-height: 16px;
+            margin-top: 2px;
+        }
+
+            .menu > .menuitem > a:hover {
+                color: var(--menu-font-color-active);
+            }
+
+        .menu > .menuitem > i:hover {
+            color: var(--menu-font-color-active);
+        }
+
+        .menu > .menuitem > img {
+            margin-right: 12px;
+            height: 16px;
+            height: 16px;
+            margin-top: -2px;
+        }
+/*左侧菜单样式*/
+
+/*顶部条样式*/
+.headerbar {
+    background: linear-gradient(270deg,rgba(98,135,233,1) 0%,rgba(58,142,255,1) 100%);
+}
+/*顶部条样式*/
+
+/*编辑窗体设置*/
+.left-label-div {
+    width: 35%;
+    text-align: right;
+    padding-right: 10px;
+    line-height: 30px;
+}
+
+.right-label-div {
+    width: 65%;
+    text-align: left;
+    line-height: 30px;
+}
+/*编辑窗体设置*/
+
+
+/*事项分组*/
+.disease-species-group-div {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    line-height: 18px;
+}
+
+    .disease-species-group-div a {
+        font-size: 12px;
+    }
+
+.disease-species-group {
+    border-left: 3px solid var(--back-color);
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--system-black-color);
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+.disease-species-subgroup-div {
+    margin-top: 10px;
+    margin-bottom: 7px;
+    margin-left: 6px;
+    line-height: 14px;
+}
+
+    .disease-species-subgroup-div a {
+        font-size: 12px;
+    }
+
+.disease-species-dategroup-div {
+    margin-top: 10px;
+    margin-bottom: 7px;
+    margin-left: -7px;
+}
+
+    .disease-species-dategroup-div a {
+        font-size: 12px;
+    }
+
+.disease-species-subgroup {
+    color: #333333;
+    font-weight: 400;
+    font-size: 14px;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+.disease-species-dategroup {
+    color: #333333;
+    font-weight: 400;
+    font-size: 14px;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+    .disease-species-dategroup:before {
+        content: "●";
+        color: var(--back-color);
+        margin-right: 3px;
+    }
+/*事项分组*/
+
+/*事项分组-勾选事项*/
+.disease-species-group-patient {
+    color: var(--back-color);
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 7px;
+    font-weight: 600;
+}
+
+    .disease-species-group-patient:before {
+        content: "●";
+        color: var(--back-color);
+        margin-right: 3px;
+    }
+/*事项分组-勾选事项*/
+
+/*事项阶段-勾选事项*/
+.disease-species-itemstage {
+    color: var(--system-green-color);
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 7px;
+    font-weight: 600;
+}
+
+    .disease-species-itemstage:before {
+        content: "▎";
+        color: var(--system-green-color);
+        margin-right: 3px;
+    }
+/*事项阶段-勾选事项*/
+
+/*重新定义按钮颜色*/
+.btn-success {
+    color: #fff;
+    background-color: var(--system-green-color);
+    border-color: var(--system-green-color);
+}
+
+.btn-danger {
+    color: #fff;
+    background-color: var(--system-red-color);
+    border-color: var(--system-red-color);
+}
+/*重新定义颜色*/
+
+

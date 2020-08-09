@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>jQuery鼠标右键弹出菜单选项 - 站长素材</title>
+</head>
+
+<body>
+
+<style type="text/css">
+*{margin:0;padding:0;list-style-type:none;}
+a,img{border:0;}
+body{font:12px/180% Arial, Helvetica, sans-serif, "新宋体";}
+
+.content{margin:0 auto;width:360px;}
+.content p{margin:20px 0 0 0;border:solid 1px #C5D8FF;background:#EDF2FF;padding:10px;}
+</style>
+
+<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="js/jquery.contextmenu.r2.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+
+	$('.demo1').contextMenu('myMenu1',{
+		bindings:{
+			'open': function(t){
+				alert('Trigger was '+t.id+'\nAction was Open');
+			},
+			'email': function(t){
+				alert('Trigger was '+t.id+'\nAction was Email');
+			},
+			'save': function(t){
+				alert('Trigger was '+t.id+'\nAction was Save');
+			},
+			'delete': function(t){
+				alert('Trigger was '+t.id+'\nAction was Delete');
+			}
+		}
+	});
+
+
+	$('.demo2').contextMenu('myMenu2',{
+		menuStyle:{
+			border: '2px solid #000'
+		},
+		itemStyle :{
+			fontFamily: 'verdana',
+			backgroundColor: '#666',
+			color: 'white',
+			border: 'none',
+			padding: '1px'
+		},
+		itemHoverStyle: {
+			color: '#fff',
+			backgroundColor: '#0f0',
+			border: 'none'
+		}
+	});
+
+
+	$('.demo3').contextMenu('myMenu3',{
+	
+		onContextMenu: function(e){
+			if ($(e.target).attr('id') == 'dontShow') return false;
+			else return true;
+		},
+		onShowMenu: function(e, menu){
+			if ($(e.target).attr('id') == 'showOne'){
+				$('#item_2, #item_3', menu).remove();
+			}
+			return menu;
+		}
+	
+	});
+	
+
+});
+</script>
+
+<div class="contextMenu" id="myMenu1">
+	<ul>
+		<li id="open"><img src="images/folder.png" /> Open</li>
+		<li id="email"><img src="images/email.png" /> Email</li>
+		<li id="save"><img src="images/disk.png" /> Save</li>
+		<li id="delete"><img src="images/cross.png" /> Delete</li>
+	</ul>
+</div>
+
+<div class="contextMenu" id="myMenu2">
+	<ul>
+		<li id="item_1">Item 1</li>
+		<li id="item_2">Item 2</li>
+		<li id="item_3">Item 3</li>
+		<li id="item_4">Item 4</li>
+		<li id="item_5">Item 5</li>
+		<li id="item_6">Item 6</li>
+		<li id="item_7">Item 7</li>
+		<li id="item_8">Item 8</li>
+	</ul>
+</div>
+
+<div class="contextMenu" id="myMenu3">
+	<ul>
+		<li id="item_1">Item 1</li>
+		<li id="item_2">Item 2</li>
+		<li id="item_3">Item 3</li>
+	</ul>
+</div>
+
+
+<div class="content">
+	<p class="demo1"><b>演示</b> 右键单击我的! !</p>
+	
+	<p class="demo2">在这个段落里面右键点击触发菜单</p>
+	
+	<p style="font-weight: bold;">
+		<span class="demo3" id="dontShow" style="padding: 5px; background-color:pink">不显示菜单</span>
+		<span class="demo3" id="showOne" style="padding: 5px;background-color:lightgreen">显示第一项</span>
+		<span class="demo3" id="showAll" style="padding: 5px;background-color:lightblue">全部显示</span>
+	</p>
+</div>
+<div style="text-align:center;clear:both"><br>
+<p>适用浏览器：IE8、360、FireFox、Chrome、Safari、Opera、傲游、搜狗、世界之窗.</p><br>
+<p>来源：<a href="http://sc.chinaz.com/" target="_blank">站长素材</a></p>
+</div>

@@ -1,0 +1,13 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<partial name="_PartialHead" />
+<body style="background: #F4F8FF;
+        height: 620px;
+        width: 130px;
+        overflow: hidden">
+    @RenderBody()
+    <partial name="_PartialScripts" />
+    <partial name="_ValidationScriptsPartial" />
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,73 @@
+﻿@model LogIndexViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<partial name="_PartialIndexToolbar" model="Model" />
+
+<div class="panel offset-top padding-8">
+    <table class="layui-table" lay-data="{url:'@Url.Action("GetDatasWithFilter","Logs")', where: {DateRange: '@Model.DateRange',LogLevel: '@Model.LogLevel',CategoryName: '@(Model.CategoryName)',Message: '@Model.Message',IsPost: true}, page:true,limits: [10, 20, 50], done: function (res, curr, count) {fillPatientList(res,curr,count);showHideScrollBars(res.data.length);}, id:'table_logs'}">
+        <thead>
+            <tr>
+                <th lay-data="{ field: 'logLevel', title: '日志级别', width: '74', minWidth: 50, align: 'center', templet: '#optPatientArchiveNameTpl' }">日志级别</th>
+                <th lay-data="{ field: 'categoryName', title: '分类' , width: '150', minWidth: 40, align: 'center'}">分类</th>
+                <th lay-data="{ field: 'message', title: '信息', width: '321', minWidth: 40, align: 'center'}">信息</th>
+                <th lay-data="{ field: 'user', title: '用户', width: '98', align: 'center' }">用户</th>
+                <th lay-data="{ field: 'createTime', title: '创建时间', width: '120', align: 'center',templet: function (d){return formatDate(d.createTime,'yyyy-MM-dd HH:mm');} }">创建时间</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@section Scripts{
+    <script src="~/js/editor.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            layui.use('table', function () {
+                var table = layui.table;
+            });
+            InitDateInput();
+        });
+        /**过滤数据 */
+        function filter() {
+            var tableId = "table_logs";
+            layui.use('table', function () {
+                var table = layui.table;
+                table.reload(tableId, {
+                    url: '@Url.Action("GetDatasWithFilter","Logs")'
+                    , where: {
+                        DateRange: $("#DateRange").val(),
+                        LogLevel: $("#LogLevel").val(),
+                        CategoryName: $("#CategoryName").val(),
+                        Message: $("#Message").val(),
+                        IsPost: true
+                    }
+                    , done: function (res, curr, count) {
+                        showHideScrollBars(res.data.length);
+                    }
+                });
+            });
+        }
+        /**
+         * 填充患者列表，供上一条/下一条使用
+         * @@param res
+         * @@param curr
+         * @@param count
+         */
+        function fillPatientList(res, curr, count) {
+
+        }
+        /**显示隐藏滚动条 */
+        function showHideScrollBars(count) {
+            if (count > 12) {
+                $("body").css("overflow-y", "auto");
+            }
+            else {
+                $("body").css("overflow-y", "hidden");
+                $(document).scrollTop(0);
+            }
+        }
+    </script>
+}

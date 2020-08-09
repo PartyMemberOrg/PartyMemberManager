@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<style type="text/css">
+    .content-container {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right:0;
+    }
+    .panelmenu {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width:130px;
+    }
+    .rightContent {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 131px;
+        overflow-y: auto;
+    }
+</style>
+@*<partial name="_PartialHeader" model="true" />
+<div class="row content-container" id="panelContent">
+    <div class="panelmenu offset-top" id="leftSideBar">
+        <aside>
+            <partial name="_LeftMenu" />
+        </aside>
+    </div>
+    <div class="rightContent" id="rightContent">
+        <main role="main" class="pb-3">*@
+            <iframe id="mainframe" name="mainframe" frameborder="0" style="overflow: visible " scrolling="no" width="785" height="620" src="@Url.Action("Index","PatientArchives")"></iframe>
+        @*</main>
+    </div>
+</div>*@
+
+@section Scripts{
+}

@@ -1,0 +1,103 @@
+﻿@model PartyMemberManager.Dal.Entities.Log
+
+@{
+    Layout = "_LayoutEmpty";
+    ViewData["Title"] = "Create";
+}
+
+<h1>添加</h1>
+
+<h4>Log</h4>
+<hr />
+<div class="row form-padding-top">
+    <div class="col-md-12">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="LogLevel" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="LogLevel" class="form-control" />
+                        <span asp-validation-for="LogLevel" class="text-danger @ValidateSpanDefaultClass"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="CategoryName" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="CategoryName" class="form-control" />
+                        <span asp-validation-for="CategoryName" class="text-danger @ValidateSpanDefaultClass"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="Message" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="Message" class="form-control" />
+                        <span asp-validation-for="Message" class="text-danger @ValidateSpanDefaultClass"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="User" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="User" class="form-control" />
+                        <span asp-validation-for="User" class="text-danger @ValidateSpanDefaultClass"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="CreateTime" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="CreateTime" class="form-control" />
+                        <span asp-validation-for="CreateTime" class="text-danger @ValidateSpanDefaultClass"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="OperatorId" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="OperatorId" class="form-control" />
+                        <span asp-validation-for="OperatorId" class="text-danger @ValidateSpanDefaultClass"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="Ordinal" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="Ordinal" class="form-control" />
+                        <span asp-validation-for="Ordinal" class="text-danger @ValidateSpanDefaultClass"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">返回</a>
+</div>
+

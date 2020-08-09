@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="gb2312">
+<meta name="viewport" content="width=device-width">
+<title>jQuery+CSS3侧边弹出菜单 - 站长素材</title>
+<link rel="stylesheet" type="text/css" href="font/exo-demibold/stylesheet.css">
+<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="css/reset.css">
+<link rel="stylesheet" type="text/css" href="css/animation.css">
+<link rel="stylesheet" type="text/css" href="css/orchid/style.css">
+<link rel="stylesheet" type="text/css" href="css/orchid/color.css">
+
+<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="js/dropdown.js"></script>
+
+</head>
+
+<!--[if lte IE 9]>
+    <style type="text/css">
+		.nav li:hover > a{
+			background-color:rgb(51,51,51);
+		}
+		img{
+			background-color:rgb(255,255,255);
+		}
+
+	</style>
+<![endif]-->
+
+<!--[if IE 7]>
+<link rel="stylesheet" type="text/css" href="css/font-awesome-ie7.min.css" />
+<![endif]-->
+
+<body>
+
+<ul class="nav">
+  
+  <!-- Start Home -->
+  <li id="first"><a href="#"><i class="icon-home"></i>Home</a>
+    <ul class="one" id="home">
+      <li>
+        <h3>Welcome</h3>
+        <p id="p-first">In the past, HTML alone provided basic formatting options for text, images, tables, and other web page elements. But today, professional web designers use CSS to style their pages. In fact, the older HTML tags used to format text and other page.</p>
+        <img src="images/thumb2.png">
+        <p>HTML alone provided basic formatting options for text, and other.</p>
+      </li>
+    </ul>
+  </li>
+  
+  <!-- Start About -->
+  <li> <a href="#about"><i class="icon-question-sign"></i>About</a>
+    <ul class="one" id="about">
+      <li><img src="images/thumb1.png" alt="image">
+        <h3>About Us</h3>
+        <p>In the past, HTML alone provided basic formatting options for text, images, tables, and other web page elements. But today, professional web designers use CSS to style their pages. In fact, the older HTML tags used to format text and other page elements have been phased out by the World Wide Web Consortium (W3C), the organization that defines Web standards, in favor of CSS. the organization that defines.</p>
+      </li>
+    </ul>
+  </li>
+  
+  <!-- Start Links -->
+  <li> <a href="#links"><i class="icon-list"></i>Links</a>
+    <ul class="one" id="links">
+      <li>
+        <div id="link-1" class="link-block light-color">
+          <h4>Links 1</h4>
+          <ul>
+            <li><a href="#"><i class="icon-minus"></i> Css</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Html5</a></li>
+            <li><a href="#"><i class="icon-minus"></i> java Script</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Php</a></li>
+            <li><a href="#"><i class="icon-minus"></i> JQuery</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Css 3</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Asp.Net</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Photoshop</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Dreamweaver</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Fireworks</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Expression Web</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Corel</a></li>
+          </ul>
+        </div>
+        <div id="link-2" class="link-block light-color">
+          <h4>Links 2</h4>
+          <ul>
+            <li><a href="#"><i class="icon-minus"></i> Photoshop</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Dreamweaver</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Fireworks</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Expression Web</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Corel</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Visual Studio</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Adobe</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Css</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Html5</a></li>
+            <li><a href="#"><i class="icon-minus"></i> java Script</a></li>
+            <li><a href="#"><i class="icon-minus"></i> Php</a></li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </li>
+  
+  <!-- Start columns -->
+  <li> <a href="#"><i class="icon-columns" ></i>Columns</a>
+    <ul class="one" id="columns">
+      <li>
+        <h4>column one</h4>
+        <p class="block50">Is there a way to apply styles to an element only if it’s embedded within a
+          particular element, rather than universally? In other words, can you ask for
+          example that italics within headlines be boldface. </p>
+        <p class="block50">Is there a way to apply styles to an element only if it’s embedded within a
+          particular element, rather than universally? In other words, can you ask for
+          example that italics within headlines be boldface. </p>
+        <h4>column two</h4>
+        <p class="block75">Is there a way to apply styles to an element only if it’s embedded within a
+          particular element, rather than universally? In other words, can you ask for
+          example that italics within headlines be boldface, but not when they’re within
+          paragraphs? </p>
+        <p class="block25">Is there a way to apply styles to an element only if it’s embedded within.</p>
+      </li>
+    </ul>
+  </li>
+  
+  <!-- Start Portfolio -->
+  <li>
+    <a href="#Portfolio"><i class="icon-briefcase" ></i>Portfolio</a>
+    <ul class="one" id="menu">
+      <li><a href="#">sample 1</a></li>
+      
+      <!-- Start sample 2 -->
+      <li><a href="#sample2">sample 2<i class="icon-chevron-right"></i></a>
+        <ul class="one" id="sub-menu">
+          <li><a href="#">Page 1</a></li>
+          
+          <!-- Start page 2 -->
+          <li> <a href="#">Page 2<i class="icon-chevron-right"></i></a>
+            <ul class="one test" id="sub-menu">
+              <li><a href="#">Page 1</a></li>
+              <li><a href="#">Page 2</a></li>
+              <li><a href="#">Page 3</a></li>
+              <li><a href="#">Page 4</a></li>
+            </ul>
+          </li>
+          <!-- End page 2 -->
+          
+          <li><a href="#">Page 3</a></li>
+        </ul>
+      </li>
+      <!-- End sample 2 -->
+      
+      <li ><a href="#">sample 3</a></li>
+    </ul>
+  </li>
+  
+  <!-- Start Products -->
+  <li> <a href="#"><i class="icon-list-ul"></i>Products</a> </li>
+  
+  <!-- Start Contact -->
+  <li> <a href="#"><i class="icon-cog"></i>Contact</a>
+    <ul class="one" id="contact">
+      <li>
+        <p>Name<em>*</em></p>
+        <input name="name" type="text" id="name" class="light-color">
+        <p>E-mail<em>*</em></p>
+        <input name="email" type="text" id="email" class="light-color">
+        <p>Message<em>*</em></p>
+        <textarea name="comment" cols="" rows="" id="comment" class="light-color"></textarea>
+        <input name="send" type="button" id="send" value="Send">
+        <h4 id="h4-social"></h4>
+        <a href="#"><i class="icon-facebook"></i></a> <a href="#"><i class="icon-twitter"></i></a> <a href="#"><i class="icon-google-plus"></i></a> <a href="#"><i class="icon-linkedin"></i></a><a href="#"><i class="icon-pinterest"></i></a> 
+       </li>
+    </ul>
+  </li>
+</ul>
+<div style="text-align:center;clear:both">
+<p>适用浏览器：360、FireFox、Chrome、Safari、Opera、傲游、搜狗、世界之窗. 不支持IE8及以下浏览器。</p>
+<p>来源：<a href="http://sc.chinaz.com/" target="_blank">站长素材</a></p>
+</div>
+</body>
+</html>

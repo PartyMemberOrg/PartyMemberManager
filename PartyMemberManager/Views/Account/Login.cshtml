@@ -1,0 +1,188 @@
+﻿@model PartyMemberManager.Models.LoginViewModel
+
+@{
+    Layout = "_LayoutEdit";
+    ViewData["Title"] = "用户登录";
+}
+
+<style type="text/css">
+    body{text-align:center;}
+    .input-group {
+        border: 1px solid rgba(247,247,247,1);
+        width: 330px;
+        height: 44px;
+        line-height: 44px;
+        border-radius: 22px;
+        background: rgba(247,247,247,1);
+    }
+
+    .input-text {
+        border: none;
+        font-size: 14px;
+        width: 250px;
+        background: transparent;
+    }
+
+    a.button {
+        color: white;
+        font-size: 16px;
+        text-align: center;
+        vertical-align: middle;
+        padding-top: 14px;
+        line-height: 16px;
+    }
+
+    a.buton:hover {
+        color: #f8f7d2;
+    }
+
+    .title-bar {
+        width: 420px;
+        height: 68px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        background: linear-gradient(270deg,rgba(98,135,233,1) 0%,rgba(58,142,255,1) 100%);
+        text-align: center;
+        vertical-align: central;
+        font-size: 20px;
+        color: #FFFFFF;
+        padding: 20px;
+    }
+
+    .login-body {
+        width: 420px;
+        height: 300px;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        background-color: #FFFFFF;
+    }
+
+    .login-button {
+        width: 300px;
+        height: 44px;
+        background: linear-gradient(270deg,rgba(98,135,233,1) 0%,rgba(58,142,255,1) 100%);
+        box-shadow: 0px 2px 4px 0px rgba(179,196,236,1);
+        border-radius: 22px;
+    }
+</style>
+
+@*<partial name="_PartialHeader" model="false" />*@
+
+<div id="logincontainer" class="" style="background-image: url('/images/loginback.png');width:440px;height:420px;padding:10px;margin:0 auto;margin-top:124px">
+    <div class="title-bar">
+        <span>兰州财经大学入党积极分子管理系统</span>
+    </div>
+    <div class="login-body">
+        <form asp-action="Login">
+            <div class="form-group input-group" style="position:relative;left:48px;top:55px;">
+                @*<label asp-for="LoginName" class="control-label"></label>*@
+                <i class="layui-icon layui-icon-username" style="position:absolute;left:15px;top:0px;font-size: 16px; color: #979797;"></i>
+                <div style="position: absolute; left: 44px; top: 15px; width: 1px; height: 12px; border-left: 1px solid #CCCCCC"></div>
+                <input asp-for="LoginName" class="input-text" style="    position: absolute;left: 58px;top: 0px;" />
+                <span asp-validation-for="LoginName" class="text-danger"></span>
+            </div>
+            <div class="form-group input-group" style="position:relative;left:48px;top:69px;">
+                @*<label asp-for="Password" class="control-label"></label>*@
+                <i class="layui-icon layui-icon-password" style="position:absolute;left:15px;top:0px;font-size: 16px; color: #979797;"></i>
+                <div style="position:absolute;left:44px;top:15px;width:1px;height:12px;border-left:1px solid #CCCCCC"></div>
+                <input asp-for="Password" class="input-text" style="position: absolute; left: 58px; top: 0px;" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="layui-form">
+                <div class="layui-form-item" style="position:relative;left:-90px;top:60px;">
+                    <input type="checkbox" id="IsRemember" name="IsRemember" title="记住密码" value="true" lay-skin="primary" @(Model.IsRemember ? "checked" : "")>
+                    @*<input type="submit" value="登录" class="btn btn-primary" />*@
+                </div>
+            </div>
+            <div class="form-group" style="position:relative;left:60px;top:75px;">
+                <a href="javascript:login()" style="display:block;" class="button login-button">登录</a>
+            </div>
+            <div class="form-group" style="position:relative;left:0px;top:70px;color:#9F9F9F">
+                <span>兰州财经大学 V1.0.0</span>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        //在浏览器中运行
+        var isInBrowser = true;
+        $(document).ready(function () {
+            if (bound) {
+                bound.logout();
+                return;
+            }
+            //判断是否在iframe中
+            if (self != top) {
+                parent.window.location.replace(window.location.href);
+            }
+        });
+        layui.use('form', function(){
+          var form = layui.form;
+        });
+        //通过ajax登录
+        function login() {
+            var data = $('form').serializeJSON({ parseBooleans: true });
+            var postUrl = "@Url.Action("LoginByAjax","Account")";
+            $.ajax({
+                url: postUrl,
+                data: data,
+                type: "post",
+                dataType: "json",
+                success: function (response) {
+                    if (response.code == 0) {
+                        callLoginSuccess(data.LoginName,data.Password,data.IsRemember);
+                    }
+                    else {
+                        callLoginError(response.message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    //showError("登录数据时发生错误");
+                    callLoginError("登录数据时发生错误");
+                }
+            });
+        }
+        //在WinForm中运行
+        function setInWinForm() {
+            isInBrowser = false;
+        }
+        //如果在窗体中运行，则调用窗体的LoginSuccess函数，否则直接跳转到主页
+        function callLoginSuccess(loginName,password,isRemember) {
+            if (!isInBrowser) {
+                LoginSuccess(loginName,password,isRemember);
+            }
+            else {
+                window.location.href = "@Url.Action("Index","Home")";
+            }
+        }
+        //如果在窗体中运行，则调用窗体的错误消息现实方法，否则直接现显示错误信息
+        function callLoginError(message) {
+            if (!isInBrowser) {
+                LoginError(message);
+            }
+            else {
+                showError(message);
+            }
+        }
+        //修改个人信息
+        function editOperator() {
+            showError('您尚未登录');
+        }
+        //显示关于信息
+        function showAbout() {
+            showContent('@Url.Action("About","Home")', '关于', 300, 200);
+        }
+        //设置用户信息
+        function setUserInfo(loginName, password, isRemember) {
+            $("#LoginName").val(loginName);
+            $("#Password").val(password);
+            $("#IsRemember").prop('checked', true);
+            $("#IsRemember").attr('checked', true);
+            $("#IsRemember").siblings("div").addClass("layui-form-checked");
+        }
+    </script>
+}

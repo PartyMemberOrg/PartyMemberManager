@@ -1,0 +1,50 @@
+﻿@model PartyMemberManager.Dal.Entities.Operator
+
+@{
+    Layout = "_LayoutEdit";
+    ViewData["Title"] = "Edit";
+}
+
+<div class="row form-padding-top">
+    <div class="col-md-12">
+        <form asp-action="Edit">
+            <partial name="_PartialEdit" model="@Model" />
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript">
+        layui.use('form', function () {
+            var form = layui.form;
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#Roles").change(function () {
+                var roles = $("#Roles").val();
+                switch (roles) {
+                    case "@((int)Role.学校党委)":
+                        $("#DoctorTypeContainer").show();
+                        $("#inpatientAreasContainer").hide();
+                        $("#GroupDoctorIdContainer").hide();
+                        $("#DoctorType").change();
+                        break;
+                    case "@((int)Role.学院党委)":
+                        $("#DoctorTypeContainer").hide();
+                        $("#inpatientAreasContainer").show();
+                        $("#GroupDoctorIdContainer").hide();
+                        break;
+                    case "@((int)Role.系统管理员)":
+                    case "@((int)Role.超级管理员)":
+                        $("#DoctorTypeContainer").hide();
+                        $("#inpatientAreasContainer").hide();
+                        $("#GroupDoctorIdContainer").hide();
+                        break;
+                }
+            });
+            $("#Roles").change();
+        });
+    </script>
+}

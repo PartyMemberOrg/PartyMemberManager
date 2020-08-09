@@ -1,0 +1,120 @@
+﻿@model PartyMemberManager.Dal.Entities.Operator
+@{
+    List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> roleList = Html.GetEnumSelectList(typeof(Role)).ToList();
+    var found = roleList.Find(s => s.Value == ((int)Role.超级管理员).ToString());
+    if (CurrentUser.Roles != Role.超级管理员)
+        roleList.Remove(found);
+    roleList = roleList.OrderByDescending(r => int.Parse(r.Value)).ToList();
+    //List<InpatientArea> inpatientAreas = ViewBag.InpatientAreas as List<InpatientArea>;
+    //List<Guid> doctorNurseInpatientAreaIds = ViewBag.DoctorNurseInpatientAreaIds as List<Guid>;
+}
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input type="hidden" asp-for="Id" />
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="LoginName" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="LoginName" class="form-control" />
+            <span asp-validation-for="LoginName" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Name" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Phone" asp-required="false" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="Phone" class="form-control" />
+            <span asp-validation-for="Phone" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Password" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="Password" class="form-control" value="@Model.Password" />
+            <span asp-validation-for="Password" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Roles" asp-required="false" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <select asp-for="Roles" asp-items="@roleList" class="form-control"></select>
+            <span asp-validation-for="Roles" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+@*<div class="form-group" id="DoctorTypeContainer">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="DoctorType" asp-required="false" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <select asp-for="DoctorType" asp-items="@Html.GetEnumSelectList(typeof(DoctorType))" class="form-control">
+                <option value="">请选择</option>
+            </select>
+            <span asp-validation-for="DoctorType" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>*@
+<div class="form-group layui-form" id="inpatientAreasContainer">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label class="control-label">负责病区</label>
+        </div>
+        @*<div class="@InputDivDefaultClass">
+            @foreach (var inpatientArea in inpatientAreas)
+            {
+                <input type="checkbox" name="inpatientAreas[]" value="@inpatientArea.Id" title="@inpatientArea.Name" lay-skin="primary" @(doctorNurseInpatientAreaIds != null && doctorNurseInpatientAreaIds.Any(c => c == inpatientArea.Id) ? "checked" : "") />
+            }
+        </div>*@
+    </div>
+</div>
+@*<div class="form-group" id="GroupDoctorIdContainer">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="GroupDoctorId" asp-required="false" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <select asp-for="GroupDoctorId" asp-items="ViewBag.GroupDoctors" class="form-control">
+                <option value="">请选择</option>
+            </select>
+            <span asp-validation-for="GroupDoctorId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>*@
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Enabled" asp-required="false" class="control-label"></label>
+        </div>
+        <div class="form-check @InputDivDefaultClass" style="padding-left: 0px;">
+            <div class="layui-form">
+                <div class="layui-form-item" style="margin-bottom:0px;margin-top:-7px">
+                    <input type="checkbox" name="Enabled" lay-skin="primary" value="true" title="" @(Model.Enabled ? "checked" : "")>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

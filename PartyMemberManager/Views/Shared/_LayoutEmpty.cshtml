@@ -1,0 +1,12 @@
+﻿@{
+    Layout = "_LayoutParent";
+}
+
+<div class="">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
+@section Scripts{
+    @RenderSection("Scripts", required: false)
+}

@@ -1,0 +1,53 @@
+﻿@model LogIndexViewModel
+<div class="@FormGroupDefaultClass panel offset-left offset-top toolbar" style="line-height:30px;padding:10px 0px 0px 10px;">
+    <div class="row">
+        <div class="toolbaritem">
+            <div class="row">
+                <div class="">
+                    <label asp-for="DateRange" class=""></label>
+                </div>
+                <div class="">
+                    <input asp-for="DateRange" onchange="javascript:filter();" class="@InputDefaultClass" placeholder=" - " data-type="daterange" style="width: 165px;" />
+                </div>
+            </div>
+        </div>
+        <div class="toolbaritem">
+            <div class="row">
+                <div class="">
+                    <label asp-for="LogLevel" class=""></label>
+                </div>
+                <div class="">
+                    <select class="@InputDefaultClass" asp-for="LogLevel" onchange="javascript:filter();" style="width:80px;">
+                        <option value="">全部</option>
+                        <option value="Trace">跟踪信息</option>
+                        <option value="Debug">调试信息</option>
+                        <option value="Information">提示信息</option>
+                        <option value="Warning">警告信息</option>
+                        <option value="Error">错误信息</option>
+                        <option value="Critical">严重错误</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="toolbaritem">
+            <div class="row">
+                <div class="">
+                    <label asp-for="CategoryName" class="" style="margin-left:12px"></label>
+                </div>
+                <div class="">
+                    <input asp-for="CategoryName" onchange="javascript:filter();" class="@InputDefaultClass" placeholder="日志分类" style="width: 90px;" />
+                </div>
+            </div>
+        </div>
+        <div class="toolbaritem">
+            <div class="row">
+                <div class="">
+                    <label asp-for="Message" class="" style="margin-left:12px"></label>
+                </div>
+                <div class="">
+                    <input asp-for="Message" onchange="javascript:filter();" class="@InputDefaultClass" placeholder="输入日志内容" style="width: 200px;" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

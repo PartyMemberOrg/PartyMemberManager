@@ -1,0 +1,116 @@
+﻿@model IEnumerable<PartyMemberManager.Dal.Entities.Operator>
+
+@{
+    Layout = "_LayoutEdit";
+    ViewData["Title"] = "Index";
+}
+
+<p style="margin-bottom:14px;">
+    <a href="javascript:showEdit('Operators/Create','Operators/Save','添加账号',600,600)" class="layui-btn layui-btn-primary">+添加账号</a>
+</p>
+
+<table class="layui-hide" id="datatable"></table>
+
+@Html.AntiForgeryToken()
+
+@section Scripts{
+    <script type="text/javascript">
+        var tableObject = null;
+        $(document).ready(function () {
+            $("body").width(770);
+            InitTable();
+        });
+
+        function Delete(id) {
+            var url="@Url.Action("Delete")";
+            DeleteData(url, id, function () {
+                tableObject.reload();
+            });
+        }
+        /**
+        * 数据上移
+        * @@param id
+        */
+        function ItemUp(id) {
+            DataOrdinalUpDown('@Url.Action("ItemUpDown")',id,true,
+                function () {
+                    RefreshTable();
+            });
+        }
+        /**
+         * 数据下移
+         * @@param id
+         */
+        function ItemDown(id) {
+            DataOrdinalUpDown('@Url.Action("ItemUpDown")',id,false,
+                function () {
+                    RefreshTable();
+            });
+        }
+        /**刷新表格 */
+        function RefreshTable() {
+            layui.use('table', function () {
+                var table = layui.table;
+                table.reload('dataGrid', {
+                    url: '@Url.Action("GetDatas")'
+                });
+            });
+        }    
+        function InitTable() {
+            layui.use('table', function () {
+                var table = layui.table;
+
+                tableObject = table.render({
+                    elem: '#datatable'
+                    , url: '@Url.Action("GetDatas")'
+                    , page: true //开启分页
+                    , limits: [10, 20, 50]
+                    , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                    , id: 'dataGrid'
+                    , cols: [[
+                        //{ type: 'checkbox' }
+                        //,
+                        { field: 'loginName', title: '账号', width: '122', minWidth: 50, align: 'center' }
+                        , { field: 'name', title: '姓名', width: '120', minWidth: 50, align: 'center' }
+                        , { field: 'phoneDisplay', title: '手机号', width: '120', minWidth: 50, align: 'center' }
+                        , { field: 'rolesDisplay', title: '角色分组', width: '100', align: 'center' }
+                        , { field: 'createTime', title: '创建时间', width: '120', align: 'center', templet: function (d) { return formatDate(d.createTime,'yyyy-MM-dd');} }
+                        , { field: 'enabledDisplay', title: '是否启用', width: '100', align: 'center' } //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                        //, { field: 'ordinal', title: '顺序', sort: true, width: '100', align: 'center' }
+                        , { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
+                    ]]
+                    , done: function (res, curr, count) {
+                        showHideScrollBars(res.data.length);
+                    }
+                });
+            });
+        }
+        /**显示隐藏滚动条 */
+        function showHideScrollBars(count) {
+            if (count > 11) {
+                $("body").css("overflow-y", "auto");
+            }
+            else {
+                $("body").css("overflow-y", "hidden");
+                $(document).scrollTop(0);
+            }
+        }
+    </script>
+    <script type="text/html" id="optTpl">
+        <a href="javascript:showEdit('Operators/Edit/{{d.id}}','Operators/Save','修改账号',600,600)" class="layui-table-link" title="查看">
+            查看
+        </a>
+        @*<a href="javascript:ItemUp('{{d.id}}')" class="layui-table-link" title="上移">
+            @Html.Raw(UpButtonTextOrIcon)
+        </a>
+        <a href="javascript:ItemDown('{{d.id}}')" class="layui-table-link" title="下移">
+            @Html.Raw(DownButtonTextOrIcon)
+        </a>
+        <a href="javascript:showEdit('Operators/Edit/{{d.id}}','Operators/Save','修改账号',600,400)" class="layui-table-link" title="修改">
+            @Html.Raw(EditButtonTextOrIcon)
+        </a>
+        <a href="javascript:Delete('{{d.id}}')" class="layui-table-link" title="删除">
+            @Html.Raw(DeleteButtonTextOrIcon)
+        </a>*@
+    </script>
+}

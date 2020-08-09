@@ -1,0 +1,76 @@
+﻿@model IEnumerable<PartyMemberManager.Dal.Entities.OperatorModule>
+
+@{
+    Layout = "_LayoutEdit";
+    ViewData["Title"] = "Index";
+    List<Module> modules = ViewData["Modules"] as List<Module>;
+    List<Operator> operators = ViewData["Operators"] as List<Operator>;
+}
+
+<form asp-action="Create" class="layui-form">
+    <div class="layui-inline">
+        <table class="layui-table" lay-skin="line">
+            <colgroup>
+                <col width="200">
+                @foreach (Module module in modules)
+                {
+                    <col width="150">
+                }
+                <col>
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>
+                        操作员
+                    </th>
+                    <th>
+                        角色
+                    </th>
+                    @foreach (Module module in modules)
+                    {
+                        <th>@module.Name</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Operator @operator in operators)
+                {
+                    <tr>
+                        <td style="min-width:120px">
+                            @(@operator.Name)
+                        </td>
+                        <td style="min-width:120px">
+                            @(@operator.RolesDisplay)
+                        </td>
+                        @foreach (Module module in modules)
+                        {
+                            bool granted = Model.Any(m => m.UserId == @operator.Id && m.ModuleId == module.Id && m.RightType == RightType.Grant);
+                            bool denied = Model.Any(m => m.UserId == @operator.Id && m.ModuleId == module.Id && m.RightType == RightType.Deny);
+                            <td>
+                                <input type="checkbox" name="moduleRights[]" title="@module.Name" lay-skin="primary" value="@(@operator.Id),@(module.Id)" @(granted ? "checked" : "")>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div style="margin-top:14px;">
+        <a href="javascript:save('@Url.Action("SaveRights")',function(){})" class="layui-btn layui-btn-primary">保存</a>
+    </div>
+</form>
+
+@section scripts{
+    <script>
+        //Demo
+        layui.use('form', function () {
+            var form = layui.form;
+            //监听提交
+            form.on('submit(formDemo)', function (data) {
+                layer.msg(JSON.stringify(data.field));
+                return false;
+            });
+        });
+    </script>
+}
+

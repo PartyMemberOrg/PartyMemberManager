@@ -1,0 +1,10 @@
+﻿@*@model IEnumerable<Module>
+<ul class="menu" lay-filter="test">
+    @if (Model.Any(m => m.Controller == "SystemSet"))
+    {
+        <li class="menuitem" onclick="openLink('@Url.Action("Index", "SystemSet")')">
+            <img src="~/images/SystemSet.png" data-icon="/images/SystemSet.png" data-icon-sel="/images/SystemSetSel.png" width="16" height="16" />
+            <a class="" href="javascript:openLink('@Url.Action("Index", "SystemSet")')">系统管理</a>
+        </li>
+    }
+</ul>*@
