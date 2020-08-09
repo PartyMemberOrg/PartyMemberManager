@@ -93,6 +93,18 @@ namespace PartyMemberManager.Dal
                 Roles = Role.系统管理员 | Role.超级管理员
             };
             context.Modules.Add(childModule);
+            childModule = new Module
+            {
+                ParentModuleId = module.Id,
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "部门管理",
+                Controller = "Departments",
+                Action = null,
+                Ordinal = 705,
+                Roles = Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(childModule);
             #endregion
         }
 
