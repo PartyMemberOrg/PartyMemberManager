@@ -12,13 +12,12 @@ using PartyMemberManager.Core.Exceptions;
 using Microsoft.Extensions.Logging;
 using PartyMemberManager.Framework.Models.JsonModels;
 using Microsoft.AspNetCore.Http;
-
 using PartyMemberManager.Dal;
 using PartyMemberManager.Dal.Entities;
 
 namespace PartyMemberManager.Controllers
 {
-    public class NationsController : PartyMemberControllerBase
+    public class NationsController : PartyMemberDataControllerBase<Nation>
     {
 
         public NationsController(ILogger<NationsController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
@@ -135,7 +134,7 @@ namespace PartyMemberManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Save([Bind("Code,Name,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] Nation nation)
+        public override async Task<IActionResult> Save([Bind("Code,Name,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] Nation nation)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {

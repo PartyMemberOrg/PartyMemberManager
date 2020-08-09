@@ -171,6 +171,7 @@ namespace PartyMemberManager.Dal
                 {
                     Id = Guid.NewGuid(),
                     CreateTime = DateTime.Now,
+                    Ordinal = context.Departments.Count() + 1,
                     Name = item,
                 };
                 if (item.Contains("长青"))
@@ -208,6 +209,7 @@ namespace PartyMemberManager.Dal
                 {
                     Id = Guid.NewGuid(),
                     CreateTime = DateTime.Now,
+                    Ordinal = context.PartySchools.Count() + 1,
                     Name = item.Split(" ")[0].Trim(),
                     Code = item.Split(" ")[1].Trim()
                 };
@@ -231,6 +233,7 @@ namespace PartyMemberManager.Dal
                 {
                     Id = Guid.NewGuid(),
                     CreateTime = DateTime.Now,
+                    Ordinal = context.Nations.Count() + 1
                 };
                 nation.Code = item.Trim().Substring(0, 2);
                 nation.Name = item.Trim().Substring(2);
@@ -254,7 +257,7 @@ namespace PartyMemberManager.Dal
                     Id = Guid.NewGuid(),
                     CreateTime = DateTime.Now,
                     Name = item.Split(" ")[0].Trim(),
-                    Code=item.Split(" ")[1].Trim()
+                    Code = item.Split(" ")[1].Trim()
                 };
                 context.TrainClassTypes.Add(trainClassType);
             }

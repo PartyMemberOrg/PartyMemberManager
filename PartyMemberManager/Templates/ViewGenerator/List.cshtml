@@ -37,81 +37,150 @@
         @:<body>
             //    PushIndent("    ");
         }
-        @:<p>
-            @:<a asp-action="Create">+添加</a>
+        @:<p style="margin-bottom:14px;">
+            @:    <a href="javascript:showEdit('@@Url.Action(" Create")','@@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
         @:</p>
-        @:<table class="table">
-            @:<thead>
-                @:<tr>
+        @:<table class="layui-hide" id="datatable"></table>
+        @:@@Html.AntiForgeryToken()
+        @:<link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
+        @:@@section Scripts{
+        @:<script src="~/lib/contentmenu/js/index.js"></script>
+        @:<script src="~/lib/Sortable/Sortable.js"></script>
+        @:    <script type="text/javascript">
+        @:var tableObject = null;
+        @:$(document).ready(function () {
+        @:    $("body").width(770);
+        @:    InitTable();
+        @:});
+        @:
+        @:function Delete(id) {
+        @:    var url="@@Url.Action("Delete")";
+        @:    DeleteData(url, id, function () {
+        @:        tableObject.reload();
+        @:    });
+        @:}
+        @:/**
+        @:* 数据上移
+        @:* @@@@param id
+        @:*/
+        @:function ItemUp(id) {
+        @:    DataOrdinalUpDown('@@Url.Action("ItemUpDown")',id,true,
+        @:        function () {
+        @:            RefreshTable();
+        @:    });
+        @:}
+        @:/**
+        @: * 数据下移
+        @: * @@@@param id
+        @: */
+        @:function ItemDown(id) {
+        @:    DataOrdinalUpDown('@@Url.Action("ItemUpDown")',id,false,
+        @:        function () {
+        @:            RefreshTable();
+        @:    });
+        @:}
+        @:/**刷新表格 */
+        @:function RefreshTable() {
+        @:    layui.use('table', function () {
+        @:        var table = layui.table;
+        @:        table.reload('dataGrid', {
+        @:            url: '@@Url.Action("GetDatas")'
+        @:        });
+        @:    });
+        @:}
+        @:function InitTable() {
+        @:    layui.use('table', function () {
+        @:        var table = layui.table;
+        @:
+        @:        tableObject = table.render({
+        @:            elem: '#datatable'
+        @:            , url: '@@Url.Action("GetDatas")'
+        @:            , page: true //开启分页
+        @:            , limits: [10, 20, 50]
+        @:            , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+        @:            , id: 'dataGrid'
+        @:            , cols: [[
+        @:                //{ type: 'checkbox' }
+        @:                //,
                     Dictionary<string, IPropertyMetadata> propertyLookup = ((IModelMetadata)Model.ModelMetadata).Properties.ToDictionary(x => x.PropertyName, x => x);
-                    Dictionary<string, INavigationMetadata> navigationLookup = ((IModelMetadata)Model.ModelMetadata).Navigations.ToDictionary(x => x.AssociationPropertyName, x => x);
-
-                    foreach (var item in Model.ModelMetadata.ModelType.GetProperties())
-                    {
-                        if (propertyLookup.TryGetValue(item.Name, out IPropertyMetadata property)
-                            && property.Scaffold && !property.IsForeignKey && !property.IsPrimaryKey)
-                        {
-                            <th>
-                                @@Html.DisplayNameFor(model => model.@GetValueExpression(property))
-                            </th>
-                        }
-                        else if (navigationLookup.TryGetValue(item.Name, out INavigationMetadata navigation))
-                        {
-                            <th>
-                                @@Html.DisplayNameFor(model => model.@GetValueExpression(navigation))
-                            </th>
-                        }
-                    }
-                    @:<th></th>
-                @:</tr>
-            @:</thead>
-            @:<tbody>
-                @:@@foreach (var item in Model) {
-                @:<tr>
-                    foreach (var item in Model.ModelMetadata.ModelType.GetProperties())
-                    {
-                        if (propertyLookup.TryGetValue(item.Name, out IPropertyMetadata property)
-                            && property.Scaffold && !property.IsForeignKey && !property.IsPrimaryKey)
-                        {
-                            <td>
-                                @@Html.DisplayFor(modelItem => item.@GetValueExpression(property))
-                            </td>
-                        }
-                        else if (navigationLookup.TryGetValue(item.Name, out INavigationMetadata navigation))
-                        {
-                            <td>
-                                @@Html.DisplayFor(modelItem => item.@GetValueExpression(navigation).@navigation.DisplayPropertyName)
-                            </td>
-                        }
-                    }
-                    string pkName = GetPrimaryKeyName();
-                    if (pkName != null)
-                    {
-                        @:<td>
-                            @:<a asp-action="Edit" asp-route-id="@@item.@pkName">修改</a> |
-                            @:<a asp-action="Details" asp-route-id="@@item.@pkName">查看</a> |
-                            @:<a asp-action="Delete" asp-route-id="@@item.@pkName">删除</a>
-                        @:</td>
-                    }
-                    else
-                    {
-                        <td>
-                            @@Html.ActionLink("修改", "Edit", new { /* id=item.PrimaryKey */ }) |
-                            @@Html.ActionLink("查看", "Details", new { /* id=item.PrimaryKey */ }) |
-                            @@Html.ActionLink("删除", "Delete", new { /* id=item.PrimaryKey */ })
-                        </td>
-                    }
-                @:</tr>
-                @:}
-            @:</tbody>
-
-
-        @:</table>
-        @:@@Html.Pager(Model as PagedDataViewModel)
+    Dictionary<string, INavigationMetadata> navigationLookup = ((IModelMetadata)Model.ModelMetadata).Navigations.ToDictionary(x => x.AssociationPropertyName, x => x);
+    foreach (var item in Model.ModelMetadata.ModelType.GetProperties())
+    {
+        if (propertyLookup.TryGetValue(item.Name, out IPropertyMetadata property)
+        && property.Scaffold && !property.IsForeignKey && !property.IsPrimaryKey)
+        {
+            string propertyName = property.PropertyName;
+            propertyName = propertyName.Substring(0, 1).ToLower() + propertyName.Substring(1);
+            @:{ field: '@propertyName', title: '@property.PropertyName', align: 'center' },
+        }
+        else if (navigationLookup.TryGetValue(item.Name, out INavigationMetadata navigation))
+        {
+            string propertyName = property.PropertyName;
+            propertyName = propertyName.Substring(0, 1).ToLower() + propertyName.Substring(1);
+            @:{ field: '@propertyName', title: '@property.PropertyName', align: 'center' },
+        }
+        else
+        {
+            string propertyName = property.PropertyName;
+            propertyName = propertyName.Substring(0, 1).ToLower() + propertyName.Substring(1);
+            @:{ field: '@propertyName', title: '@property.PropertyName', align: 'center' },
+        }
+    }
+    string pkName = GetPrimaryKeyName();
+    if (pkName != null)
+    {
+    }
+    else
+    {
+    }
+        @:                , { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
+        @:            ]]
+        @:            , done: function (res, curr, count) {
+        @:                showHideScrollBars(res.data.length);
+        @:            }
+        @:        });
+        @:    });
+        @:}
+        @:/**显示隐藏滚动条 */
+        @:function showHideScrollBars(count) {
+        @:    if (count > 11) {
+        @:        $("body").css("overflow-y", "auto");
+        @:    }
+        @:    else {
+        @:        $("body").css("overflow-y", "hidden");
+        @:        $(document).scrollTop(0);
+        @:    }
+        @:}
+        @:/**显示操作菜单 */
+        @:function showOperatMenu(event, id) {
+        @:    var contextMenu = new ContextMenu();
+        @:    contextMenu.addMenuItem("编辑", function () {
+        @:        showEdit('@@Url.Action("Edit")'+'/' + id, '@@Url.Action("Save")', '编辑', 500, 400);
+        @:    })
+        @:    contextMenu.addMenuItem("删除", function () {
+        @:        Delete(id);
+        @:    })
+        @:    contextMenu.addMenuItem("上移", function () {
+        @:        ItemUp(id);
+        @:    })
+        @:    contextMenu.addMenuItem("下移", function () {
+        @:        ItemDown(id);
+        @:    })
+        @:    contextMenu.showMenu(event);
+        @:}
+        @:</script>
+        @:<script type="text/html" id="optTpl">
+            @:<a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
+                @:<img src="~/images/gridmenu1x.png" />
+            @:</a>
+        @:</script>
+        @:}
         if (!Model.IsPartialView && !Model.IsLayoutPageSelected)
         {
             //ClearIndent();
+            @:
         @:</body>
+        @:
     @:</html>
 }
 }

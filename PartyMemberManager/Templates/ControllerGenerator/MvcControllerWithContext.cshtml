@@ -73,7 +73,7 @@ namespace @Model.ControllerNamespace
         @:@string.Format("[Area(\"{0}\")]", Model.AreaName)
     }
 }
-    public class @Model.ControllerName : PartyMemberControllerBase
+    public class @Model.ControllerName : PartyMemberDataControllerBase<@Model.ModelTypeName>
     {
 
     public @(Model.ControllerName)(ILogger<@(Model.ControllerName)> logger, @Model.ContextTypeName context,IHttpContextAccessor accessor):base(logger,context,accessor)
@@ -230,7 +230,7 @@ namespace @Model.ControllerNamespace
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Save([Bind("@bindString")] @Model.ModelTypeName @Model.ModelVariable)
+        public override async Task<IActionResult> Save([Bind("@bindString")] @Model.ModelTypeName @Model.ModelVariable)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
