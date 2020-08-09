@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PartyMemberManager.Dal.Entities.Nation>
+﻿@model IEnumerable<PartyMemberManager.Dal.Entities.Department>
 
         @{
         ViewData["Title"] = "Index";
@@ -71,14 +71,15 @@
                     , cols: [[
                         //{ type: 'checkbox' }
                         //,
-            { field: 'code', title: 'Code', align: 'center' },
             { field: 'name', title: 'Name', align: 'center' },
+            { field: 'password', title: 'Password', align: 'center' },
+            { field: 'schoolAreas', title: 'SchoolAreas', align: 'center' },
             { field: 'id', title: 'Id', align: 'center' },
             { field: 'createTime', title: 'CreateTime', align: 'center' },
             { field: 'operatorId', title: 'OperatorId', align: 'center' },
             { field: 'ordinal', title: 'Ordinal', align: 'center' },
             { field: 'isDeleted', title: 'IsDeleted', align: 'center' },
-                        , { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
+                        { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);

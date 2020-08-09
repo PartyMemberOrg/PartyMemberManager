@@ -38,7 +38,7 @@
             //    PushIndent("    ");
         }
         @:<p style="margin-bottom:14px;">
-            @:    <a href="javascript:showEdit('@@Url.Action(" Create")','@@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
+            @:    <a href="javascript:showEdit('@@Url.Action("Create")','@@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
         @:</p>
         @:<table class="layui-hide" id="datatable"></table>
         @:@@Html.AntiForgeryToken()
@@ -106,24 +106,31 @@
     Dictionary<string, INavigationMetadata> navigationLookup = ((IModelMetadata)Model.ModelMetadata).Navigations.ToDictionary(x => x.AssociationPropertyName, x => x);
     foreach (var item in Model.ModelMetadata.ModelType.GetProperties())
     {
-        if (propertyLookup.TryGetValue(item.Name, out IPropertyMetadata property)
-        && property.Scaffold && !property.IsForeignKey && !property.IsPrimaryKey)
+        try
         {
-            string propertyName = property.PropertyName;
-            propertyName = propertyName.Substring(0, 1).ToLower() + propertyName.Substring(1);
+            if (propertyLookup.TryGetValue(item.Name, out IPropertyMetadata property)
+            && property.Scaffold && !property.IsForeignKey && !property.IsPrimaryKey)
+            {
+                string propertyName = property.PropertyName;
+                propertyName = propertyName.Substring(0, 1).ToLower() + propertyName.Substring(1);
             @:{ field: '@propertyName', title: '@property.PropertyName', align: 'center' },
         }
-        else if (navigationLookup.TryGetValue(item.Name, out INavigationMetadata navigation))
-        {
-            string propertyName = property.PropertyName;
-            propertyName = propertyName.Substring(0, 1).ToLower() + propertyName.Substring(1);
+            else if (navigationLookup.TryGetValue(item.Name, out INavigationMetadata navigation))
+            {
+                string propertyName = property.PropertyName;
+                propertyName = propertyName.Substring(0, 1).ToLower() + propertyName.Substring(1);
             @:{ field: '@propertyName', title: '@property.PropertyName', align: 'center' },
         }
-        else
-        {
-            string propertyName = property.PropertyName;
-            propertyName = propertyName.Substring(0, 1).ToLower() + propertyName.Substring(1);
+            else
+            {
+                string propertyName = property.PropertyName;
+                propertyName = propertyName.Substring(0, 1).ToLower() + propertyName.Substring(1);
             @:{ field: '@propertyName', title: '@property.PropertyName', align: 'center' },
+        }
+        }
+        catch
+        {
+
         }
     }
     string pkName = GetPrimaryKeyName();
@@ -133,7 +140,7 @@
     else
     {
     }
-        @:                , { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
+        @:                { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
         @:            ]]
         @:            , done: function (res, curr, count) {
         @:                showHideScrollBars(res.data.length);

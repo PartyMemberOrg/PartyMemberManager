@@ -18,9 +18,6 @@
             @:Layout = "@Model.LayoutPageFile";
         }
         @:}
-        @:
-        @:<h1>编辑</h1>
-        @:
     }
     else
     {
@@ -39,8 +36,6 @@
             @:
             //    PushIndent("    ");
         }
-        @:<h4>@Model.ViewDataTypeShortName</h4>
-        @:<hr />
         @:<div class="row form-padding-top">
             @:<div class="col-md-12">
                 @:<form asp-action="@Model.ViewName">
@@ -67,7 +62,7 @@
                                         @:<div class="@@LabelDivDefaultClass">
                                             @:<label asp-for="@property.PropertyName" class="control-label"></label>
                                         @:</div>
-                                        @:<div >
+                                        @:<div>
                                             @:<select asp-for="@property.PropertyName" class="form-control" asp-items="ViewBag.@property.PropertyName"></select>
                                         @:</div>
                                     @:</div>
@@ -83,10 +78,12 @@
                                         @:<div class="@@LabelDivDefaultClass">
                                             @:<label asp-for="@property.PropertyName" class="control-label"></label>
                                         @:</div>
-                                        @:<div class="form-check">
-                                            @:<label class="form-check-label">
-                                                @:<input class="form-check-input" asp-for="@property.PropertyName" /> @@Html.DisplayNameFor(model => model.@GetValueExpression(property))
-                                            @:</label>
+                                        @:<div class="form-check @@InputDivDefaultClass">
+                                            @:<div class="layui-form">
+                                                @:<div class="layui-form-item" style="margin-bottom:0px;margin-top:-5px">
+                                                    @:<input type="checkbox" name="@property.PropertyName" lay-skin="primary" value="true" title="" @@(Model.@(property.PropertyName) ? "checked" : "" )>
+                                                @:</div>
+                                            @:</div>
                                         @:</div>
                                     @:</div>
                                 @:</div>
@@ -98,7 +95,7 @@
                                         @:<div class="@@LabelDivDefaultClass">
                                             @:<label asp-for="@property.PropertyName" class="control-label"></label>
                                         @:</div>
-                                        @:<div >
+                                        @:<div>
                                             @:<select asp-for="@property.PropertyName" asp-items="@@Html.GetEnumSelectList(typeof(@property.ShortTypeName))" class="form-control"></select>
                                             @:<span asp-validation-for="@property.PropertyName" class="text-danger"></span>
                                         @:</div>
@@ -112,7 +109,7 @@
                                         @:<div class="@@LabelDivDefaultClass">
                                             @:<label asp-for="@property.PropertyName" class="control-label"></label>
                                         @:</div>
-                                        @:<div >
+                                        @:<div>
                                             @:<textarea asp-for="@property.PropertyName" class="form-control"></textarea>
                                             @:<span asp-validation-for="@property.PropertyName" class="text-danger"></span>
                                         @:</div>
@@ -152,12 +149,18 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-
 @{
     if (Model.ReferenceScriptLibraries)
     {
-        @:@@section Scripts {
+        @:@@section Scripts{
         @:@@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+        @:<link href="~/lib/layui/css/layui.css" rel="stylesheet" />
+        @:<script src="~/lib/layui/layui.js"></script>
+        @:<script>
+        @:    layui.use('form', function () {
+        @:        var form = layui.form;
+        @:    });
+        @:</script>
         @:}
     }
     // The following code closes the tag used in the case of a view using a layout page and the body and html tags in the case of a regular view page
