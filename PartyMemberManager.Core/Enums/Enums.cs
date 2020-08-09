@@ -41,8 +41,8 @@ namespace PartyMemberManager.Core.Enums
     {
         和平 = 1,
         段家滩 = 2,
-        长青学院=3,
-        陇桥学院=4
+        长青学院=4,
+        陇桥学院=8
     }
     /// <summary>
     /// 授权类型
