@@ -8,6 +8,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PartyMemberManager.Dal.Entities
 {
+    /// <summary>
+    /// 入党积极分子
+    /// </summary>
     public class PotentialMember : EntityBase
     {
         /// <summary>

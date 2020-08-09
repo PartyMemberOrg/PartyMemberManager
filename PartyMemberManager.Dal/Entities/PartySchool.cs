@@ -6,6 +6,9 @@ using System.Text;
 
 namespace PartyMemberManager.Dal.Entities
 {
+    /// <summary>
+    /// 党校
+    /// </summary>
     public class PartySchool : EntityBase
     {
         /// <summary>

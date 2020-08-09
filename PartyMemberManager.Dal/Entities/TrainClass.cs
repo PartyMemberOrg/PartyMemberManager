@@ -6,6 +6,9 @@ using System.Text;
 
 namespace PartyMemberManager.Dal.Entities
 {
+    /// <summary>
+    /// 培训班
+    /// </summary>
     public class TrainClass : EntityBase
     {
         /// <summary>
