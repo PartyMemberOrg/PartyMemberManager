@@ -183,7 +183,7 @@ namespace PartyMemberManager.Dal
                 {
                     Id = Guid.NewGuid(),
                     CreateTime = DateTime.Now,
-                    Ordinal = context.Departments.Count() + 1,
+                    Ordinal = context.Departments.Local.Count() + 1,
                     Name = item,
                 };
                 if (item.Contains("长青"))
@@ -221,10 +221,11 @@ namespace PartyMemberManager.Dal
                 {
                     Id = Guid.NewGuid(),
                     CreateTime = DateTime.Now,
-                    Ordinal = context.PartySchools.Count() + 1,
+                    Ordinal = context.PartySchools.Local.Count() + 1,
                     Name = item.Split(" ")[0].Trim(),
                     Code = item.Split(" ")[1].Trim()
                 };
+                partySchool.Ordinal = int.Parse(partySchool.Code) + 1;
                 context.PartySchools.Add(partySchool);
 
             }
@@ -245,10 +246,10 @@ namespace PartyMemberManager.Dal
                 {
                     Id = Guid.NewGuid(),
                     CreateTime = DateTime.Now,
-                    Ordinal = context.Nations.Count() + 1
                 };
                 nation.Code = item.Trim().Substring(0, 2);
                 nation.Name = item.Trim().Substring(2);
+                nation.Ordinal = int.Parse(nation.Code);
                 context.Nations.Add(nation);
             }
             #endregion
@@ -271,6 +272,7 @@ namespace PartyMemberManager.Dal
                     Name = item.Split(" ")[0].Trim(),
                     Code = item.Split(" ")[1].Trim()
                 };
+                trainClassType.Ordinal = int.Parse(trainClassType.Code);
                 context.TrainClassTypes.Add(trainClassType);
             }
             #endregion

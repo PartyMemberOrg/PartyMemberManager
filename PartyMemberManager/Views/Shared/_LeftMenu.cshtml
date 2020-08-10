@@ -1,5 +1,9 @@
 ﻿@model IEnumerable<Module>
 <ul class="menu" lay-filter="test">
+    <li class="menuitem" onclick="openLink('@Url.Action("Index", "Departments")')">
+        <img src="~/images/SystemSet.png" data-icon="/images/SystemSet.png" data-icon-sel="/images/SystemSetSel.png" width="16" height="16" />
+        <a class="" href="javascript:openLink('@Url.Action("Index", "Departments")')">学院管理</a>
+    </li>
     @if (Model != null && Model.Count() > 0)
     {
         if (Model.Any(m => m.Controller == "SystemSet"))
