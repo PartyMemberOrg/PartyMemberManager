@@ -17,20 +17,20 @@ using PartyMemberManager.Dal.Entities;
 
 namespace PartyMemberManager.Controllers
 {
-    public class DepartmentsController : PartyMemberDataControllerBase<Department>
+    public class PartyActivistsController : PartyMemberDataControllerBase<PartyActivist>
     {
 
-        public DepartmentsController(ILogger<DepartmentsController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
+        public PartyActivistsController(ILogger<PartyActivistsController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
         {
         }
 
-        // GET: Departments
+        // GET: PartyActivists
         public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.Departments.OrderBy(d => d.Ordinal).GetPagedDataAsync(page));
+            return View(await _context.PartyActivists.OrderBy(p => p.Ordinal).GetPagedDataAsync(page));
         }
 
-        // GET: Departments/Details/5
+        // GET: PartyActivists/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -38,24 +38,25 @@ namespace PartyMemberManager.Controllers
                 return NotFoundData();
             }
 
-            var department = await _context.Departments
+            var partyActivist = await _context.PartyActivists
             .SingleOrDefaultAsync(m => m.Id == id);
-            if (department == null)
+            if (partyActivist == null)
             {
                 return NotFoundData();
             }
 
-            return View(department);
+            return View(partyActivist);
         }
 
-        // GET: Departments/Create
+        // GET: PartyActivists/Create
         public IActionResult Create()
         {
-            Department department = new Department();
-            return View(department);
+            PartyActivist partyActivist = new PartyActivist();
+            return View(partyActivist);
         }
 
-        // GET: Departments/Edit/5
+
+        // GET: PartyActivists/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -63,18 +64,17 @@ namespace PartyMemberManager.Controllers
                 return NotFoundData();
             }
 
-            var department = await _context.Departments.SingleOrDefaultAsync(m => m.Id == id);
-            if (department == null)
+            var partyActivist = await _context.PartyActivists.SingleOrDefaultAsync(m => m.Id == id);
+            if (partyActivist == null)
             {
                 return NotFoundData();
             }
-            return View(department);
+            return View(partyActivist);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("Name,Password,SchoolAreas,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] Department department)
+        public override async Task<IActionResult> Save([Bind("Name,StudentNo,IDNumber,Sex,BirthDate,Nationality,Phone,Class,ApplicationTime,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PartyActivist partyActivist)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -85,23 +85,30 @@ namespace PartyMemberManager.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    Department departmentInDb = await _context.Departments.FindAsync(department.Id);
-                    if (departmentInDb != null)
+                    PartyActivist partyActivistInDb = await _context.PartyActivists.FindAsync(partyActivist.Id);
+                    if (partyActivistInDb != null)
                     {
-                        departmentInDb.Name = department.Name;
-                        departmentInDb.Password = department.Password;
-                        departmentInDb.SchoolAreas = department.SchoolAreas;
-                        departmentInDb.Id = department.Id;
-                        departmentInDb.CreateTime = department.CreateTime;
-                        departmentInDb.OperatorId = department.OperatorId;
-                        departmentInDb.Ordinal = department.Ordinal;
-                        departmentInDb.IsDeleted = department.IsDeleted;
-                        _context.Update(departmentInDb);
+                        partyActivistInDb.Name = partyActivist.Name;
+                        partyActivistInDb.StudentNo = partyActivist.StudentNo;
+                        partyActivistInDb.IDNumber = partyActivist.IDNumber;
+                        partyActivistInDb.Sex = partyActivist.Sex;
+                        partyActivistInDb.BirthDate = partyActivist.BirthDate;
+                        partyActivistInDb.Nationality = partyActivist.Nationality;
+                        partyActivistInDb.Phone = partyActivist.Phone;
+                        partyActivistInDb.Department = partyActivist.Department;
+                        partyActivistInDb.Class = partyActivist.Class;
+                        partyActivistInDb.ApplicationTime = partyActivist.ApplicationTime;
+                        partyActivistInDb.Id = partyActivist.Id;
+                        partyActivistInDb.CreateTime = partyActivist.CreateTime;
+                        partyActivistInDb.OperatorId = partyActivist.OperatorId;
+                        partyActivistInDb.Ordinal = partyActivist.Ordinal;
+                        partyActivistInDb.IsDeleted = partyActivist.IsDeleted;
+                        _context.Update(partyActivistInDb);
                     }
                     else
                     {
-                        //department.Id = Guid.NewGuid();
-                        _context.Add(department);
+                        //partyActivist.Id = Guid.NewGuid();
+                        _context.Add(partyActivist);
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -141,9 +148,9 @@ namespace PartyMemberManager.Controllers
         }
 
 
-        private bool DepartmentExists(Guid id)
+        private bool PartyActivistExists(Guid id)
         {
-            return _context.Departments.Any(e => e.Id == id);
+            return _context.PartyActivists.Any(e => e.Id == id);
         }
     }
 }

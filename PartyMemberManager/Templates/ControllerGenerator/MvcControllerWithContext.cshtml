@@ -131,32 +131,6 @@ namespace @Model.ControllerNamespace
         }            return View(@Model.ModelVariable);
         }
 
-        // POST: @routePrefix/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("@bindString")] @Model.ModelTypeName @Model.ModelVariable)
-            {
-            if (ModelState.IsValid)
-            {
-            @{
-                if (!string.IsNullOrEmpty(primaryKeyType) && IsGuid(primaryKeyType))
-                {
-                    @://@(Model.ModelVariable).@primaryKeyName = Guid.NewGuid();
-                }
-                @:_context.Add(@Model.ModelVariable);
-                @:await _context.SaveChangesAsync();
-            }                return RedirectToAction(nameof(Index));
-            }
-            @{
-                foreach (var property in relatedProperties.Values)
-                {
-                    @:ViewData["@(property.ForeignKeyPropertyNames[0])"] = new SelectList(_context.@property.EntitySetName, "@property.PrimaryKeyNames[0]", "@property.DisplayPropertyName", @(Model.ModelVariable).@property.ForeignKeyPropertyNames[0]);
-                }
-            }
-            return View(@Model.ModelVariable);
-            }
 
             // GET: @routePrefix/Edit/5
             public async Task<IActionResult> Edit(@primaryKeyNullableTypeName id)
@@ -179,53 +153,6 @@ namespace @Model.ControllerNamespace
                 }
                 return View(@Model.ModelVariable);
                 }
-
-                // POST: @routePrefix/Edit/5
-                // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-                // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-                [HttpPost]
-                [ValidateAntiForgeryToken]
-                public async Task<IActionResult> Edit(@primaryKeyShortTypeName id, [Bind("@bindString")] @Model.ModelTypeName @Model.ModelVariable)
-    {
-    if (id != @Model.ModelVariable.@primaryKeyName)
-    {
-    return NotFoundData();
-    }
-
-    if (ModelState.IsValid)
-    {
-    try
-    {
-    @Model.ModelTypeName @(Model.ModelVariable)InDb=await _context.@(entitySetName).FindAsync(id);
-    @foreach (var item in Model.ModelMetadata.ModelType.GetProperties())
-    {
-            @:@(Model.ModelVariable)InDb.@item.Name=@(Model.ModelVariable).@item.Name;
-    }
-    _context.Update(@(Model.ModelVariable)InDb);
-    await _context.SaveChangesAsync();
-    }
-    catch (DbUpdateConcurrencyException)
-    {
-    if (!@(Model.ModelTypeName)Exists(@Model.ModelVariable.@primaryKeyName))
-    {
-    return NotFoundData();
-    }
-    else
-    {
-    throw;
-    }
-    }
-    return RedirectToAction(nameof(Index));
-    }
-    @{
-        foreach (var property in relatedProperties.Values)
-        {
-            @:ViewData["@(property.ForeignKeyPropertyNames[0])"] = new SelectList(_context.@property.EntitySetName, "@property.PrimaryKeyNames[0]", "@property.DisplayPropertyName", @(Model.ModelVariable).@property.ForeignKeyPropertyNames[0]);
-        }
-    }
-    return View(@Model.ModelVariable);
-    }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
