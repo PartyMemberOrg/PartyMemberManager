@@ -53,8 +53,8 @@ namespace PartyMemberManager.Core.Helpers
         /// <returns></returns>
         public static string DESEncrypt(string data)
         {
-            string key = "zhending";
-            string iv = "453123!@";
+            string key = "lzufepar";
+            string iv = "878541!@";
             return DESEncrypt(data, key, iv);
         }
 
@@ -101,8 +101,8 @@ namespace PartyMemberManager.Core.Helpers
         /// <returns></returns>
         public static string DESDecrypt(string data)
         {
-            string key = "zhending";
-            string iv = "453123!@";
+            string key = "lzufepar";
+            string iv = "878541!@";
             return DESDecrypt(data, key, iv);
         }
     }
