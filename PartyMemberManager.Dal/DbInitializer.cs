@@ -184,7 +184,7 @@ namespace PartyMemberManager.Dal
                     Id = Guid.NewGuid(),
                     CreateTime = DateTime.Now,
                     Ordinal = context.Departments.Local.Count() + 1,
-                    Name = item,
+                    Name = item.Trim(),
                 };
                 if (item.Contains("长青"))
                 {
