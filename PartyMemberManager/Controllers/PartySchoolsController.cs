@@ -55,22 +55,6 @@ namespace PartyMemberManager.Controllers
             return View(partySchool);
         }
 
-        // POST: PartySchools/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Code,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PartySchool partySchool)
-        {
-            if (ModelState.IsValid)
-            {
-                //partySchool.Id = Guid.NewGuid();
-                _context.Add(partySchool);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(partySchool);
-        }
 
         // GET: PartySchools/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
@@ -87,50 +71,6 @@ namespace PartyMemberManager.Controllers
             }
             return View(partySchool);
         }
-
-        // POST: PartySchools/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Code,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PartySchool partySchool)
-        {
-            if (id != partySchool.Id)
-            {
-                return NotFoundData();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    PartySchool partySchoolInDb = await _context.PartySchools.FindAsync(id);
-                    partySchoolInDb.Name = partySchool.Name;
-                    partySchoolInDb.Code = partySchool.Code;
-                    partySchoolInDb.Id = partySchool.Id;
-                    partySchoolInDb.CreateTime = partySchool.CreateTime;
-                    partySchoolInDb.OperatorId = partySchool.OperatorId;
-                    partySchoolInDb.Ordinal = partySchool.Ordinal;
-                    partySchoolInDb.IsDeleted = partySchool.IsDeleted;
-                    _context.Update(partySchoolInDb);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PartySchoolExists(partySchool.Id))
-                    {
-                        return NotFoundData();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(partySchool);
-        }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]

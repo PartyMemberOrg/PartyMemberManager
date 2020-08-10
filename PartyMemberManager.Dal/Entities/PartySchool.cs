@@ -14,7 +14,7 @@ namespace PartyMemberManager.Dal.Entities
         /// <summary>
         /// 党校名称
         /// </summary>
-        [DisplayName("部门名称")]
+        [DisplayName("党校名称")]
         [StringLength(50, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Name { get; set; }

@@ -1,176 +1,176 @@
 ﻿@model PartyMemberManager.Dal.Entities.PartyActivist
 
-        @{
-        Layout = "_LayoutEmpty";
-        ViewData["Title"] = "Create";
-        }
-        <div class="row form-padding-top">
-            <div class="col-md-12">
-                <form asp-action="Create">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="Name" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="Name" class="form-control" />
-                                            <span asp-validation-for="Name" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="StudentNo" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="StudentNo" class="form-control" />
-                                            <span asp-validation-for="StudentNo" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="IDNumber" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="IDNumber" class="form-control" />
-                                            <span asp-validation-for="IDNumber" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="Sex" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <select asp-for="Sex" asp-items="@Html.GetEnumSelectList(typeof(Sex))" class="form-control"></select>
-                                            <span asp-validation-for="Sex" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="BirthDate" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="BirthDate" class="form-control" />
-                                            <span asp-validation-for="BirthDate" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="Nationality" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="Nationality" class="form-control" />
-                                            <span asp-validation-for="Nationality" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="Phone" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="Phone" class="form-control" />
-                                            <span asp-validation-for="Phone" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="Class" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="Class" class="form-control" />
-                                            <span asp-validation-for="Class" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="ApplicationTime" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="ApplicationTime" class="form-control" />
-                                            <span asp-validation-for="ApplicationTime" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="CreateTime" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="CreateTime" class="form-control" />
-                                            <span asp-validation-for="CreateTime" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="OperatorId" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="OperatorId" class="form-control" />
-                                            <span asp-validation-for="OperatorId" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="Ordinal" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="Ordinal" class="form-control" />
-                                            <span asp-validation-for="Ordinal" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="IsDeleted" class="control-label"></label>
-                                        </div>
-                                        <div class="form-check @InputDivDefaultClass">
-                                            <div class="layui-form">
-                                                <div class="layui-form-item" style="margin-bottom:0px;margin-top:-5px">
-                                                    <input type="checkbox" name="IsDeleted" lay-skin="primary" value="true" title="" @(Model.IsDeleted ? "checked" : "" )>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-<div class="form-group">
-    <input type="submit" value="Create" class="btn btn-primary" />
-</div>
-</form>
-</div>
+@{
+    Layout = "_LayoutEmpty";
+    ViewData["Title"] = "Create";
+}
+<div class="row form-padding-top">
+    <div class="col-md-12">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="Name" class="control-label"></label>
+                    </div>
+                    <div>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="StudentNo" class="control-label"></label>
+                    </div>
+                    <div>
+                        <input asp-for="StudentNo" class="form-control" />
+                        <span asp-validation-for="StudentNo" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="IDNumber" class="control-label"></label>
+                    </div>
+                    <div>
+                        <input asp-for="IDNumber" class="form-control" />
+                        <span asp-validation-for="IDNumber" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="Sex" class="control-label"></label>
+                    </div>
+                    <div>
+                        <select asp-for="Sex" asp-items="@Html.GetEnumSelectList(typeof(Sex))" class="form-control"></select>
+                        <span asp-validation-for="Sex" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="BirthDate" class="control-label"></label>
+                    </div>
+                    <div>
+                        <input asp-for="BirthDate" class="form-control" />
+                        <span asp-validation-for="BirthDate" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="Nationality" class="control-label"></label>
+                    </div>
+                    <div>
+                        <input asp-for="Nationality" class="form-control" />
+                        <span asp-validation-for="Nationality" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="Phone" class="control-label"></label>
+                    </div>
+                    <div>
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="Class" class="control-label"></label>
+                    </div>
+                    <div>
+                        <input asp-for="Class" class="form-control" />
+                        <span asp-validation-for="Class" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="ApplicationTime" class="control-label"></label>
+                    </div>
+                    <div>
+                        <input asp-for="ApplicationTime" class="form-control" />
+                        <span asp-validation-for="ApplicationTime" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="CreateTime" class="control-label"></label>
+                    </div>
+                    <div>
+                        <input asp-for="CreateTime" class="form-control" />
+                        <span asp-validation-for="CreateTime" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="OperatorId" class="control-label"></label>
+                    </div>
+                    <div>
+                        <input asp-for="OperatorId" class="form-control" />
+                        <span asp-validation-for="OperatorId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="Ordinal" class="control-label"></label>
+                    </div>
+                    <div>
+                        <input asp-for="Ordinal" class="form-control" />
+                        <span asp-validation-for="Ordinal" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="IsDeleted" class="control-label"></label>
+                    </div>
+                    <div class="form-check @InputDivDefaultClass">
+                        <div class="layui-form">
+                            <div class="layui-form-item" style="margin-bottom:0px;margin-top:-5px">
+                                <input type="checkbox" name="IsDeleted" lay-skin="primary" value="true" title="" @(Model.IsDeleted ? "checked" : "" )>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
 </div>
 
 <div>
     <a asp-action="Index">返回</a>
 </div>
-        @section Scripts{
-        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-        <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
-        <script src="~/lib/layui/layui.js"></script>
-        <script>
-            layui.use('form', function () {
-                var form = layui.form;
-            });
-        </script>
-        }
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/lib/layui/layui.js"></script>
+    <script>
+        layui.use('form', function () {
+            var form = layui.form;
+        });
+    </script>
+}
