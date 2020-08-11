@@ -15,17 +15,18 @@
         top: 60px;
         bottom: 0;
         left: 0;
-        width: 200px;
+        width: 202px;
         border-top:1px solid #e5e5e5;
     }
 
     .rightContent {
-        position:relative;
-        top: 60px;
+        position:fixed;
+        top:60px;
         right: 0;
         bottom: 0;
         left: 205px;
         overflow-y: auto;
+        padding-top:5px;
     }
 </style>
 <partial name="_PartialHeader" model="true" />
@@ -37,7 +38,7 @@
     </div>
     <div class="rightContent" id="rightContent">
         <main role="main" class="pb-3">
-            <iframe id="mainframe" name="mainframe" frameborder="0" style="overflow: visible " scrolling="no" width="785" height="620" src="@Url.Action("Index","Nations")"></iframe>
+            <iframe id="mainframe" name="mainframe" frameborder="0" style="overflow: visible " scrolling="no" width="1200" height="900" src="@Url.Action("Index","Nations")"></iframe>
         </main>
     </div>
 </div>
