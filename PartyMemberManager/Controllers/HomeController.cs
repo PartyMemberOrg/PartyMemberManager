@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PartyMemberManager.Framework.Controllers;
 using PartyMemberManager.Models;
 
 namespace PartyMemberManager.Controllers
@@ -12,7 +13,7 @@ namespace PartyMemberManager.Controllers
     //[TypeFilter(typeof(Filters.AuthorizeFilter))]
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private  readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger)
         {

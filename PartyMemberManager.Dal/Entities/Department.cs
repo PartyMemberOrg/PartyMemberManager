@@ -18,8 +18,6 @@ namespace PartyMemberManager.Dal.Entities
         [StringLength(50, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Name { get; set; }
-
-        public string Password { get; set; }
         /// <summary>
         /// 所属校区
         /// </summary>

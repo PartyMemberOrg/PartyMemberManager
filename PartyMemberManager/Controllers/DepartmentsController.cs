@@ -89,7 +89,6 @@ namespace PartyMemberManager.Controllers
                     if (departmentInDb != null)
                     {
                         departmentInDb.Name = department.Name;
-                        departmentInDb.Password = department.Password;
                         departmentInDb.SchoolAreas = department.SchoolAreas;
                         departmentInDb.Id = department.Id;
                         departmentInDb.CreateTime = department.CreateTime;

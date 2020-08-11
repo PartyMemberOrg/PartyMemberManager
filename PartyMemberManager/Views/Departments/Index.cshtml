@@ -71,14 +71,9 @@
                     , cols: [[
                         //{ type: 'checkbox' }
                         //,
-            { field: 'name', title: 'Name', align: 'center' },
-            { field: 'password', title: 'Password', align: 'center' },
-            { field: 'schoolAreas', title: 'SchoolAreas', align: 'center' },
-            { field: 'id', title: 'Id', align: 'center' },
-            { field: 'createTime', title: 'CreateTime', align: 'center' },
-            { field: 'operatorId', title: 'OperatorId', align: 'center' },
-            { field: 'ordinal', title: 'Ordinal', align: 'center' },
-            { field: 'isDeleted', title: 'IsDeleted', align: 'center' },
+                        { field: 'name', title: '单位名称', align: 'center' },
+                        { field: '所属校区', title: 'SchoolAreasDisplay', align: 'center' },
+                        { field: 'isDeleted', title: 'IsDeleted', align: 'center' },
                         { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
