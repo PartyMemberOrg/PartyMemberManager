@@ -37,8 +37,13 @@ namespace PartyMemberManager.Dal
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Operator>().HasKey(o => o.Id);
             modelBuilder.Entity<Operator>().HasIndex(o => o.LoginName).IsUnique(true);
+            modelBuilder.Entity<Operator>()
+                .HasOne(o => o.Department)
+                .WithMany()
+                .HasForeignKey(o => o.DepartmentId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Module>().HasKey(m => m.Id);
+           modelBuilder.Entity<Module>().HasKey(m => m.Id);
             modelBuilder.Entity<Module>().HasIndex(m => m.Name).IsUnique(true);
             modelBuilder.Entity<Module>()
                 .HasOne(m => m.ParentModule)
@@ -60,6 +65,7 @@ namespace PartyMemberManager.Dal
             modelBuilder.Entity<Log>().HasKey(l => l.Id);
 
             modelBuilder.Entity<Department>().HasKey(d => d.Id);
+
             modelBuilder.Entity<TrainClass>().HasKey(t => t.Id);
             modelBuilder.Entity<TrainClass>()
                 .HasOne(t => t.TrainClassType)

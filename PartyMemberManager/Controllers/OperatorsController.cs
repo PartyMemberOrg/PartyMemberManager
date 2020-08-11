@@ -21,7 +21,7 @@ using System.Xml;
 namespace PartyMemberManager.Controllers
 {
     //[TypeFilter(typeof(Filters.AuthorizeFilter))]
-    public class OperatorsController : PartyMemberControllerBase
+    public class OperatorsController : PartyMemberDataControllerBase<Operator>
     {
         public OperatorsController(ILogger<OperatorsController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
         {
@@ -45,7 +45,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatas(int page = 1, int limit = 10)
+        public override async Task<IActionResult> GetDatas(int page = 1, int limit = 10)
         {
             JsonResultDatasModel<Operator> jsonResult = new JsonResultDatasModel<Operator>
             {
@@ -108,6 +108,7 @@ namespace PartyMemberManager.Controllers
         {
             Operator Operator = new Operator();
             Operator.Roles = Role.学院党委;
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(c => c.Ordinal), "Id", "Name");
             return View(Operator);
         }
 
@@ -121,23 +122,23 @@ namespace PartyMemberManager.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("LoginName,Name,Phone,Password,Roles,Enabled,Id,CreateTime,Ordinal")] Operator Operator)
+        public async Task<IActionResult> Create([Bind("LoginName,Name,Phone,Password,Roles,Enabled,Id,CreateTime,Ordinal")] Operator @operator)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    Operator.Id = Guid.NewGuid();
-                    Operator.CreateTime =DateTime.Now;
-                    Operator.Ordinal = _context.Operators.Count() + 1;
-                    Operator.Password = StringHelper.EncryPassword(Operator.Password);
-                    _context.Add(Operator);
+                    @operator.Id = Guid.NewGuid();
+                    @operator.CreateTime = DateTime.Now;
+                    @operator.Ordinal = _context.Operators.Count() + 1;
+                    @operator.Password = StringHelper.EncryPassword(@operator.Password);
+                    _context.Add(@operator);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OperatorExists(Operator.Id))
+                    if (!OperatorExists(@operator.Id))
                     {
                         return NotFoundData();
                     }
@@ -155,7 +156,8 @@ namespace PartyMemberManager.Controllers
                     ShowAndLogSystemError(ex);
                 }
             }
-            return View(Operator);
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(c => c.Ordinal), "Id", "Name");
+            return View(@operator);
         }
 
         // GET: Operators/Edit/5
@@ -171,6 +173,7 @@ namespace PartyMemberManager.Controllers
             {
                 return NotFoundData();
             }
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(c => c.Ordinal), "Id", "Name");
             return View(Operator);
         }
 
@@ -186,9 +189,9 @@ namespace PartyMemberManager.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("LoginName,Name,Phone,Password,Roles,Enabled,DoctorType,GroupDoctorId,Id,CreateTime,Ordinal")] Operator Operator)
+        public async Task<IActionResult> Edit(Guid id, [Bind("LoginName,Name,Phone,Password,Roles,Department,Enabled,Id,CreateTime,Ordinal")] Operator @operator)
         {
-            if (id != Operator.Id)
+            if (id != @operator.Id)
             {
                 return NotFoundData();
             }
@@ -198,20 +201,20 @@ namespace PartyMemberManager.Controllers
                 try
                 {
                     Operator OperatorInDb = await _context.Operators.FindAsync(id);
-                    OperatorInDb.LoginName = Operator.LoginName;
-                    OperatorInDb.Name = Operator.Name;
-                    OperatorInDb.Phone = Operator.Phone;
-                    if (Operator.Password != OperatorInDb.Password)
-                        OperatorInDb.Password = StringHelper.EncryPassword(Operator.Password);
-                    OperatorInDb.Roles = Operator.Roles;
-                    OperatorInDb.Enabled = Operator.Enabled;
+                    OperatorInDb.LoginName = @operator.LoginName;
+                    OperatorInDb.Name = @operator.Name;
+                    OperatorInDb.Phone = @operator.Phone;
+                    if (@operator.Password != OperatorInDb.Password)
+                        OperatorInDb.Password = StringHelper.EncryPassword(@operator.Password);
+                    OperatorInDb.Roles = @operator.Roles;
+                    OperatorInDb.Enabled = @operator.Enabled;
                     _context.Update(OperatorInDb);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OperatorExists(Operator.Id))
+                    if (!OperatorExists(@operator.Id))
                     {
                         return NotFoundData();
                     }
@@ -229,13 +232,14 @@ namespace PartyMemberManager.Controllers
                     ShowAndLogSystemError(ex);
                 }
             }
-            return View(Operator);
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(c => c.Ordinal), "Id", "Name");
+            return View(@operator);
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Save(Guid id, [Bind("LoginName,Name,Phone,Password,Roles,Enabled,Id,CreateTime,Ordinal")] Operator Operator, Guid[] inpatientAreas)
+        public async Task<IActionResult> Save(Guid id, [Bind("LoginName,Name,Phone,Password,Roles,Department,Enabled,Id,CreateTime,Ordinal")] Operator @operator)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -244,47 +248,37 @@ namespace PartyMemberManager.Controllers
             };
             try
             {
-
                 if (ModelState.IsValid)
                 {
+                    if (@operator.Roles > Roles)
+                        throw new PartyMemberException($"您将用户的权限提升至[{@operator.RolesDisplay}]");
                     Operator OperatorInDb = await _context.Operators.FindAsync(id);
-                    if (OperatorInDb.LoginName.ToLower() == "eadmin" || OperatorInDb.LoginName.ToLower() == "erasadmin")
-                        if (OperatorInDb.LoginName != Operator.LoginName)
-                            throw new PartyMemberException($"{OperatorInDb.LoginName}为内置系统管理员账号，不允许修改该账号的“账号”名");
-                    switch (Operator.Roles)
-                    {
-                        case Role.学校党委:
-                            break;
-                        case Role.学院党委:
-                            break;
-                        case Role.系统管理员:
-                        case Role.超级管理员:
-                            inpatientAreas = new Guid[] { };
-                            break;
-                    }
+                    if (OperatorInDb.LoginName.ToLower() == "admin" || OperatorInDb.LoginName.ToLower() == "sysadmin")
+                        if (OperatorInDb.LoginName != @operator.LoginName)
+                            throw new PartyMemberException($"{OperatorInDb.LoginName}为内置系统管理员工号，不允许修改该工号");
                     if (OperatorInDb != null)
                     {
-                        if (_context.Operators.Any(o => o.LoginName == Operator.LoginName && o.Id != Operator.Id))
-                            throw new PartyMemberException($"登录名[{Operator.LoginName}]已经存在");
-                        OperatorInDb.LoginName = Operator.LoginName;
-                        OperatorInDb.Name = Operator.Name;
-                        OperatorInDb.Phone = Operator.Phone;
-                        if (Operator.Password != OperatorInDb.Password)
-                            OperatorInDb.Password = StringHelper.EncryPassword(Operator.Password);
-                        OperatorInDb.Roles = Operator.Roles;
-                        OperatorInDb.Enabled = Operator.Enabled;
+                        if (_context.Operators.Any(o => o.LoginName == @operator.LoginName && o.Id != @operator.Id))
+                            throw new PartyMemberException($"用户[{@operator.LoginName}]已经存在");
+                        OperatorInDb.LoginName = @operator.LoginName;
+                        OperatorInDb.Name = @operator.Name;
+                        OperatorInDb.Phone = @operator.Phone;
+                        if (@operator.Password != OperatorInDb.Password)
+                            OperatorInDb.Password = StringHelper.EncryPassword(@operator.Password);
+                        OperatorInDb.Roles = @operator.Roles;
+                        OperatorInDb.Enabled = @operator.Enabled;
                         _context.Update(OperatorInDb);
                         await _context.SaveChangesAsync();
                     }
                     else
                     {
-                        if (_context.Operators.Any(o => o.LoginName == Operator.LoginName))
-                            throw new PartyMemberException($"登录名[{Operator.LoginName}]已经存在");
-                        Operator.Id = Guid.NewGuid();
-                        Operator.CreateTime = DateTime.Now;
-                        Operator.Password = StringHelper.EncryPassword(Operator.Password);
-                        Operator.Ordinal = _context.Operators.Count() + 1;
-                        _context.Add(Operator);
+                        if (_context.Operators.Any(o => o.LoginName == @operator.LoginName))
+                            throw new PartyMemberException($"用户[{@operator.LoginName}]已经存在");
+                        @operator.Id = Guid.NewGuid();
+                        @operator.CreateTime = DateTime.Now;
+                        @operator.Password = StringHelper.EncryPassword(@operator.Password);
+                        @operator.Ordinal = _context.Operators.Count() + 1;
+                        _context.Add(@operator);
                         await _context.SaveChangesAsync();
                     }
                 }

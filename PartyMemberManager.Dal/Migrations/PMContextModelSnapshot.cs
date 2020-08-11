@@ -19,6 +19,135 @@ namespace PartyMemberManager.Dal.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("PartyMemberManager.Dal.Entities.ActiveApplicationSurvey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DepartmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("OperatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Ordinal")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Proportion")
+                        .HasColumnType("float");
+
+                    b.Property<int>("SchoolArea")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Term")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Total")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TrainTotal")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Year")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(4)")
+                        .HasMaxLength(4);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("ActiveApplicationSurveies");
+                });
+
+            modelBuilder.Entity("PartyMemberManager.Dal.Entities.CadreTrain", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CadreTrainType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("IDNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
+
+                    b.Property<Guid?>("OperatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Ordinal")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Organizer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("Post")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
+
+                    b.Property<int>("Sex")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TrainClass")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("TrainDuration")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<string>("TrainOrganizational")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<DateTime>("TrainTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Year")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(4)")
+                        .HasMaxLength(4);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("CadreTrains");
+                });
+
             modelBuilder.Entity("PartyMemberManager.Dal.Entities.Department", b =>
                 {
                     b.Property<Guid>("Id")
@@ -41,9 +170,6 @@ namespace PartyMemberManager.Dal.Migrations
 
                     b.Property<int>("Ordinal")
                         .HasColumnType("int");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SchoolAreas")
                         .HasColumnType("int");
@@ -179,6 +305,9 @@ namespace PartyMemberManager.Dal.Migrations
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("DepartmentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("Enabled")
                         .HasColumnType("bit");
 
@@ -214,6 +343,8 @@ namespace PartyMemberManager.Dal.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
 
                     b.HasIndex("LoginName")
                         .IsUnique();
@@ -482,12 +613,86 @@ namespace PartyMemberManager.Dal.Migrations
                     b.ToTable("TrainClassTypes");
                 });
 
+            modelBuilder.Entity("PartyMemberManager.Dal.Entities.TrainResult", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("CSGrade")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPass")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("OperatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Ordinal")
+                        .HasColumnType("int");
+
+                    b.Property<double>("PSGrade")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("PartyActivistId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("TotalGrade")
+                        .HasColumnType("float");
+
+                    b.Property<Guid?>("TrainClassTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Year")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(4)")
+                        .HasMaxLength(4);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PartyActivistId");
+
+                    b.HasIndex("TrainClassTypeId");
+
+                    b.ToTable("TrainResults");
+                });
+
+            modelBuilder.Entity("PartyMemberManager.Dal.Entities.ActiveApplicationSurvey", b =>
+                {
+                    b.HasOne("PartyMemberManager.Dal.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId");
+                });
+
+            modelBuilder.Entity("PartyMemberManager.Dal.Entities.CadreTrain", b =>
+                {
+                    b.HasOne("PartyMemberManager.Dal.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("PartyMemberManager.Dal.Entities.Module", b =>
                 {
                     b.HasOne("PartyMemberManager.Dal.Entities.Module", "ParentModule")
                         .WithMany("ChildModules")
                         .HasForeignKey("ParentModuleId")
                         .OnDelete(DeleteBehavior.NoAction);
+                });
+
+            modelBuilder.Entity("PartyMemberManager.Dal.Entities.Operator", b =>
+                {
+                    b.HasOne("PartyMemberManager.Dal.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("PartyMemberManager.Dal.Entities.OperatorModule", b =>
@@ -526,6 +731,19 @@ namespace PartyMemberManager.Dal.Migrations
                         .HasForeignKey("TrainClassTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("PartyMemberManager.Dal.Entities.TrainResult", b =>
+                {
+                    b.HasOne("PartyMemberManager.Dal.Entities.PartyActivist", "PartyActivist")
+                        .WithMany()
+                        .HasForeignKey("PartyActivistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PartyMemberManager.Dal.Entities.TrainClassType", "TrainClassType")
+                        .WithMany()
+                        .HasForeignKey("TrainClassTypeId");
                 });
 #pragma warning restore 612, 618
         }

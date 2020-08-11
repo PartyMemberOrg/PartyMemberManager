@@ -25,22 +25,17 @@
             $("#Roles").change(function () {
                 var roles = $("#Roles").val();
                 switch (roles) {
-                    case "@((int)Role.学校党委)":
-                        $("#DoctorTypeContainer").show();
-                        $("#inpatientAreasContainer").hide();
-                        $("#GroupDoctorIdContainer").hide();
-                        $("#DoctorType").change();
-                        break;
                     case "@((int)Role.学院党委)":
-                        $("#DoctorTypeContainer").hide();
-                        $("#inpatientAreasContainer").show();
-                        $("#GroupDoctorIdContainer").hide();
+                        $("#DepartmentContainer").show();
+                        break;
+                    case "@((int)Role.学校党委)":
+                        $("#DepartmentContainer").hide();
                         break;
                     case "@((int)Role.系统管理员)":
+                        $("#DepartmentContainer").hide();
+                        break;
                     case "@((int)Role.超级管理员)":
-                        $("#DoctorTypeContainer").hide();
-                        $("#inpatientAreasContainer").hide();
-                        $("#GroupDoctorIdContainer").hide();
+                        $("#DepartmentContainer").hide();
                         break;
                 }
             });

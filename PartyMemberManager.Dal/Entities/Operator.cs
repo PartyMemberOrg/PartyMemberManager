@@ -20,7 +20,7 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("工号")]
         [StringLength(10, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [Required(ErrorMessageResourceName = "AccountNoErrorMessage")]
+        [Required(ErrorMessageResourceName = "AccountNoErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string LoginName { get; set; }
         /// <summary>
         /// 姓名
@@ -41,9 +41,10 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("密码")]
         [StringLength(100, MinimumLength = 6, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+
         /// <summary>
         /// 用户角色
         /// </summary>
@@ -55,6 +56,16 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("用户角色")]
         [NotMapped]
         public string RolesDisplay { get => Roles.ToString(); }
+        /// <summary>
+        /// 所属部门
+        /// </summary>
+         [DisplayName("所属部门")]
+        public Guid? DepartmentId { get; set; }
+        /// <summary>
+        /// 所属部门
+        /// </summary>
+        [DisplayName("所属部门")]
+        public Department Department { get; set; }
         /// <summary>
         /// 是否启用
         /// </summary>

@@ -4,13 +4,10 @@
     Layout = "_LayoutEdit";
     ViewData["Title"] = "Index";
 }
-
 <p style="margin-bottom:14px;">
     <a href="javascript:showEdit('Operators/Create','Operators/Save','添加账号',600,600)" class="layui-btn layui-btn-primary">+添加账号</a>
 </p>
-
 <table class="layui-hide" id="datatable"></table>
-
 @Html.AntiForgeryToken()
 
 @section Scripts{
@@ -73,10 +70,9 @@
                         { field: 'loginName', title: '账号', width: '122', minWidth: 50, align: 'center' }
                         , { field: 'name', title: '姓名', width: '120', minWidth: 50, align: 'center' }
                         , { field: 'phoneDisplay', title: '手机号', width: '120', minWidth: 50, align: 'center' }
-                        , { field: 'rolesDisplay', title: '角色分组', width: '100', align: 'center' }
+                        , { field: 'rolesDisplay', title: '角色', width: '100', align: 'center' }
                         , { field: 'createTime', title: '创建时间', width: '120', align: 'center', templet: function (d) { return formatDate(d.createTime,'yyyy-MM-dd');} }
                         , { field: 'enabledDisplay', title: '是否启用', width: '100', align: 'center' } //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
-                        //, { field: 'ordinal', title: '顺序', sort: true, width: '100', align: 'center' }
                         , { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
@@ -100,17 +96,5 @@
         <a href="javascript:showEdit('Operators/Edit/{{d.id}}','Operators/Save','修改账号',600,600)" class="layui-table-link" title="查看">
             查看
         </a>
-        @*<a href="javascript:ItemUp('{{d.id}}')" class="layui-table-link" title="上移">
-            @Html.Raw(UpButtonTextOrIcon)
-        </a>
-        <a href="javascript:ItemDown('{{d.id}}')" class="layui-table-link" title="下移">
-            @Html.Raw(DownButtonTextOrIcon)
-        </a>
-        <a href="javascript:showEdit('Operators/Edit/{{d.id}}','Operators/Save','修改账号',600,400)" class="layui-table-link" title="修改">
-            @Html.Raw(EditButtonTextOrIcon)
-        </a>
-        <a href="javascript:Delete('{{d.id}}')" class="layui-table-link" title="删除">
-            @Html.Raw(DeleteButtonTextOrIcon)
-        </a>*@
     </script>
 }
