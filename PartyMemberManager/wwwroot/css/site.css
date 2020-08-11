@@ -801,14 +801,14 @@ input[data-type='daterange'] {
 }
 /*左侧菜单样式*/
 .panelmenu {
-    width: 135px;
+    width: 205px;
     background: rgba(247,250,253,1);
     border-right: 5px solid rgba(245,246,251,1);
     padding-right: 5px;
 }
 
 .menu {
-    width: 130px;
+    width: 200px;
 }
 
     .menu i {
@@ -890,7 +890,8 @@ input[data-type='daterange'] {
 
 /*顶部条样式*/
 .headerbar {
-    background:#f8f8f8;
+    /*    background: rgba(247,250,253,1);*/
+    background: red;
 }
 /*顶部条样式*/
 

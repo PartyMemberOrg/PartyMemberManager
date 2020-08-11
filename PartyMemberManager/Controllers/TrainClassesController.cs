@@ -12,69 +12,69 @@ using PartyMemberManager.Core.Exceptions;
 using Microsoft.Extensions.Logging;
 using PartyMemberManager.Framework.Models.JsonModels;
 using Microsoft.AspNetCore.Http;
-        using PartyMemberManager.Dal;
-        using PartyMemberManager.Dal.Entities;
+using PartyMemberManager.Dal;
+using PartyMemberManager.Dal.Entities;
 
 namespace PartyMemberManager.Controllers
 {
     public class TrainClassesController : PartyMemberDataControllerBase<TrainClass>
     {
 
-    public TrainClassesController(ILogger<TrainClassesController> logger, PMContext context,IHttpContextAccessor accessor):base(logger,context,accessor)
-    {
-    }
+        public TrainClassesController(ILogger<TrainClassesController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
+        {
+        }
 
-    // GET: TrainClasses
+        // GET: TrainClasses
         public async Task<IActionResult> Index(int page = 1)
-{
-                var pMContext = _context.TrainClasses.Include(t => t.TrainClassType);
-                return View(await pMContext.ToListAsync());
+        {
+            var pMContext = _context.TrainClasses.Include(t => t.TrainClassType);
+            return View(await pMContext.ToListAsync());
         }
 
-    // GET: TrainClasses/Details/5
-    public async Task<IActionResult> Details(Guid? id)
+        // GET: TrainClasses/Details/5
+        public async Task<IActionResult> Details(Guid? id)
         {
-        if (id == null)
-        {
-        return NotFoundData();
-        }
+            if (id == null)
+            {
+                return NotFoundData();
+            }
 
-        var trainClass = await _context.TrainClasses
-                .Include(t => t.TrainClassType)
-        .SingleOrDefaultAsync(m => m.Id == id);
-        if (trainClass == null)
-        {
-        return NotFoundData();
-        }
+            var trainClass = await _context.TrainClasses
+                    .Include(t => t.TrainClassType)
+            .SingleOrDefaultAsync(m => m.Id == id);
+            if (trainClass == null)
+            {
+                return NotFoundData();
+            }
 
-        return View(trainClass);
+            return View(trainClass);
         }
 
         // GET: TrainClasses/Create
         public IActionResult Create()
         {
-                TrainClass trainClass= new TrainClass();
-                ViewData["TrainClassTypeId"] = new SelectList(_context.TrainClassTypes, "Id", "Name");
+            TrainClass trainClass = new TrainClass();
+            ViewData["TrainClassTypeId"] = new SelectList(_context.TrainClassTypes, "Id", "Name");
             return View(trainClass);
         }
 
 
-            // GET: TrainClasses/Edit/5
-            public async Task<IActionResult> Edit(Guid? id)
-                {
-                if (id == null)
-                {
+        // GET: TrainClasses/Edit/5
+        public async Task<IActionResult> Edit(Guid? id)
+        {
+            if (id == null)
+            {
                 return NotFoundData();
-                }
+            }
 
-                var trainClass = await _context.TrainClasses.SingleOrDefaultAsync(m => m.Id == id);
-                if (trainClass == null)
-                {
+            var trainClass = await _context.TrainClasses.SingleOrDefaultAsync(m => m.Id == id);
+            if (trainClass == null)
+            {
                 return NotFoundData();
-                }
-                        ViewData["TrainClassTypeId"] = new SelectList(_context.TrainClassTypes, "Id", "Name", trainClass.TrainClassTypeId);
-                return View(trainClass);
-                }
+            }
+            ViewData["TrainClassTypeId"] = new SelectList(_context.TrainClassTypes, "Id", "Name", trainClass.TrainClassTypeId);
+            return View(trainClass);
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -89,18 +89,18 @@ namespace PartyMemberManager.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    TrainClass trainClassInDb=await _context.TrainClasses.FindAsync(trainClass.Id);
+                    TrainClass trainClassInDb = await _context.TrainClasses.FindAsync(trainClass.Id);
                     if (trainClassInDb != null)
                     {
-                                trainClassInDb.Name=trainClass.Name;
-                                trainClassInDb.Code=trainClass.Code;
-                                trainClassInDb.TrainClassTypeId=trainClass.TrainClassTypeId;
-                                trainClassInDb.TrainClassType=trainClass.TrainClassType;
-                                trainClassInDb.Id=trainClass.Id;
-                                trainClassInDb.CreateTime=trainClass.CreateTime;
-                                trainClassInDb.OperatorId=trainClass.OperatorId;
-                                trainClassInDb.Ordinal=trainClass.Ordinal;
-                                trainClassInDb.IsDeleted=trainClass.IsDeleted;
+                        trainClassInDb.Name = trainClass.Name;
+                        trainClassInDb.Code = trainClass.Code;
+                        trainClassInDb.TrainClassTypeId = trainClass.TrainClassTypeId;
+                        trainClassInDb.TrainClassType = trainClass.TrainClassType;
+                        trainClassInDb.Id = trainClass.Id;
+                        trainClassInDb.CreateTime = trainClass.CreateTime;
+                        trainClassInDb.OperatorId = trainClass.OperatorId;
+                        trainClassInDb.Ordinal = trainClass.Ordinal;
+                        trainClassInDb.IsDeleted = trainClass.IsDeleted;
                         _context.Update(trainClassInDb);
                     }
                     else
@@ -146,9 +146,9 @@ namespace PartyMemberManager.Controllers
         }
 
 
-            private bool TrainClassExists(Guid id)
-            {
+        private bool TrainClassExists(Guid id)
+        {
             return _context.TrainClasses.Any(e => e.Id == id);
-            }
-            }
-            }
+        }
+    }
+}

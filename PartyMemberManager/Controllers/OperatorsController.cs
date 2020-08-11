@@ -20,7 +20,7 @@ using System.Xml;
 
 namespace PartyMemberManager.Controllers
 {
-    [TypeFilter(typeof(Filters.AuthorizeFilter))]
+    //[TypeFilter(typeof(Filters.AuthorizeFilter))]
     public class OperatorsController : PartyMemberControllerBase
     {
         public OperatorsController(ILogger<OperatorsController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
