@@ -275,7 +275,7 @@ namespace PartyMemberManager.Dal
             Operator @operator = new Operator
             {
                 LoginName = "admin",
-                Name = "超级管理员",
+                Name = "Admin",
                 Password = StringHelper.EncryPassword("pm123"),
                 Roles = Core.Enums.Role.超级管理员,
                 IsDeleted = false,
@@ -287,7 +287,7 @@ namespace PartyMemberManager.Dal
             @operator = new Operator
             {
                 LoginName = "sysadmin",
-                Name = "系统管理员",
+                Name = "SysAdmin",
                 Password = StringHelper.EncryPassword("pm123"),
                 Roles = Core.Enums.Role.系统管理员,
                 IsDeleted = false,
@@ -299,7 +299,7 @@ namespace PartyMemberManager.Dal
             @operator = new Operator
             {
                 LoginName = "1074113104",
-                Name = "学校党委",
+                Name = "测试学校党委",
                 Password = StringHelper.EncryPassword("123"),
                 Roles = Core.Enums.Role.学校党委,
                 IsDeleted = false,
@@ -311,7 +311,7 @@ namespace PartyMemberManager.Dal
             @operator = new Operator
             {
                 LoginName = "1074113105",
-                Name = "学院党委",
+                Name = "测试学院党委",
                 Password = StringHelper.EncryPassword("123"),
                 Roles = Core.Enums.Role.学院党委,
                 IsDeleted = false,

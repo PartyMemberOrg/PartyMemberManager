@@ -1,7 +1,7 @@
 ﻿@model bool
 <header style="height:60px;width:100%;" class="app-sys-command-container" id="pageHeader">
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light headerbar app-sys-command-container" style="height:60px">
-        <div class="container app-sys-command-container" style="color:red;margin-left:0">
+        <div class="container app-sys-command-container" style="color:red;margin-left:5px">
             <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">
                 <img src="~/images/Logo.png" width="40" style="padding:0 3px" />
                 <span style="padding:3px">兰州财经大学入党管理系统</span>
@@ -16,7 +16,7 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link text-white sys-commands" href="javascript:;">
-                                @CurrentUser.LoginName
+                                @CurrentUser.Name
                             </a>
                         </li>
                         <li class="nav-item">
