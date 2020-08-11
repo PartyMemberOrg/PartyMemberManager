@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace PartyMemberManager.Controllers
 {
-    [TypeFilter(typeof(Filters.AuthorizeFilter))]
+    //[TypeFilter(typeof(Filters.AuthorizeFilter))]
     public class ModuleFunctionsController : PartyMemberControllerBase
     {
 
