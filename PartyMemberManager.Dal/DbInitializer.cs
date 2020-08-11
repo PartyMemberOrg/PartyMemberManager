@@ -253,7 +253,7 @@ namespace PartyMemberManager.Dal
             {
                 Id = Guid.NewGuid(),
                 CreateTime = DateTime.Now,
-                Name = "领导干部了培训",
+                Name = "领导干部培训",
                 Controller = "CadreTrains",
                 Action = null,
                 Ordinal = 5,
