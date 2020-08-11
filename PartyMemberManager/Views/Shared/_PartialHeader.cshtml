@@ -15,18 +15,18 @@
                     @if (Model)
                     {
                         <li class="nav-item">
-                            <a class="nav-link text-white sys-commands" href="javascript:;">
-                                @CurrentUser.Name
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link text-white sys-commands" href="javascript:editOperator()">
                                 <i class="layui-icon layui-icon-username" style="font-size: 14px; color: #FFFFFF;"></i>
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-white sys-commands" href="javascript:;">
+                                @CurrentUser.Name
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-white sys-commands" href="javascript:logout()">
-                                <i class="layui-icon layui-icon-close-fill" style="font-size: 14px; color: #FFFFFF;"></i>
+                                <i class="layui-icon layui-icon-down" style="font-size: 14px; color: #FFFFFF;"></i>
                             </a>
                         </li>
                     }
