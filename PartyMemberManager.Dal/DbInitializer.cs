@@ -51,10 +51,10 @@ namespace PartyMemberManager.Dal
                 Id = Guid.NewGuid(),
                 CreateTime = DateTime.Now,
                 Name = "系统管理",
-                Controller = "PatientArchives",
+                Controller = null,
                 Action = null,
                 Ordinal = 1,
-                Roles = Role.系统管理员 | Role.超级管理员
+                Roles =Role.学校党委| Role.系统管理员 | Role.超级管理员
             };
             context.Modules.Add(module);
             Module childModule = new Module
@@ -65,8 +65,8 @@ namespace PartyMemberManager.Dal
                 Name = "账号管理",
                 Controller = "Operators",
                 Action = null,
-                Ordinal = 702,
-                Roles = Role.系统管理员 | Role.超级管理员
+                Ordinal = 102,
+                Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员
             };
             context.Modules.Add(childModule);
             childModule = new Module
@@ -77,8 +77,8 @@ namespace PartyMemberManager.Dal
                 Name = "角色权限",
                 Controller = "ModuleFunctions",
                 Action = null,
-                Ordinal = 703,
-                Roles = Role.系统管理员 | Role.超级管理员
+                Ordinal = 103,
+                Roles =  Role.系统管理员 | Role.超级管理员
             };
             context.Modules.Add(childModule);
             childModule = new Module
@@ -89,8 +89,8 @@ namespace PartyMemberManager.Dal
                 Name = "账号权限",
                 Controller = "OperatorModules",
                 Action = null,
-                Ordinal = 704,
-                Roles = Role.系统管理员 | Role.超级管理员
+                Ordinal = 104,
+                Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员
             };
             context.Modules.Add(childModule);
             childModule = new Module
@@ -101,10 +101,165 @@ namespace PartyMemberManager.Dal
                 Name = "部门管理",
                 Controller = "Departments",
                 Action = null,
-                Ordinal = 705,
-                Roles = Role.系统管理员 | Role.超级管理员
+                Ordinal = 105,
+                Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员
             };
             context.Modules.Add(childModule);
+            childModule = new Module
+            {
+                ParentModuleId = module.Id,
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "党校管理",
+                Controller = "PartySchools",
+                Action = null,
+                Ordinal = 106,
+                Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员
+            };
+            childModule = new Module
+            {
+                ParentModuleId = module.Id,
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "民族管理",
+                Controller = "Nations",
+                Action = null,
+                Ordinal = 107,
+                Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(childModule);
+            module = new Module
+            {
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "入党积极分子管理",
+                Controller = null,
+                Action = null,
+                Ordinal = 2,
+                Roles = Role.学校党委 | Role.学院党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(module);
+            childModule = new Module
+            {
+                ParentModuleId = module.Id,
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "入党积极分子摸底",
+                Controller = "ActiveApplicationSurveys",
+                Action = null,
+                Ordinal = 201,
+                Roles = Role.学校党委 | Role.学院党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(childModule);
+            childModule = new Module
+            {
+                ParentModuleId = module.Id,
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "入党积极分子名单",
+                Controller = "PartyActivists",
+                Action = null,
+                Ordinal = 202,
+                Roles = Role.学校党委 | Role.学院党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(childModule);
+            childModule = new Module
+            {
+                ParentModuleId = module.Id,
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "入党积极分子培训班",
+                Controller = "TrainClasses",
+                Action = null,
+                Ordinal = 203,
+                Roles = Role.学校党委 | Role.学院党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(childModule);
+            childModule = new Module
+            {
+                ParentModuleId = module.Id,
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "入党积极分子成绩",
+                Controller = "TrainResults",
+                Action = null,
+                Ordinal = 204,
+                Roles = Role.学校党委 | Role.学院党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(childModule);
+
+            module = new Module
+            {
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "发展对象管理",
+                Controller = null,
+                Action = null,
+                Ordinal = 3,
+                Roles = Role.学校党委 | Role.学院党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(module);
+            childModule = new Module
+            {
+                ParentModuleId = module.Id,
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "发展对象名单",
+                Controller = "PotentialMembers",
+                Action = null,
+                Ordinal = 301,
+                Roles = Role.学校党委 | Role.学院党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(childModule);
+            childModule = new Module
+            {
+                ParentModuleId = module.Id,
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "发展对象培训班",
+                Controller = "TrainClasses",
+                Action = null,
+                Ordinal = 302,
+                Roles = Role.学校党委 | Role.学院党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(childModule);
+            childModule = new Module
+            {
+                ParentModuleId = module.Id,
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "发展对象培训成绩",
+                Controller = "TrainResults",
+                Action = null,
+                Ordinal = 303,
+                Roles = Role.学校党委 | Role.学院党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(childModule);
+
+
+            module = new Module
+            {
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "省一级干部培训",
+                Controller = "CadreTrains",
+                Action = null,
+                Ordinal = 4,
+                Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(module);
+
+            module = new Module
+            {
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "领导干部了培训",
+                Controller = "CadreTrains",
+                Action = null,
+                Ordinal = 5,
+                Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(module);
             #endregion
         }
 

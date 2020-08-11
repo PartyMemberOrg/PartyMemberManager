@@ -50,11 +50,9 @@ namespace PartyMemberManager.Controllers
                         var identity = new
                                            ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);//一定要声明AuthenticationScheme
                         identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
-                        identity.AddClaim(new Claim(ClaimTypes.Name, user.LoginName));
-                        identity.AddClaim(new Claim("FullName", user.Name));
+                        identity.AddClaim(new Claim(ClaimTypes.Surname, user.LoginName));
+                        identity.AddClaim(new Claim(ClaimTypes.Name, user.Name));
                         identity.AddClaim(new Claim(ClaimTypes.Role, user.Roles.ToString()));
-                        //identity.AddClaim(new Claim("DoctorType", user.DoctorType.ToString()));
-                        //identity.AddClaim(new Claim("GroupDoctor", user.GroupDoctorId.ToString()));
 
                         await HttpContext.SignInAsync(identity.AuthenticationType,
                                                       new ClaimsPrincipal(identity),

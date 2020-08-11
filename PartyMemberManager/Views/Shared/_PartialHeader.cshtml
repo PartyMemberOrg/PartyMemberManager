@@ -1,8 +1,11 @@
 ﻿@model bool
-<header style="height:60px;display:none;" class="app-sys-command-container" id="pageHeader">
+<header style="height:60px;width:100%;" class="app-sys-command-container" id="pageHeader">
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light headerbar app-sys-command-container" style="height:60px">
-        <div class="container app-sys-command-container" style="color:white">
-            <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">ERAS临床路径应用系统</a>
+        <div class="container app-sys-command-container" style="color:red;margin-left:0">
+            <a class="navbar-brand text-danger" asp-area="" asp-controller="Home" asp-action="Index">
+                <img src="~/images/Logo.png" width="40" style="padding:0 5px" />
+                <span style="padding:3px 0 0 5px">兰州财经大学入党积极分子管理系统</span>
+            </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -12,23 +15,23 @@
                     @if (Model)
                     {
                         <li class="nav-item">
-                            <a class="nav-link text-white sys-commands" href="javascript:;">
-                                @*@CurrentUser.Name*@
+                            <a class="nav-link text-danger sys-commands" href="javascript:;">
+                                @CurrentUser.Name
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white sys-commands" href="javascript:logout()">
+                            <a class="nav-link text-danger sys-commands" href="javascript:logout()">
                                 <i class="layui-icon layui-icon-home" style="font-size: 14px; color: #FFFFFF;"></i>
                             </a>
                         </li>
                     }
                     <li class="nav-item">
-                        <a class="nav-link text-white sys-commands" href="javascript:editOperator()">
+                        <a class="nav-link text-danger sys-commands" href="javascript:editOperator()">
                             <i class="layui-icon layui-icon-user" style="font-size: 14px; color: #FFFFFF;"></i>
                         </a>
                     </li>
                     <li class="nav-item" n-ui-command="close">
-                        <a class="nav-link text-white sys-commands" href="javascript:showAbout();">
+                        <a class="nav-link text-danger sys-commands" href="javascript:showAbout();">
                             <i class="layui-icon layui-icon-tips" style="font-size: 14px; color: #FFFFFF;"></i>
                         </a>
                     </li>

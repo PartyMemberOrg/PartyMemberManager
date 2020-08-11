@@ -45,6 +45,14 @@ namespace PartyMemberManager.Core.Enums
         陇桥学院=8
     }
     /// <summary>
+    /// 干部培训类型
+    /// </summary>
+    public enum CadreTrainType
+    {
+        省级干部培训 = 1,
+        校级干部培训 = 2,
+    }
+    /// <summary>
     /// 授权类型
     /// </summary>
     public enum RightType

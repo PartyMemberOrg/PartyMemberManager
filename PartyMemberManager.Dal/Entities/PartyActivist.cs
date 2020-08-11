@@ -41,7 +41,7 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("性别")]
         public Sex Sex { get; set; }
         /// <summary>
-        /// 用户角色
+        /// 性别
         /// </summary>
         [DisplayName("性别")]
         [NotMapped]

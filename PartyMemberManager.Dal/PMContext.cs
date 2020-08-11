@@ -26,9 +26,12 @@ namespace PartyMemberManager.Dal
         public virtual DbSet<PartySchool> PartySchools { get; set; }
         public virtual DbSet<TrainClassType> TrainClassTypes { get; set; }
         public virtual DbSet<TrainClass> TrainClasses { get; set; }
+        public virtual DbSet<TrainResult> TrainResults { get; set; }
+        public virtual DbSet<CadreTrain> CadreTrains { get; set; }
         public virtual DbSet<PartyActivist> PartyActivists { get; set; }
         public virtual DbSet<PotentialMember> PotentialMembers { get; set; }
         public virtual DbSet<Nation> Nations { get; set; }
+        public virtual DbSet<ActiveApplicationSurvey> ActiveApplicationSurveies { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

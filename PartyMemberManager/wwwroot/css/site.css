@@ -24,8 +24,8 @@ for details on configuring this project to bundle and minify static web assets. 
     /*菜单项目*/
     --menu-back-color: #F4F8FF;
     --menu-back-color-active: #FFFFFF;
-    --menu-font-color: #515253;
-    --menu-font-color-active: #4A8CF6;
+    --menu-font-color: #FF0000;
+    --menu-font-color-active: #f17878;
     /*表格颜色*/
     --table-header-color: #474747;
     --table-body-color: #515253;
@@ -890,7 +890,7 @@ input[data-type='daterange'] {
 
 /*顶部条样式*/
 .headerbar {
-    background: linear-gradient(270deg,rgba(98,135,233,1) 0%,rgba(58,142,255,1) 100%);
+    background:#f8f8f8;
 }
 /*顶部条样式*/
 

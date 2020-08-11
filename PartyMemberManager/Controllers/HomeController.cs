@@ -9,6 +9,7 @@ using PartyMemberManager.Models;
 
 namespace PartyMemberManager.Controllers
 {
+    //[TypeFilter(typeof(Filters.AuthorizeFilter))]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
