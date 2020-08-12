@@ -26,6 +26,8 @@ for details on configuring this project to bundle and minify static web assets. 
     --menu-back-color-active: #FFFFFF;
     --menu-font-color: #FF0000;
     --menu-font-color-active: #f17878;
+    --menu-sub-font-color: #4A8CF6;
+    --menu-sub-font-color-active: #f17878;
     /*表格颜色*/
     --table-header-color: #474747;
     --table-body-color: #515253;
@@ -41,11 +43,13 @@ for details on configuring this project to bundle and minify static web assets. 
     src: url('../font/sourcehansanscn-extralight.otf') format('opentype');
     font-weight: 100;
 }
+
 @font-face {
     font-family: 'sourcehansanscn';
     src: url('../font/sourcehansanscn-light.otf') format('opentype');
     font-weight: 200;
 }
+
 @font-face {
     font-family: 'sourcehansanscn';
     src: url('../font/sourcehansanscn-normal.otf') format('opentype');
@@ -57,16 +61,19 @@ for details on configuring this project to bundle and minify static web assets. 
     src: url('../font/sourcehansanscn-regular.otf') format('opentype');
     font-weight: 400;
 }
+
 @font-face {
     font-family: 'sourcehansanscn';
     src: url('../font/sourcehansanscn-medium.otf') format('opentype');
     font-weight: 500;
 }
+
 @font-face {
     font-family: 'sourcehansanscn';
     src: url('../font/sourcehansanscn-bold.otf') format('opentype');
     font-weight: 700;
 }
+
 @font-face {
     font-family: 'sourcehansanscn';
     src: url('../font/sourcehansanscn-heavy.otf') format('opentype');
@@ -78,31 +85,37 @@ for details on configuring this project to bundle and minify static web assets. 
     src: url('../font/sourcehanserifcn-extralight.otf') format('opentype');
     font-weight: 100;
 }
+
 @font-face {
     font-family: 'sourcehanserifcn';
     src: url('../font/sourcehanserifcn-light.otf') format('opentype');
     font-weight: 200;
 }
+
 @font-face {
     font-family: 'sourcehanserifcn';
     src: url('../font/sourcehanserifcn-regular.otf') format('opentype');
     font-weight: 400;
 }
+
 @font-face {
     font-family: 'sourcehanserifcn';
     src: url('../font/sourcehanserifcn-medium.otf') format('opentype');
     font-weight: 500;
 }
+
 @font-face {
     font-family: 'sourcehanserifcn';
     src: url('../font/sourcehanserifcn-semibold.otf') format('opentype');
     font-weight: 600;
 }
+
 @font-face {
     font-family: 'sourcehanserifcn';
     src: url('../font/sourcehanserifcn-bold.otf') format('opentype');
-    font-weight:700;
+    font-weight: 700;
 }
+
 @font-face {
     font-family: 'sourcehanserifcn';
     src: url('../font/sourcehanserifcn-heavy.otf') format('opentype');
@@ -604,6 +617,7 @@ input[data-type='daterange'] {
         line-height: 20px;
         font-size: 12px;
     }
+
 .layui-table-grid-down {
     display: none;
 }
@@ -790,6 +804,7 @@ input[data-type='daterange'] {
         border-color: var(--border-color);
         font-size: 12px;
     }
+
     .toolbar .required {
         color: red;
         display: inline-block;
@@ -843,10 +858,10 @@ input[data-type='daterange'] {
         border-top: 0px solid var(--menu-back-color);
         line-height: 45px;
         height: 45px;
-        font-size: 12px;
         background-color: transparent;
         color: var(--menu-font-color);
-        padding-left: 20px;
+        padding-left: 10px;
+        font-size:16px;
     }
 
         .menu > .menuitem:hover {
@@ -881,13 +896,131 @@ input[data-type='daterange'] {
         }
 
         .menu > .menuitem > img {
-            margin-right: 12px;
+            /*            margin-right: 12px;*/
             height: 16px;
             height: 16px;
             margin-top: -2px;
         }
-/*左侧菜单样式*/
 
+        .menu > .menuitem.active {
+            color: var(--menu-font-color-active);
+            background-color: var(--menu-back-color-active);
+            border-left: 2px solid var(--menu-font-color-active);
+        }
+
+            .menu > .menuitem.active > a {
+                color: var(--menu-font-color-active);
+            }
+
+            .menu > .menuitem.active > img {
+            }
+
+    .menu > .menuitem {
+        border-top: 0px solid var(--menu-back-color);
+        line-height: 45px;
+        height: 45px;
+        background-color: transparent;
+        color: var(--menu-font-color);
+        padding-left: 10px;
+    }
+
+        .menu > .menuitem:hover {
+            color: var(--menu-font-color-active);
+            background-color: var(--menu-back-color-active);
+        }
+
+            .menu > .menuitem:hover > a {
+                color: var(--menu-font-color-active);
+            }
+
+            .menu > .menuitem:hover > i {
+                color: var(--menu-font-color-active);
+            }
+
+        /*.menu > .menuitem:first-child {
+            border-top: 0px;
+        }*/
+
+        .menu > .menuitem > a {
+            color: var(--menu-font-color);
+            line-height: 16px;
+            margin-top: 2px;
+        }
+
+            .menu > .menuitem > a:hover {
+                color: var(--menu-font-color-active);
+            }
+
+        .menu > .menuitem > i:hover {
+            color: var(--menu-font-color-active);
+        }
+
+        .menu > .menuitem > img {
+            /*            margin-right: 12px;*/
+            height: 16px;
+            height: 16px;
+            margin-top: -2px;
+        }
+    /*左侧菜单样式*/
+    .menu > .subitem.active {
+        color: var(--menu-sub-font-color-active);
+        background-color: var(--menu-back-color-active);
+        border-left: 2px solid var(--menu-sub-font-color-active);
+    }
+
+        .menu > .subitem.active > a {
+            color: var(--menu-sub-font-color-active);
+        }
+
+    .menu > .menuitem.active > img {
+    }
+
+    .menu > .subitem {
+        border-top: 0px solid var(--menu-back-color);
+        line-height: 35px;
+        height: 35px;
+        background-color: transparent;
+        color: var(--menu-sub-font-color);
+        padding-left: 20px;
+    }
+
+        .menu > .subitem:hover {
+            color: var(--menu-sub-font-color-active);
+            background-color: var(--menu-back-color-active);
+        }
+
+            .menu > .subitem:hover > a {
+                color: var(--menu-sub-font-color-active);
+            }
+
+            .menu > .subitem:hover > i {
+                color: var(--menu-sub-font-color-active);
+            }
+
+        /*.menu > .menuitem:first-child {
+            border-top: 0px;
+        }*/
+
+        .menu > .subitem > a {
+            color: var(--menu-sub-font-color);
+            line-height: 16px;
+            margin-top: 2px;
+        }
+
+            .menu > .subitem > a:hover {
+                color: var(--menu-sub-font-color-active);
+            }
+
+        .menu > .subitem > i:hover {
+            color: var(--menu-sub-font-color-active);
+        }
+
+        .menu > .subitem > img {
+            /*            margin-right: 12px;*/
+            height: 16px;
+            height: 16px;
+            margin-top: -2px;
+        }
 /*顶部条样式*/
 .headerbar {
     /*    background: rgba(247,250,253,1);*/

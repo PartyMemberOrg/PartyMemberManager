@@ -6,7 +6,11 @@
 }
 
 <style type="text/css">
-    body{text-align:center;}
+    body {
+        text-align: center;
+        background:rgba(179,196,236,1);
+    }
+
     .input-group {
         border: 1px solid rgba(255,0,0,1);
         width: 330px;
@@ -77,7 +81,7 @@
             <div class="form-group input-group" style="position:relative;left:48px;top:55px;">
                 <i class="layui-icon layui-icon-username" style="position:absolute;left:15px;top:0px;font-size: 16px; color: #979797;"></i>
                 <div style="position: absolute; left: 44px; top: 15px; width: 1px; height: 12px; border-left: 1px solid #CCCCCC"></div>
-                <input asp-for="LoginName" class="input-text" style="    position: absolute;left: 58px;top: 0px;" />
+                <input asp-for="LoginName" class="input-text" style="position: absolute;left: 58px;top: 0px;" />
                 <span asp-validation-for="LoginName" class="text-danger"></span>
             </div>
             <div class="form-group input-group" style="position:relative;left:48px;top:69px;">

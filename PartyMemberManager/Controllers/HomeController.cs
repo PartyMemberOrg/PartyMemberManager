@@ -3,26 +3,25 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PartyMemberManager.Dal;
 using PartyMemberManager.Framework.Controllers;
 using PartyMemberManager.Models;
 
 namespace PartyMemberManager.Controllers
 {
     //[TypeFilter(typeof(Filters.AuthorizeFilter))]
-    public class HomeController : Controller
+    public class HomeController : PartyMemberControllerBase
     {
-        private  readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<AccountController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
         {
-            _logger = logger;
         }
-
         public IActionResult Index()
         {
-            return View();
+            var modules = _context.Modules.ToList();
+            return View(modules);
         }
 
         public IActionResult Privacy()

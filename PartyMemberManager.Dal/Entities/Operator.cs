@@ -67,6 +67,11 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("所属部门")]
         public Department Department { get; set; }
         /// <summary>
+        /// 所属部门
+        /// </summary>
+        [DisplayName("所属部门")]
+        public string DepartmentDisplay { get => Department == null ? "" : Department.Name; }
+        /// <summary>
         /// 是否启用
         /// </summary>
         [DisplayName("是否启用")]

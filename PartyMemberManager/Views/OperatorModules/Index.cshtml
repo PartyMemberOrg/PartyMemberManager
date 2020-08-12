@@ -11,10 +11,10 @@
     <div class="layui-inline">
         <table class="layui-table" lay-skin="line">
             <colgroup>
-                <col width="200">
+                <col width="20%">
                 @foreach (Module module in modules)
                 {
-                    <col width="150">
+                    <col width="15%">
                 }
                 <col>
             </colgroup>
@@ -36,10 +36,10 @@
                 @foreach (Operator @operator in operators)
                 {
                     <tr>
-                        <td style="min-width:120px">
+                        <td style="min-width:15%">
                             @(@operator.Name)
                         </td>
-                        <td style="min-width:120px">
+                        <td style="min-width:15%">
                             @(@operator.RolesDisplay)
                         </td>
                         @foreach (Module module in modules)

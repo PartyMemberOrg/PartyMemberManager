@@ -41,7 +41,7 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("学生总人数")]
         [Range(0,5000,ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public int Total { get; set; }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("拟培训人数")]
         [Range(0, 1000, ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public int TrainTotal{ get; set; }
 
         /// <summary>

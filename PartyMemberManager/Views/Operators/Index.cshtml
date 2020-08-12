@@ -14,7 +14,7 @@
     <script type="text/javascript">
         var tableObject = null;
         $(document).ready(function () {
-            $("body").width(1200);
+            $("body").width($(window).width());
             InitTable();
         });
 
@@ -52,7 +52,7 @@
                     url: '@Url.Action("GetDatas")'
                 });
             });
-        }    
+        }
         function InitTable() {
             layui.use('table', function () {
                 var table = layui.table;
@@ -67,14 +67,14 @@
                     , cols: [[
                         //{ type: 'checkbox' }
                         //,
-                        { field: 'loginName', title: '账号', width: '122', minWidth: 50, align: 'center' }
-                        , { field: 'name', title: '姓名', width: '120', minWidth: 50, align: 'center' }
-                        , { field: 'phone', title: '手机号', width: '120', minWidth: 50, align: 'center' }
-                        , { field: 'rolesDisplay', title: '角色', width: '100', align: 'center' }
-                        , { field: 'department.Name', title: '所属部门', width: '100', align: 'center' }
-                        , { field: 'createTime', title: '创建时间', width: '120', align: 'center', templet: function (d) { return formatDate(d.createTime,'yyyy-MM-dd');} }
-                        , { field: 'enabledDisplay', title: '是否启用', width: '100', align: 'center' } //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
-                        , { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
+                        { field: 'loginName', title: '账号', align: 'center' }
+                        , { field: 'name', title: '姓名',  align: 'center' }
+                        , { field: 'phone', title: '手机号',  align: 'center' }
+                        , { field: 'rolesDisplay', title: '角色', align: 'center' }
+                        , { field: 'departmentDisplay', title: '所属部门',  align: 'center', templet:'#optDepartmentNameTpl' }
+                        , { field: 'createTime', title: '创建时间',  align: 'center', templet: function (d) { return formatDate(d.createTime,'yyyy-MM-dd');} }
+                        , { field: 'enabledDisplay', title: '是否启用',  align: 'center' } //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                        , { field: 'id', title: '操作', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);
@@ -97,5 +97,8 @@
         <a href="javascript:showEdit('Operators/Edit/{{d.id}}','Operators/Save','修改账号',600,600)" class="layui-table-link" title="查看">
             查看
         </a>
+    </script>
+    <script type="text/html" id="optDepartmentNameTpl">
+        {{d.departmentDisplay}}
     </script>
 }

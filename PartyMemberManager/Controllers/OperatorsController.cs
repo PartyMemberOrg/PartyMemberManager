@@ -57,7 +57,7 @@ namespace PartyMemberManager.Controllers
             {
                 if (CurrentUser.Roles == Role.超级管理员)
                 {
-                    var data = await _context.Set<Operator>().OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<Operator>().Include(d=>d.Department).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<Operator>().Count();
@@ -65,7 +65,7 @@ namespace PartyMemberManager.Controllers
                 }
                 else
                 {
-                    var data = await _context.Set<Operator>().Where(o => o.Roles != Role.超级管理员).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<Operator>().Include(d => d.Department).Where(o => o.Roles != Role.超级管理员).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<Operator>().Count();

@@ -1,27 +1,24 @@
 ﻿@model IEnumerable<PartyMemberManager.Dal.Entities.ActiveApplicationSurvey>
 
-        @{
-        ViewData["Title"] = "Index";
-        }
-        
-        <h1>列表</h1>
-        
-        <p style="margin-bottom:14px;">
-                <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
-        </p>
-        <table class="layui-hide" id="datatable"></table>
-        @Html.AntiForgeryToken()
-        <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
-        @section Scripts{
-        <script src="~/lib/contentmenu/js/index.js"></script>
-        <script src="~/lib/Sortable/Sortable.js"></script>
-            <script type="text/javascript">
+@{
+    ViewData["Title"] = "Index";
+}
+<p style="margin-bottom:14px;">
+    <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
+</p>
+<table class="layui-hide" id="datatable"></table>
+@Html.AntiForgeryToken()
+<link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
+@section Scripts{
+    <script src="~/lib/contentmenu/js/index.js"></script>
+    <script src="~/lib/Sortable/Sortable.js"></script>
+    <script type="text/javascript">
         var tableObject = null;
         $(document).ready(function () {
-            $("body").width(770);
+            $("body").width($(window).width());
             InitTable();
         });
-        
+
         function Delete(id) {
             var url="@Url.Action("Delete")";
             DeleteData(url, id, function () {
@@ -60,7 +57,7 @@
         function InitTable() {
             layui.use('table', function () {
                 var table = layui.table;
-        
+
                 tableObject = table.render({
                     elem: '#datatable'
                     , url: '@Url.Action("GetDatas")'
@@ -71,18 +68,13 @@
                     , cols: [[
                         //{ type: 'checkbox' }
                         //,
-            { field: 'year', title: 'Year', align: 'center' },
-            { field: 'schoolArea', title: 'SchoolArea', align: 'center' },
-            { field: 'term', title: 'Term', align: 'center' },
-            { field: 'total', title: 'Total', align: 'center' },
-            { field: 'trainTotal', title: 'TrainTotal', align: 'center' },
-            { field: 'proportion', title: 'Proportion', align: 'center' },
-            { field: 'id', title: 'Id', align: 'center' },
-            { field: 'createTime', title: 'CreateTime', align: 'center' },
-            { field: 'operatorId', title: 'OperatorId', align: 'center' },
-            { field: 'ordinal', title: 'Ordinal', align: 'center' },
-            { field: 'isDeleted', title: 'IsDeleted', align: 'center' },
-                        { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
+            { field: 'year', title: '年份', align: 'center' },
+            { field: 'schoolArea', title: '校区', align: 'center' },
+            { field: 'term', title: '学期', align: 'center' },
+            { field: 'total', title: '总人数', align: 'center' },
+            { field: 'trainTotal', title: '培训总人数', align: 'center' },
+            { field: 'proportion', title: '比例', align: 'center' },,
+             { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);
@@ -117,11 +109,11 @@
             })
             contextMenu.showMenu(event);
         }
-        </script>
-        <script type="text/html" id="optTpl">
-            <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
-                <img src="~/images/gridmenu1x.png" />
-            </a>
-        </script>
-        }
+    </script>
+    <script type="text/html" id="optTpl">
+        <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
+            <img src="~/images/gridmenu1x.png" />
+        </a>
+    </script>
+}
 
