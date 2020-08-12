@@ -1,144 +1,27 @@
 ﻿@model PartyMemberManager.Dal.Entities.ActiveApplicationSurvey
 
-        @{
-        Layout = "_LayoutEmpty";
-        ViewData["Title"] = "Edit";
-        }
-        <div class="row form-padding-top">
-            <div class="col-md-12">
-                <form asp-action="Edit">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="Year" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="Year" class="form-control" />
-                                            <span asp-validation-for="Year" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="SchoolArea" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <select asp-for="SchoolArea" asp-items="@Html.GetEnumSelectList(typeof(SchoolArea))" class="form-control"></select>
-                                            <span asp-validation-for="SchoolArea" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="Term" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <select asp-for="Term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="form-control"></select>
-                                            <span asp-validation-for="Term" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="Total" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="Total" class="form-control" />
-                                            <span asp-validation-for="Total" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="TrainTotal" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="TrainTotal" class="form-control" />
-                                            <span asp-validation-for="TrainTotal" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="Proportion" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="Proportion" class="form-control" />
-                                            <span asp-validation-for="Proportion" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            <input type="hidden" asp-for="Id" />
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="CreateTime" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="CreateTime" class="form-control" />
-                                            <span asp-validation-for="CreateTime" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="OperatorId" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="OperatorId" class="form-control" />
-                                            <span asp-validation-for="OperatorId" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="Ordinal" class="control-label"></label>
-                                        </div>
-                                        <div>
-                                            <input asp-for="Ordinal" class="form-control" />
-                                            <span asp-validation-for="Ordinal" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="@LabelDivDefaultClass">
-                                            <label asp-for="IsDeleted" class="control-label"></label>
-                                        </div>
-                                        <div class="form-check @InputDivDefaultClass">
-                                            <div class="layui-form">
-                                                <div class="layui-form-item" style="margin-bottom:0px;margin-top:-5px">
-                                                    <input type="checkbox" name="IsDeleted" lay-skin="primary" value="true" title="" @(Model.IsDeleted ? "checked" : "" )>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-<div class="form-group">
-    <input type="submit" value="Save" class="btn btn-primary" />
-</div>
-</form>
-</div>
+@{
+    Layout = "_LayoutEdit";
+    ViewData["Title"] = "Edit";
+}
+<div class="row form-padding-top">
+    <div class="col-md-12">
+        <form asp-action="Edit">
+            <partial name="_PartialEdit" model="@Model" />
+        </form>
+    </div>
 </div>
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-        @section Scripts{
-        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-        <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
-        <script src="~/lib/layui/layui.js"></script>
-        <script>
-            layui.use('form', function () {
-                var form = layui.form;
-            });
-        </script>
-        }
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/lib/layui/layui.js"></script>
+    <script>
+        layui.use('form', function () {
+            var form = layui.form;
+        });
+    </script>
+}

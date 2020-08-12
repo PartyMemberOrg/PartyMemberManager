@@ -45,7 +45,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public override async Task<IActionResult> GetDatas(int page = 1, int limit = 10)
+        public override async Task<IActionResult> GetDatas(int page = 1, int limit = 20)
         {
             JsonResultDatasModel<Operator> jsonResult = new JsonResultDatasModel<Operator>
             {

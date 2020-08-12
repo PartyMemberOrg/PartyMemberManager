@@ -1,10 +1,12 @@
 ﻿@model IEnumerable<PartyMemberManager.Dal.Entities.Department>
 
 @{
+    Layout = "_LayoutEdit";
     ViewData["Title"] = "Index";
 }
 <p style="margin-bottom:14px;">
     <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
+
 </p>
 <table class="layui-hide" id="datatable"></table>
 @Html.AntiForgeryToken()

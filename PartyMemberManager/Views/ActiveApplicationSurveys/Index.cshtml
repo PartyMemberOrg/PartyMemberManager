@@ -1,10 +1,28 @@
 ﻿@model IEnumerable<PartyMemberManager.Dal.Entities.ActiveApplicationSurvey>
 
 @{
+    Layout = "_LayoutEdit";
     ViewData["Title"] = "Index";
 }
 <p style="margin-bottom:14px;">
     <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
+    <div>
+        @*<input asp-for="Year" class="form-control" />*@
+        <input name="Year" type="text" class="form-control" id="kwyear" />
+    </div>
+    @if (CurrentUser.Roles > Role.学院党委)
+    {
+        <div>
+            @*<select asp-for="SchoolArea" asp-items="@Html.GetEnumSelectList(typeof(SchoolArea))" class="form-control"></select>*@
+            <select name="SchoolArea" asp-items="@Html.GetEnumSelectList(typeof(SchoolArea))" class="form-control"></select>
+
+        </div>
+        <div>
+            <select name="DepartmentId" asp-items="@ViewBag.Departments" class="form-control">
+                <option value="">-请选择-</option>
+            </select>
+        </div>
+    }
 </p>
 <table class="layui-hide" id="datatable"></table>
 @Html.AntiForgeryToken()
@@ -18,7 +36,6 @@
             $("body").width($(window).width());
             InitTable();
         });
-
         function Delete(id) {
             var url="@Url.Action("Delete")";
             DeleteData(url, id, function () {
@@ -68,13 +85,15 @@
                     , cols: [[
                         //{ type: 'checkbox' }
                         //,
-            { field: 'year', title: '年份', align: 'center' },
-            { field: 'schoolArea', title: '校区', align: 'center' },
-            { field: 'term', title: '学期', align: 'center' },
-            { field: 'total', title: '总人数', align: 'center' },
-            { field: 'trainTotal', title: '培训总人数', align: 'center' },
-            { field: 'proportion', title: '比例', align: 'center' },,
-             { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
+                        { field: 'year', title: '年份', align: 'center' },
+                        { field: 'termDisplay', title: '学期', align: 'center' },
+                        { field: 'schoolAreaDisplay', title: '所属校区', align: 'center' },
+                        { field: 'departmentDisplay', title: '所属部门', align: 'center', templet: '#optDepartmentNameTpl' },
+                        { field: 'total', title: '总人数', align: 'center' },
+                        { field: 'trainTotal', title: '培训总人数', align: 'center' },
+                        { field: 'proportion', title: '比例', align: 'center', templet: function (d) { return formatDate(d.proportion, (d.proportion * 100).toFixed(2).toString() + '%'); } },
+                        { field: 'createTime', title: '创建时间', align: 'center', templet: function (d) { return formatDate(d.createTime, 'yyyy-MM-dd'); } },
+                        { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);
@@ -96,7 +115,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 500, 400);
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 600, 600);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);
@@ -114,6 +133,16 @@
         <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
             <img src="~/images/gridmenu1x.png" />
         </a>
+    </script>
+    <script type="text/html" id="optDepartmentNameTpl">
+        {{d.departmentDisplay}}
+    </script>
+    <script type="text/html">
+        laydate.render({
+        elem: '#kwyear',
+        type: 'year',
+        trigger: 'click'
+        });
     </script>
 }
 

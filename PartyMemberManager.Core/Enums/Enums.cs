@@ -13,8 +13,8 @@ namespace PartyMemberManager.Core.Enums
     //[Flags]
     public enum Role
     {
-        学校党委 = 1,
-        学院党委 = 2,
+        学院党委 = 1,
+        学校党委 = 2,
         系统管理员 = 4,
         超级管理员 = 8
     }

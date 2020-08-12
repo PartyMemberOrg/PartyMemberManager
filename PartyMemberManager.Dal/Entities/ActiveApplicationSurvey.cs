@@ -22,12 +22,26 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("校区")]
         public SchoolArea SchoolArea { get; set; }
-
         /// <summary>
-        /// 部门
+        /// 校区
         /// </summary>
-        [DisplayName("部门")]
+        [DisplayName("校区")]
+        public string SchoolAreaDisplay { get => SchoolArea.ToString(); }
+        /// <summary>
+        /// 所属部门
+        /// </summary>
+        [DisplayName("所属部门")]
+        public Guid DepartmentId { get; set; }
+        /// <summary>
+        /// 所属部门
+        /// </summary>
+        [DisplayName("所属部门")]
         public Department Department { get; set; }
+        /// <summary>
+        /// 所属部门
+        /// </summary>
+        [DisplayName("所属部门")]
+        public string DepartmentDisplay { get => Department == null ? "" : Department.Name; }
 
         /// <summary>
         /// 学期
@@ -35,6 +49,11 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("学期")]
         public Term Term { get; set; }
 
+        /// <summary>
+        /// 学期
+        /// </summary>
+        [DisplayName("学期")]
+        public string TermDisplay { get => Term.ToString(); }
 
         /// <summary>
         /// 学生总人数

@@ -175,7 +175,6 @@ namespace PartyMemberManager.Controllers
                             identity.AddClaim(new Claim(ClaimTypes.Name, user.LoginName));
                             identity.AddClaim(new Claim("FullName", user.Name));
                             identity.AddClaim(new Claim(ClaimTypes.Role, user.Roles.ToString()));
-
                             await HttpContext.SignInAsync(identity.AuthenticationType,
                                                           new ClaimsPrincipal(identity),
                                                           new AuthenticationProperties

@@ -43,9 +43,11 @@ namespace PartyMemberManager.Framework.Controllers
                     Id = Guid.Parse(claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value),
                     LoginName = claims.First(c => c.Type == ClaimTypes.Name).Value,
                     Name = claims.First(c => c.Type == "FullName").Value,
-                    Roles = (Role)Enum.Parse(typeof(Role), claims.First(c => c.Type == ClaimTypes.Role).Value)
+                    Roles = (Role)Enum.Parse(typeof(Role), claims.First(c => c.Type == ClaimTypes.Role).Value),                   
+                    
                 };
                 currentUser = @operator;
+                currentUser.DepartmentId = _context.Operators.Find(@operator.Id).DepartmentId;
                 return @operator;
             }
         }

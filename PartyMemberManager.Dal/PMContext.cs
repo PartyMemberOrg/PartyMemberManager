@@ -7,7 +7,7 @@ using PartyMemberManager.Dal.Entities;
 
 namespace PartyMemberManager.Dal
 {
-    public class PMContext:DbContext
+    public class PMContext : DbContext
     {
         public PMContext(DbContextOptions<PMContext> options) : base(options)
         {
@@ -43,7 +43,7 @@ namespace PartyMemberManager.Dal
                 .HasForeignKey(o => o.DepartmentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-           modelBuilder.Entity<Module>().HasKey(m => m.Id);
+            modelBuilder.Entity<Module>().HasKey(m => m.Id);
             modelBuilder.Entity<Module>().HasIndex(m => m.Name).IsUnique(true);
             modelBuilder.Entity<Module>()
                 .HasOne(m => m.ParentModule)
@@ -70,6 +70,12 @@ namespace PartyMemberManager.Dal
             modelBuilder.Entity<TrainClass>()
                 .HasOne(t => t.TrainClassType)
                 .WithMany()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ActiveApplicationSurvey>()
+                .HasOne(o => o.Department)
+                .WithMany()
+                .HasForeignKey(o => o.DepartmentId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
