@@ -5,7 +5,7 @@
     ViewData["Title"] = "Index";
 }
 <p style="margin-bottom:14px;">
-    <a href="javascript:showEdit('Operators/Create','Operators/Save','添加账号',600,600)" class="layui-btn layui-btn-primary">+添加账号</a>
+    <a href="javascript:showEdit('Operators/Create','Operators/Save','添加账号',800,800)" class="layui-btn layui-btn-primary">+添加账号</a>
 </p>
 <table class="layui-hide" id="datatable"></table>
 @Html.AntiForgeryToken()
@@ -14,7 +14,7 @@
     <script type="text/javascript">
         var tableObject = null;
         $(document).ready(function () {
-            $("body").width(770);
+            $("body").width(1200);
             InitTable();
         });
 
@@ -69,8 +69,9 @@
                         //,
                         { field: 'loginName', title: '账号', width: '122', minWidth: 50, align: 'center' }
                         , { field: 'name', title: '姓名', width: '120', minWidth: 50, align: 'center' }
-                        , { field: 'phoneDisplay', title: '手机号', width: '120', minWidth: 50, align: 'center' }
+                        , { field: 'phone', title: '手机号', width: '120', minWidth: 50, align: 'center' }
                         , { field: 'rolesDisplay', title: '角色', width: '100', align: 'center' }
+                        , { field: 'department.Name', title: '所属部门', width: '100', align: 'center' }
                         , { field: 'createTime', title: '创建时间', width: '120', align: 'center', templet: function (d) { return formatDate(d.createTime,'yyyy-MM-dd');} }
                         , { field: 'enabledDisplay', title: '是否启用', width: '100', align: 'center' } //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
                         , { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
@@ -93,7 +94,7 @@
         }
     </script>
     <script type="text/html" id="optTpl">
-        <a href="javascript:showEdit('Operators/Edit/{{d.id}}','Operators/Save','修改账号',600,600)" class="layui-table-link" title="查看">
+        <a href="javascript:showEdit('Operators/Edit/{{d.id}}','Operators/Save','修改账号',800,800)" class="layui-table-link" title="查看">
             查看
         </a>
     </script>

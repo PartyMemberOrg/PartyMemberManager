@@ -66,13 +66,13 @@
 <div class="form-group" id="DepartmentContainer">
     <div class="row">
         <div class="@LabelDivDefaultClass">
-            <label asp-for="Department" asp-required="false" class="control-label"></label>
+            <label asp-for="DepartmentId" asp-required="false" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <select asp-for="Department" asp-items="@ViewBag.Departments" class="form-control">
+            <select asp-for="DepartmentId" asp-items="@ViewBag.Departments" class="form-control">
                 <option value="">-请选择-</option>
             </select>
-            <span asp-validation-for="Department" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+            <span asp-validation-for="DepartmentId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
 </div>

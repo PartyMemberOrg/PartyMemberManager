@@ -34,9 +34,9 @@ namespace PartyMemberManager.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             if (CurrentUser.Roles == Role.超级管理员)
-                return View(await _context.Operators.OrderBy(o => o.Ordinal).GetPagedDataAsync(page));
+                return View(await _context.Operators.Include(d=>d.Department).OrderBy(o => o.Ordinal).GetPagedDataAsync(page));
             else
-                return View(await _context.Operators.Where(o => o.Roles != Role.超级管理员).OrderBy(o => o.Ordinal).GetPagedDataAsync(page));
+                return View(await _context.Operators.Include(d => d.Department).Where(o => o.Roles != Role.超级管理员).OrderBy(o => o.Ordinal).GetPagedDataAsync(page));
         }
 
         /// <summary>
@@ -72,6 +72,7 @@ namespace PartyMemberManager.Controllers
                     jsonResult.Data = data.Data;
                 }
             }
+
             catch (PartyMemberException ex)
             {
                 jsonResult.Code = -1;
@@ -185,22 +186,16 @@ namespace PartyMemberManager.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="Operator">操作员信息</param>
-        /// <param name="inpatientAreas">负责病区</param>
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("LoginName,Name,Phone,Password,Roles,Department,Enabled,Id,CreateTime,Ordinal")] Operator @operator)
+        public async Task<IActionResult> Edit([Bind("LoginName,Name,Phone,Password,Roles,Department,Enabled,Id,CreateTime,Ordinal")] Operator @operator)
         {
-            if (id != @operator.Id)
-            {
-                return NotFoundData();
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
-                    Operator OperatorInDb = await _context.Operators.FindAsync(id);
+                    Operator OperatorInDb = await _context.Operators.FindAsync(@operator.Id);
                     OperatorInDb.LoginName = @operator.LoginName;
                     OperatorInDb.Name = @operator.Name;
                     OperatorInDb.Phone = @operator.Phone;
@@ -239,7 +234,7 @@ namespace PartyMemberManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Save(Guid id, [Bind("LoginName,Name,Phone,Password,Roles,Department,Enabled,Id,CreateTime,Ordinal")] Operator @operator)
+        public override async Task<IActionResult> Save([Bind("LoginName,Name,Phone,Password,Roles,DepartmentId,Enabled,Id,CreateTime,Ordinal")] Operator @operator)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -252,21 +247,39 @@ namespace PartyMemberManager.Controllers
                 {
                     if (@operator.Roles > Roles)
                         throw new PartyMemberException($"您将用户的权限提升至[{@operator.RolesDisplay}]");
-                    Operator OperatorInDb = await _context.Operators.FindAsync(id);
-                    if (OperatorInDb.LoginName.ToLower() == "admin" || OperatorInDb.LoginName.ToLower() == "sysadmin")
-                        if (OperatorInDb.LoginName != @operator.LoginName)
-                            throw new PartyMemberException($"{OperatorInDb.LoginName}为内置系统管理员工号，不允许修改该工号");
-                    if (OperatorInDb != null)
+                    switch (@operator.Roles)
                     {
+                        case Role.学院党委:
+                            if (@operator.DepartmentId == null)
+                            {
+                                throw new PartyMemberException($"请选择部门");
+                            }
+                            @operator.Department = await _context.Departments.FindAsync(@operator.DepartmentId);
+                            break;
+                        case Role.学校党委:
+                            @operator.Department = null;
+                            break;
+                        case Role.系统管理员:
+                        case Role.超级管理员:
+                            @operator.Department = null;
+                            break;
+                    }
+                    Operator @OperatorInDb = await _context.Operators.FindAsync(@operator.Id);
+                    if (@OperatorInDb != null)
+                    {
+                        if (@OperatorInDb.LoginName.ToLower() == "admin" || @OperatorInDb.LoginName.ToLower() == "sysadmin")
+                            if (@OperatorInDb.LoginName != @operator.LoginName)
+                                throw new PartyMemberException($"{@OperatorInDb.LoginName}为内置系统管理员账号，不允许修改该账号");                        
                         if (_context.Operators.Any(o => o.LoginName == @operator.LoginName && o.Id != @operator.Id))
                             throw new PartyMemberException($"用户[{@operator.LoginName}]已经存在");
-                        OperatorInDb.LoginName = @operator.LoginName;
-                        OperatorInDb.Name = @operator.Name;
-                        OperatorInDb.Phone = @operator.Phone;
-                        if (@operator.Password != OperatorInDb.Password)
-                            OperatorInDb.Password = StringHelper.EncryPassword(@operator.Password);
-                        OperatorInDb.Roles = @operator.Roles;
-                        OperatorInDb.Enabled = @operator.Enabled;
+                        @OperatorInDb.LoginName = @operator.LoginName;
+                        @OperatorInDb.Name = @operator.Name;
+                        @OperatorInDb.Phone = @operator.Phone;
+                        if (@operator.Password != @OperatorInDb.Password)
+                            @OperatorInDb.Password = StringHelper.EncryPassword(@operator.Password);
+                        @OperatorInDb.Roles = @operator.Roles;
+                        @OperatorInDb.Enabled = @operator.Enabled;
+                        @OperatorInDb.Department = @operator.Department;
                         _context.Update(OperatorInDb);
                         await _context.SaveChangesAsync();
                     }
