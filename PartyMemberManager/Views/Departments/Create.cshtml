@@ -7,43 +7,7 @@
 <div class="row form-padding-top">
     <div class="col-md-12">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <div class="row">
-                    <div class="@LabelDivDefaultClass">
-                        <label asp-for="Name" class="control-label"></label>
-                    </div>
-                    <div class="@InputDivDefaultClass">
-                        <input asp-for="Name" class="form-control" />
-                        <span asp-validation-for="Name" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="row">
-                    <div class="@LabelDivDefaultClass">
-                        <label asp-for="SchoolAreas" class="control-label"></label>
-                    </div>
-                    <div class="@InputDivDefaultClass">
-                        <select asp-for="SchoolAreas" asp-items="@Html.GetEnumSelectList(typeof(SchoolArea))" class="form-control"></select>
-                        <span asp-validation-for="SchoolAreas" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="row">
-                    <div class="@LabelDivDefaultClass">
-                        <label asp-for="IsDeleted" class="control-label"></label>
-                    </div>
-                    <div class="form-check @InputDivDefaultClass">
-                        <div class="layui-form">
-                            <div class="layui-form-item" style="margin-bottom:0px;margin-top:-7px">
-                                <input type="checkbox" name="IsDeleted" lay-skin="primary" value="true" title="" @(Model.IsDeleted ? "checked" : "" )>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <partial name="_PartialEdit" model="@Model" />
         </form>
     </div>
 </div>
