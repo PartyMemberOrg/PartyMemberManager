@@ -226,14 +226,14 @@ namespace PartyMemberManager.Controllers
         /// </summary>
         /// <returns></returns>
         // GET: Users/Create
-        public async Task<IActionResult> EditUser()
+        public async Task<IActionResult> EditOperator()
         {
             Operator @operator = await _context.Operators.FindAsync(CurrentUser.Id);
             return View(@operator);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveUser(Guid id, [Bind("Name,LoginName,Phone,Password,Id")] Operator @operator)
+        public async Task<IActionResult> SaveOperator(Guid id, [Bind("Name,LoginName,Phone,Password,Id")] Operator @operator)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {

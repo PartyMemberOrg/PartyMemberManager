@@ -85,11 +85,12 @@
                 var table = layui.table;
                 tableObject = table.render({
                     elem: '#datatable'
+                    //此处的id就是为后面使用设置的
+                    , id: 'dataGrid'
                     , url: '@Url.Action("GetDatasWithFilter", "ActiveApplicationSurveys")'
                     , page: true //开启分页
                     , limits: [10,20, 50]
                     , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
-                    , id: 'dataGrid'
                     , cols: [[
                         //{ type: 'checkbox' }
                         //,
@@ -111,7 +112,8 @@
         }
         /**过滤数据 */
         function tablefilter() {
-            var tableId = "#datatable";
+            //此处Id不要#号
+            var tableId = "dataGrid";
             layui.use('table', function () {
                 var table = layui.table;
                 table.reload(tableId, {

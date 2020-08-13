@@ -11,14 +11,14 @@
                     @if (Model)
                     {
                         <li class="layui-nav-item" lay-unselect="">
-                            <a href="javascript:;">
+                            <a href="javascript:;" onmousedown="showProfileMenu(event)">
                                 <i class="layui-icon layui-icon-username" style="font-size: 14px; color: #FFFFFF;"></i>
                                 <span>@CurrentUser.Name</span>
                             </a>
-                            <dl class="layui-nav-child">                               
+                            @*<dl class="layui-nav-child">                               
                                 <dd><a href="javascript:editOperator()">个人信息</a></dd>
                                 <dd><a href="javascript:logout()">注销</a></dd>
-                            </dl>
+                            </dl>*@
                         </li>
                     }
                 </ul>

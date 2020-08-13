@@ -42,8 +42,12 @@
         </main>
     </div>
 </div>
+<partial name="_PartialScripts" />
+<partial name="_ValidationScriptsPartial" />
 
 @section Scripts{
+    <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
+    <script src="~/lib/contentmenu/js/index.js"></script>
     <script type="text/javascript">
         layui.use('element', function () {
             var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
@@ -58,6 +62,38 @@
          */
         function openLink(href) {
             $("#mainframe").attr("src", href);
+        }
+        /**显示个人菜单 */
+        function showProfileMenu(event) {
+            var contextMenu = new ContextMenu();
+            contextMenu.addMenuItem("个人信息", function () {
+                editOperator();
+            })
+            contextMenu.addMenuItem("注销", function () {
+                logout();
+            })
+            contextMenu.showMenu(event);
+        }
+        /**编辑操作员信息 */
+        function editOperator() {
+            showEdit('@Url.Action("EditOperator", "Account")', '@Url.Action("SaveOperator", "Account")', '个人信息', 380, 380);
+        }
+        /**注销 */
+        function logout() {
+            var url = "@Url.Action("LogoutByAjax", "Account")";
+            $.ajax({
+                url: url,
+                data: {},
+                dataType: "json",
+                type: "POST",
+                error: function () {
+                    showError("注销失败");
+                },
+                success: function () {
+                    location.reload();
+                },
+                complete: function () { }
+            });
         }
     </script>
     <script type="text/javascript">
@@ -74,6 +110,5 @@
             });
 
         });
-
     </script>
 }
