@@ -4,26 +4,35 @@
     Layout = "_LayoutEdit";
     ViewData["Title"] = "Index";
 }
-<p style="margin-bottom:14px;">
-    <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
+<div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px">
+    <div class="layui-input-inline" style="width:80px" >
+        <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
+    </div>
     <div>
-        @*<input asp-for="Year" class="form-control" />*@
-        <input name="Year" type="text" class="form-control" id="kwyear" />
+        <label class="layui-form-label" style="padding:5px">年份:</label>
+        <div class="layui-input-inline" style="width:80px">
+            <input name="Year" type="text" class="layui-input" id="kwyear" placeholder="yyyy" style="width:80px;" />
+        </div>
     </div>
     @if (CurrentUser.Roles > Role.学院党委)
     {
         <div>
-            @*<select asp-for="SchoolArea" asp-items="@Html.GetEnumSelectList(typeof(SchoolArea))" class="form-control"></select>*@
-            <select name="SchoolArea" asp-items="@Html.GetEnumSelectList(typeof(SchoolArea))" class="form-control"></select>
-
-        </div>
-        <div>
-            <select name="DepartmentId" asp-items="@ViewBag.Departments" class="form-control">
-                <option value="">-请选择-</option>
-            </select>
+            <label class="layui-form-label" style="padding:5px">部门:</label>
+            <div class="layui-input-inline" style="width:300px">
+                <select name="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input" id="department">
+                    <option value="">-请选择部门-</option>
+                </select>
+            </div>
         </div>
     }
-</p>
+    <div>
+        <div class="layui-input-inline" style="width:80px">
+            <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
+                <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
+            </a>
+        </div>
+    </div>
+</div>
 <table class="layui-hide" id="datatable"></table>
 @Html.AntiForgeryToken()
 <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
@@ -67,19 +76,18 @@
             layui.use('table', function () {
                 var table = layui.table;
                 table.reload('dataGrid', {
-                    url: '@Url.Action("GetDatas")'
+                    url: '@Url.Action("GetDatasWithFilter", "ActiveApplicationSurveys")'
                 });
             });
         }
         function InitTable() {
             layui.use('table', function () {
                 var table = layui.table;
-
                 tableObject = table.render({
                     elem: '#datatable'
-                    , url: '@Url.Action("GetDatas")'
+                    , url: '@Url.Action("GetDatasWithFilter", "ActiveApplicationSurveys")'
                     , page: true //开启分页
-                    , limits: [10, 20, 50]
+                    , limits: [10,20, 50]
                     , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
                     , id: 'dataGrid'
                     , cols: [[
@@ -97,6 +105,23 @@
                     ]]
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);
+                    }
+                });
+            });
+        }
+        /**过滤数据 */
+        function tablefilter() {
+            var tableId = "#datatable";
+            layui.use('table', function () {
+                var table = layui.table;
+                table.reload(tableId, {
+                    url: '@Url.Action("GetDatasWithFilter", "ActiveApplicationSurveys")'
+                    , where: {
+                        year: $("#kwyear").val(),
+                        departmentId: $("#department").val(),
+                    }
+                    , done: function (res, curr, count) {
+                        fillPatientList(res,curr,count);showHideScrollBars(res.data.length);
                     }
                 });
             });
@@ -137,11 +162,13 @@
     <script type="text/html" id="optDepartmentNameTpl">
         {{d.departmentDisplay}}
     </script>
-    <script type="text/html">
-        laydate.render({
-        elem: '#kwyear',
-        type: 'year',
-        trigger: 'click'
+    <script type="text/javascript">
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#kwyear',
+                type: 'year',
+            });
         });
     </script>
 }

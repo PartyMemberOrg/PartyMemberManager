@@ -563,7 +563,7 @@ input[data-type='daterange'] {
     height: 30px;
     font-size: 12px;
     border: 1px solid var(--border-color);
-    border-radius: 15px;
+    border-radius: 5px;
 }
 
 .row {

@@ -28,6 +28,7 @@ namespace PartyMemberManager.Controllers
         // GET: ActiveApplicationSurveys
         public async Task<IActionResult> Index(int page = 1)
         {
+            ViewBag.Departments = new SelectList(_context.Departments,"Id","Name");
             return View(await _context.ActiveApplicationSurveies.Include(d => d.Department).OrderBy(a => a.Ordinal).GetPagedDataAsync(page));
         }
 
@@ -37,7 +38,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public override async Task<IActionResult> GetDatas(int page = 1, int limit = 20)
+        public  async Task<IActionResult> GetDatasWithFilter(Guid? departmentId,string year,int page = 1, int limit = 10)
         {
             JsonResultDatasModel<ActiveApplicationSurvey> jsonResult = new JsonResultDatasModel<ActiveApplicationSurvey>
             {
@@ -47,9 +48,18 @@ namespace PartyMemberManager.Controllers
 
             try
             {
+                var filter = PredicateBuilder.True<ActiveApplicationSurvey>();
+                if (!string.IsNullOrEmpty(year))
+                {
+                    filter = filter.And(d => d.Year == year);
+                }
+                if (departmentId != null)
+                {
+                    filter = filter.And(d => d.DepartmentId == departmentId);
+                }
                 if (CurrentUser.Roles > Role.学院党委)
                 {
-                    var data = await _context.Set<ActiveApplicationSurvey>().Include(d => d.Department).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<ActiveApplicationSurvey>().Include(d => d.Department).Where(filter).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);     
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<ActiveApplicationSurvey>().Count();
@@ -59,7 +69,7 @@ namespace PartyMemberManager.Controllers
                 {
                     if (CurrentUser.DepartmentId == null)
                         throw new PartyMemberException("该用户不合法，请设置该用户所属部门");
-                    var data = await _context.Set<ActiveApplicationSurvey>().Include(d => d.Department).Where(d => d.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<ActiveApplicationSurvey>().Where(filter).Include(d => d.Department).Where(d => d.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<ActiveApplicationSurvey>().Count();
