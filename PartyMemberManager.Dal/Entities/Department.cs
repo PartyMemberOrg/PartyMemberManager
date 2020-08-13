@@ -22,7 +22,7 @@ namespace PartyMemberManager.Dal.Entities
         /// 所属校区
         /// </summary>
         [DisplayName("所属校区")]
-        public SchoolArea SchoolAreas { get; set; }
+        public SchoolArea SchoolArea { get; set; }
         /// <summary>
         /// 所属校区
         /// </summary>

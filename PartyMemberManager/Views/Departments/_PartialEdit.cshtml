@@ -4,10 +4,10 @@
 <div class="form-group">
     <div class="row">
         <div class="@LabelDivDefaultClass">
-            <label asp-for="Name" class="control-label"></label>
+            <label asp-for="Name" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <input asp-for="Name" asp-required="true" class="form-control" />
+            <input asp-for="Name" class="form-control" />
             <span asp-validation-for="Name" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
@@ -15,11 +15,11 @@
 <div class="form-group">
     <div class="row">
         <div class="@LabelDivDefaultClass">
-            <label asp-for="SchoolAreas" class="control-label"></label>
+            <label asp-for="SchoolArea" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <select asp-for="SchoolAreas" asp-required="true" asp-items="@Html.GetEnumSelectList(typeof(SchoolArea))" class="form-control"></select>
-            <span asp-validation-for="SchoolAreas" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+            <select asp-for="SchoolArea"  asp-items="@Html.GetEnumSelectList(typeof(SchoolArea))" class="form-control"></select>
+            <span asp-validation-for="SchoolArea" class="text-danger alidate-message-offset @ValidateSpanDefaultClass "></span>
         </div>
     </div>
 </div>
