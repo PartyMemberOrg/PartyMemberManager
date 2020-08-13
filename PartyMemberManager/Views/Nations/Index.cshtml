@@ -70,7 +70,7 @@
                         //,
                         { field: 'name', title: '名称', align: 'center' },
                         { field: 'code', title: '代码', align: 'center' },
-                        { field: 'isDeleted', title: '是否删除', align: 'center' },
+                        { field: 'isDeleted', title: '是否已删除', align: 'center', templet: function (d) { return d.isDeleted ? "是" : "否" } },
                         { field: 'id', title: '操作', width: '300', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {

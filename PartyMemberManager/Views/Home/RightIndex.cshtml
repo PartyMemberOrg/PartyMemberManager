@@ -1,0 +1,60 @@
+﻿@{
+    Layout = "_LayoutEmpty";
+    ViewData["Title"] = "入党誓词";
+}
+<style>
+    .dqback {
+        width: 40%;
+        height: 100%;
+        float: left;
+        margin:10% 30px 0 50px;
+    }
+
+    h1.title {
+        font-size: 2.5em;
+        color: rgb(255,160,0);
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .dqback > img {
+        width: 100%;
+        display: block;
+    }
+
+    p.content {
+        font-size: 1.5em;
+        color: rgb(255,160,0);
+        text-indent: 2em;
+        line-height: 50px;
+        text-align:justify;
+        font-weight:bold;
+        margin-top:30px;
+    }
+
+    .sctext {
+        float: left;
+        width: 40%;
+        margin: 15% 30px 0 30px;
+    }
+</style>
+<div class="dqback">
+    <img src="~/images/dq.png" />
+</div>
+<div class="sctext">
+    <h1 class="title">入党誓词</h1>
+    <p class="content">
+        我志愿加入中国共产党，拥护党的纲领，遵守党的章程，
+        履行党员义务，执行党的决定，严守党的纪律，保守党的秘密，
+        对党忠诚，积极工作，为共产主义奋斗终身，随时准备为党和人民牺牲一切，
+        永不叛党。
+    </p>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("body").width($(window).width());
+            $("body").height($(window).height());
+        });
+    </script>
+}

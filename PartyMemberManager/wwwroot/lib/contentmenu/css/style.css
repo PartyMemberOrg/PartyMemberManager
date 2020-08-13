@@ -23,14 +23,14 @@
         .contextmenu li a {
             display: block;
             padding: 8px;
-            color: #4A8CF6; /*#515253;*/
+            color: #ffd800; /*#515253;*/
             text-decoration: none;
             transition: ease .1s;
         }
 
         .contextmenu li:hover {
             background: #F2F2F2;
-            border-left: 3px solid #4A8CF6;
+            border-left: 3px solid #ffd800;
         }
             .contextmenu li:hover a {
                 font-weight:500;

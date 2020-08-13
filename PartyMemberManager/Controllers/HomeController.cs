@@ -24,7 +24,7 @@ namespace PartyMemberManager.Controllers
             return View(modules);
         }
 
-        public IActionResult Privacy()
+        public IActionResult RightIndex()
         {
             return View();
         }

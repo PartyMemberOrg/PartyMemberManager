@@ -12,6 +12,8 @@ namespace PartyMemberManager.Dal.Entities
         /// Code
         /// </summary>
         [DisplayName("代码")]
+        [StringLength(2, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Code { get; set; }
         /// <summary>
         /// 名称

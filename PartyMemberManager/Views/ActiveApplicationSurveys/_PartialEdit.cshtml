@@ -7,7 +7,7 @@
             <label asp-for="Year" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <input asp-for="Year" class="form-control" />
+            <input asp-for="Year" class="form-control"  id="year"  value="@DateTime.Now.Year"/>
             <span asp-validation-for="Year" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
@@ -69,7 +69,7 @@
         </div>
     </div>
 </div>
-<div class="form-group">
+@*<div class="form-group">
     <div class="row">
         <div class="@LabelDivDefaultClass">
             <label asp-for="Proportion" class="control-label"></label>
@@ -79,4 +79,4 @@
             <span asp-validation-for="Proportion" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
-</div>
+</div>*@

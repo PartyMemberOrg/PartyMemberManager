@@ -70,10 +70,10 @@
                     , cols: [[
                         //{ type: 'checkbox' }
                         //,
-                        { field: 'name', title: '单位名称', align: 'center' },
-                        { field: '所属校区', title: 'SchoolAreasDisplay', align: 'center' },
-                        { field: 'isDeleted', title: 'IsDeleted', align: 'center' },
-                        { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
+                        { field: 'name', title: '部门名称', align: 'center' },
+                        { field: 'schoolAreasDisplay', title: '所属校区', align: 'center' },
+                        { field: 'isDeleted', title: '是否已删除', align: 'center', templet: function (d) { return d.isDeleted?"是":"否"}},
+                        { field: 'id', title: '操作', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);
@@ -95,7 +95,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 500, 400);
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 600,600);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);

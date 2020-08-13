@@ -1,0 +1,39 @@
+﻿@model PartyMemberManager.Dal.Entities.Nation
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input type="hidden" asp-for="Id" />
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Name" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Code" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="Code" class="form-control" />
+            <span asp-validation-for="Code" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="IsDeleted" class="control-label"></label>
+        </div>
+        <div class="form-check @InputDivDefaultClass">
+            <div class="layui-form">
+                <div class="layui-form-item" style="margin-bottom:0px;margin-top:-7px">
+                    <input type="checkbox" name="IsDeleted" lay-skin="primary" value="true" title="" @(Model.IsDeleted ? "checked" : "" )>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

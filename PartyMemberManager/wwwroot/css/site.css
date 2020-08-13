@@ -26,7 +26,7 @@ for details on configuring this project to bundle and minify static web assets. 
     --menu-back-color-active: #FFFFFF;
     --menu-font-color: #FF0000;
     --menu-font-color-active: #f17878;
-    --menu-sub-font-color: #4A8CF6;
+    --menu-sub-font-color: rgb(255,160,0);
     --menu-sub-font-color-active: #f17878;
     /*表格颜色*/
     --table-header-color: #474747;
