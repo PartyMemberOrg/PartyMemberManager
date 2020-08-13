@@ -16,14 +16,30 @@
     <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
     <script src="~/lib/layui/layui.js"></script>
     <script>
+        $(document).ready(function () {
+            $("#TrainTotal").change(function () {
+                computeScale();
+            });
+            $("#Total").change(function () {
+                computeScale();
+            });
+        });
         layui.use('form', function () {
             var form = layui.form;
         });
+        /**计算比例 */
+        function computeScale() {
+            var trainTotal = parseFloat($("#TrainTotal").val());
+            var total = parseFloat($("#Total").val());
+            var scale = trainTotal / total;
+            scale = Math.round(scale * 100) / 100;
+            $("#Proportion").val(scale);
+        }
     </script>
     <script>
-        $(document).ready(function () {
-            $("body").width($(window).width());
-            InitTable();
-        });
+        //$(document).ready(function () {
+        //    $("body").width($(window).width());
+        //    InitTable();
+        //});
     </script>
 }
