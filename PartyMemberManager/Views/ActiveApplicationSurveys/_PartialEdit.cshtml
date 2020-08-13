@@ -4,7 +4,7 @@
 <div class="form-group">
     <div class="row">
         <div class="@LabelDivDefaultClass">
-            <label asp-for="Year" class="control-label"></label>
+            <label asp-for="Year" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
             <input asp-for="Year" class="form-control"  id="year"  value="@DateTime.Now.Year"/>
@@ -15,7 +15,7 @@
 <div class="form-group">
     <div class="row">
         <div class="@LabelDivDefaultClass">
-            <label asp-for="SchoolArea" class="control-label"></label>
+            <label asp-for="SchoolArea" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
             <select asp-for="SchoolArea" asp-items="@Html.GetEnumSelectList(typeof(SchoolArea))" class="form-control"></select>
@@ -26,7 +26,7 @@
 <div class="form-group" id="DepartmentContainer">
     <div class="row">
         <div class="@LabelDivDefaultClass">
-            <label asp-for="DepartmentId" asp-required="false" class="control-label"></label>
+            <label asp-for="DepartmentId" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
             <select asp-for="DepartmentId" asp-items="@ViewBag.Departments" class="form-control">
@@ -39,7 +39,7 @@
 <div class="form-group">
     <div class="row">
         <div class="@LabelDivDefaultClass">
-            <label asp-for="Term" class="control-label"></label>
+            <label asp-for="Term" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
             <select asp-for="Term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="form-control"></select>
@@ -50,7 +50,7 @@
 <div class="form-group">
     <div class="row">
         <div class="@LabelDivDefaultClass">
-            <label asp-for="Total" class="control-label"></label>
+            <label asp-for="Total" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
             <input asp-for="Total" class="form-control" />
@@ -61,7 +61,7 @@
 <div class="form-group">
     <div class="row">
         <div class="@LabelDivDefaultClass">
-            <label asp-for="TrainTotal" class="control-label" ></label>
+            <label asp-for="TrainTotal" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
             <input asp-for="TrainTotal" class="form-control"/>

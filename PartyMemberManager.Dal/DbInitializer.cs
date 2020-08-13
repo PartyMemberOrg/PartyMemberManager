@@ -343,19 +343,19 @@ namespace PartyMemberManager.Dal
                 };
                 if (item.Contains("长青"))
                 {
-                    department.SchoolAreas = SchoolArea.长青学院;
+                    department.SchoolArea = SchoolArea.长青学院;
                 }
                 else if (item.Contains("陇桥"))
                 {
-                    department.SchoolAreas = SchoolArea.陇桥学院;
+                    department.SchoolArea = SchoolArea.陇桥学院;
                 }
                 else if (item.Contains("信息工程") || item.Contains("艺术"))
                 {
-                    department.SchoolAreas = SchoolArea.段家滩;
+                    department.SchoolArea = SchoolArea.段家滩;
                 }
                 else
                 {
-                    department.SchoolAreas = SchoolArea.和平;
+                    department.SchoolArea = SchoolArea.和平;
                 }
 
                 context.Departments.Add(department);

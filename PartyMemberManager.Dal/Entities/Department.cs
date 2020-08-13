@@ -28,6 +28,6 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("所属校区")]
         [NotMapped]
-        public string SchoolAreasDisplay { get => SchoolAreas.ToString(); }
+        public string SchoolAreaDisplay { get => SchoolArea.ToString(); }
     }
 }
