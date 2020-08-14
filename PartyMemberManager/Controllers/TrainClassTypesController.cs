@@ -17,20 +17,20 @@ using PartyMemberManager.Dal.Entities;
 
 namespace PartyMemberManager.Controllers
 {
-    public class PartySchoolsController : PartyMemberDataControllerBase<PartySchool>
+    public class TrainClassTypesController : PartyMemberDataControllerBase<TrainClassType>
     {
 
-        public PartySchoolsController(ILogger<PartySchoolsController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
+        public TrainClassTypesController(ILogger<TrainClassTypesController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
         {
         }
 
-        // GET: PartySchools
+        // GET: TrainClassTypes
         public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.PartySchools.OrderBy(p => p.Ordinal).GetPagedDataAsync(page));
+            return View(await _context.TrainClassTypes.OrderBy(t => t.Ordinal).GetPagedDataAsync(page));
         }
 
-        // GET: PartySchools/Details/5
+        // GET: TrainClassTypes/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -38,25 +38,25 @@ namespace PartyMemberManager.Controllers
                 return NotFoundData();
             }
 
-            var partySchool = await _context.PartySchools
+            var trainClassType = await _context.TrainClassTypes
             .SingleOrDefaultAsync(m => m.Id == id);
-            if (partySchool == null)
+            if (trainClassType == null)
             {
                 return NotFoundData();
             }
 
-            return View(partySchool);
+            return View(trainClassType);
         }
 
-        // GET: PartySchools/Create
+        // GET: TrainClassTypes/Create
         public IActionResult Create()
         {
-            PartySchool partySchool = new PartySchool();
-            return View(partySchool);
+            TrainClassType trainClassType = new TrainClassType();
+            return View(trainClassType);
         }
 
 
-        // GET: PartySchools/Edit/5
+        // GET: TrainClassTypes/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -64,17 +64,17 @@ namespace PartyMemberManager.Controllers
                 return NotFoundData();
             }
 
-            var partySchool = await _context.PartySchools.SingleOrDefaultAsync(m => m.Id == id);
-            if (partySchool == null)
+            var trainClassType = await _context.TrainClassTypes.SingleOrDefaultAsync(m => m.Id == id);
+            if (trainClassType == null)
             {
                 return NotFoundData();
             }
-            return View(partySchool);
+            return View(trainClassType);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("Name,Code,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PartySchool partySchool)
+        public override async Task<IActionResult> Save([Bind("Name,Code,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] TrainClassType trainClassType)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -85,22 +85,22 @@ namespace PartyMemberManager.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    PartySchool partySchoolInDb = await _context.PartySchools.FindAsync(partySchool.Id);
-                    if (partySchoolInDb != null)
+                    TrainClassType trainClassTypeInDb = await _context.TrainClassTypes.FindAsync(trainClassType.Id);
+                    if (trainClassTypeInDb != null)
                     {
-                        partySchoolInDb.Name = partySchool.Name;
-                        partySchoolInDb.Code = partySchool.Code;
-                        partySchoolInDb.Id = partySchool.Id;
-                        partySchoolInDb.CreateTime = partySchool.CreateTime;
-                        partySchoolInDb.OperatorId = partySchool.OperatorId;
-                        partySchoolInDb.Ordinal = partySchool.Ordinal;
-                        partySchoolInDb.IsDeleted = partySchool.IsDeleted;
-                        _context.Update(partySchoolInDb);
+                        trainClassTypeInDb.Name = trainClassType.Name;
+                        trainClassTypeInDb.Code = trainClassType.Code;
+                        trainClassTypeInDb.Id = trainClassType.Id;
+                        trainClassTypeInDb.CreateTime = DateTime.Now;
+                        trainClassTypeInDb.OperatorId = CurrentUser.Id;
+                        trainClassTypeInDb.Ordinal = _context.TrainClassTypes.Count()+1;
+                        trainClassTypeInDb.IsDeleted = trainClassType.IsDeleted;
+                        _context.Update(trainClassTypeInDb);
                     }
                     else
                     {
-                        //partySchool.Id = Guid.NewGuid();
-                        _context.Add(partySchool);
+                        //trainClassType.Id = Guid.NewGuid();
+                        _context.Add(trainClassType);
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -140,9 +140,9 @@ namespace PartyMemberManager.Controllers
         }
 
 
-        private bool PartySchoolExists(Guid id)
+        private bool TrainClassTypeExists(Guid id)
         {
-            return _context.PartySchools.Any(e => e.Id == id);
+            return _context.TrainClassTypes.Any(e => e.Id == id);
         }
     }
 }

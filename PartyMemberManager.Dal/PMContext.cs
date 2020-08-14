@@ -23,7 +23,6 @@ namespace PartyMemberManager.Dal
         public virtual DbSet<Operator> Operators { get; set; }
         public virtual DbSet<OperatorModule> OperatorModules { get; set; }
         public virtual DbSet<Department> Departments { get; set; }
-        public virtual DbSet<PartySchool> PartySchools { get; set; }
         public virtual DbSet<TrainClassType> TrainClassTypes { get; set; }
         public virtual DbSet<TrainClass> TrainClasses { get; set; }
         public virtual DbSet<TrainResult> TrainResults { get; set; }

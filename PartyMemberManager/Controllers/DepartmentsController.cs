@@ -74,7 +74,7 @@ namespace PartyMemberManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("Name,Password,SchoolAreas,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] Department department)
+        public override async Task<IActionResult> Save([Bind("Name,Password,SchoolAreas,Code,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] Department department)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -91,9 +91,9 @@ namespace PartyMemberManager.Controllers
                         departmentInDb.Name = department.Name;
                         departmentInDb.SchoolArea = department.SchoolArea;
                         departmentInDb.Id = department.Id;
-                        departmentInDb.CreateTime = department.CreateTime;
-                        departmentInDb.OperatorId = department.OperatorId;
-                        departmentInDb.Ordinal = department.Ordinal;
+                        departmentInDb.CreateTime =DateTime.Now;
+                        departmentInDb.OperatorId = CurrentUser.Id;
+                        departmentInDb.Ordinal = _context.Departments.Count()+1;
                         departmentInDb.IsDeleted = department.IsDeleted;
                         _context.Update(departmentInDb);
                     }

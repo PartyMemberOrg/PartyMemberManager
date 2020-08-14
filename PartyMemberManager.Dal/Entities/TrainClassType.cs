@@ -13,17 +13,19 @@ namespace PartyMemberManager.Dal.Entities
     {
 
         /// <summary>
-        /// Code
-        /// </summary>
-        [DisplayName("代码")]
-        public string Code { get; set; }
-        /// <summary>
         /// 名称
         /// </summary>
         [DisplayName("名称")]
         [StringLength(20, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-
         public string Name { get; set; }
+        /// <summary>
+        /// Code
+        /// </summary>
+        [DisplayName("代码")]
+        [StringLength(20, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public string Code { get; set; }
+
     }
 }

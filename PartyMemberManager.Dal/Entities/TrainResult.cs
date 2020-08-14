@@ -6,28 +6,16 @@ using System.Text;
 
 namespace PartyMemberManager.Dal.Entities
 {
-    public class TrainResult : EntityBase
+    public class TrainResult : PartyMemberBase
     {
         /// <summary>
-        /// 年度
+        /// 培训班
         /// </summary>
-        [DisplayName("年度")]
-        [StringLength(4, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public string  Year{ get; set; }
+        public Guid TrainClassId { get; set; }
         /// <summary>
-        /// 培训班类型
+        /// 培训班
         /// </summary>
-        public TrainClassType TrainClassType { get; set; }
-        /// <summary>
-        /// 培训人员
-        /// </summary>
-        public Guid PartyActivistId { get; set; }
-        /// <summary>
-        /// 培训人员
-        /// </summary>
-        public PartyActivist PartyActivist { get; set; }
-
+        public TrainClass TrainClass { get; set; }
         /// <summary>
         /// 平时成绩
         /// </summary>

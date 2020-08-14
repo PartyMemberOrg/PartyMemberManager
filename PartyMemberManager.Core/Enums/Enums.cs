@@ -41,8 +41,8 @@ namespace PartyMemberManager.Core.Enums
     {
         和平 = 1,
         段家滩 = 2,
-        长青学院=4,
-        陇桥学院=8
+        长青学院 = 4,
+        陇桥学院 = 8
     }
     /// <summary>
     /// 干部培训类型
@@ -51,6 +51,15 @@ namespace PartyMemberManager.Core.Enums
     {
         省级干部培训 = 1,
         校级干部培训 = 2,
+    }
+
+    /// <summary>
+    /// 对象类型
+    /// </summary>
+    public enum PartyMemberType
+    {
+        教师 = 1,
+        学生 = 2,
     }
     /// <summary>
     /// 授权类型

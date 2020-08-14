@@ -158,9 +158,9 @@ namespace PartyMemberManager.Controllers
                         activeApplicationSurveyInDb.TrainTotal = activeApplicationSurvey.TrainTotal;
                         activeApplicationSurveyInDb.Proportion = (double)(activeApplicationSurvey.TrainTotal)/(double) activeApplicationSurvey.Total;
                         activeApplicationSurveyInDb.Id = activeApplicationSurvey.Id;
-                        activeApplicationSurveyInDb.CreateTime = activeApplicationSurvey.CreateTime;
-                        activeApplicationSurveyInDb.OperatorId = activeApplicationSurvey.OperatorId;
-                        activeApplicationSurveyInDb.Ordinal = activeApplicationSurvey.Ordinal;
+                        activeApplicationSurveyInDb.CreateTime = DateTime.Now;
+                        activeApplicationSurveyInDb.OperatorId = CurrentUser.Id;
+                        activeApplicationSurveyInDb.Ordinal = _context.ActiveApplicationSurveies.Count() + 1;
                         activeApplicationSurveyInDb.IsDeleted = activeApplicationSurvey.IsDeleted;
                         _context.Update(activeApplicationSurveyInDb);
                     }

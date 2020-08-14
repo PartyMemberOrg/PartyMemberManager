@@ -20,21 +20,37 @@ namespace PartyMemberManager.Dal.Entities
         public string Name { get; set; }
 
         /// <summary>
-        /// 培训班代码
-        /// </summary>
-        [DisplayName("培训班代码")]
-        [StringLength(2, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public string Code { get; set; }
-
-        /// <summary>
         /// 培训班类型
         /// </summary>
+        [DisplayName("培训班类型")]
         public Guid TrainClassTypeId { get; set; }
 
         /// <summary>
         /// 培训班类型
         /// </summary>
+        [DisplayName("培训班类型")]
         public TrainClassType TrainClassType { get; set; }
+        /// <summary>
+        /// 开始时间
+        /// </summary>
+        [DisplayName("开始时间")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public DateTime StartTime { get; set; }
+
+        /// <summary>
+        /// 平时成绩比例
+        /// </summary>
+        [DisplayName("平时成绩占比")]
+        [Range(0, 100, ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public int PSGradeProportion { get; set; }
+
+        /// <summary>
+        /// 考试成绩比例
+        /// </summary>
+        [DisplayName("考试成绩占比")]
+        [Range(0, 100, ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public int CsGradeProportion { get; set; }
     }
 }

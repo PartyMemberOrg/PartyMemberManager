@@ -25,8 +25,6 @@ namespace PartyMemberManager.Dal
             InitModules(context);
             //初始化部门
             InitDepartments(context);
-            //初始化党校
-            InitPartySchools(context);
             //初始化民族
             InitNations(context);
             //初始化培训班类型
@@ -116,6 +114,7 @@ namespace PartyMemberManager.Dal
                 Ordinal = 106,
                 Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员
             };
+            context.Modules.Add(childModule);
             childModule = new Module
             {
                 ParentModuleId = module.Id,
@@ -340,6 +339,7 @@ namespace PartyMemberManager.Dal
                     CreateTime = DateTime.Now,
                     Ordinal = context.Departments.Local.Count() + 1,
                     Name = item.Trim(),
+                    Code="00"
                 };
                 if (item.Contains("长青"))
                 {
@@ -359,30 +359,6 @@ namespace PartyMemberManager.Dal
                 }
 
                 context.Departments.Add(department);
-            }
-            #endregion
-        }
-        private static void InitPartySchools(PMContext context)
-        {
-            if (context.PartySchools.Any())
-                return;
-
-            #region 党校
-            string psList = "学校党校 00,国际经济与贸易学院党校 01,金融学院党校 02,法学院党校 03,外语学院党校 04,艺术学院党校 05,统计学院党校 06,信息工程学院党校 07,工商管理学院党校 08,会计学院党校 09,财税与公共管理学院党校 10,农林经济管理学院党校 11,商务传媒党校 12,经济学院党校 21,体育教学部直属党支部 13,马克思主义学院党总支 14,创新创业学院直属党支部 15,国际教育学院直属党支部 16";
-            string[] psListSplit = psList.Split(",");
-            foreach (var item in psListSplit)
-            {
-                PartySchool partySchool = new PartySchool
-                {
-                    Id = Guid.NewGuid(),
-                    CreateTime = DateTime.Now,
-                    Ordinal = context.PartySchools.Local.Count() + 1,
-                    Name = item.Split(" ")[0].Trim(),
-                    Code = item.Split(" ")[1].Trim()
-                };
-                partySchool.Ordinal = int.Parse(partySchool.Code) + 1;
-                context.PartySchools.Add(partySchool);
-
             }
             #endregion
         }

@@ -2,7 +2,7 @@
     <ul class="menu" lay-filter="test">
         <li class="menuitem" onclick="openLink('@Url.Action("RightIndex", "Home")')">
             <img src="~/images/Postoperative.png" data-icon="/images/Postoperative.png" data-icon-sel="/images/PostoperativeSel.png" width="16" height="16" />
-            <a class=""  href="javascript:openLink('@Url.Action("RightIndex", "Home")')">首页</a>
+            <a class="" href="javascript:openLink('@Url.Action("RightIndex", "Home")')">首页</a>
         </li>
         @if (CurrentUser.Roles >= Role.学院党委)
         {
@@ -113,18 +113,18 @@
                             <a class="" href="javascript:openLink('@Url.Action("Index", "Departments")')">部门管理</a>
                         </li>
                     }
-                    if (Model.Any(m => m.Controller == "PartySchools"))
-                    {
-                        <li class="subitem">
-                            <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
-                            <a class="" href="javascript:openLink('@Url.Action("Index", "PartySchools")')">党校管理</a>
-                        </li>
-                    }
                     if (Model.Any(m => m.Controller == "Nations"))
                     {
                         <li class="subitem">
                             <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
                             <a class="" href="javascript:openLink('@Url.Action("Index", "Nations")')">民族管理</a>
+                        </li>
+                    }
+                    if (Model.Any(m => m.Controller == "TrainClassTypes"))
+                    {
+                        <li class="subitem">
+                            <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
+                            <a class="" href="javascript:openLink('@Url.Action("Index", "TrainClassTypes")')">培训班类型</a>
                         </li>
                     }
                 }
