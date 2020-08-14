@@ -8,7 +8,7 @@ using System.Text;
 
 namespace PartyMemberManager.Dal.Entities
 {
-    public class PartyMemberBase:EntityBase
+    public class PartyMemberBase : EntityBase
     {
         /// <summary>
         /// 姓名
@@ -62,7 +62,7 @@ namespace PartyMemberManager.Dal.Entities
         /// <summary>
         /// 出身年月
         /// </summary>
-        [DisplayName("出身年月")]
+        [DisplayName("出生年月")]
         [StringLength(20, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string BirthDate { get; set; }
@@ -71,9 +71,12 @@ namespace PartyMemberManager.Dal.Entities
         /// 民族
         /// </summary>
         [DisplayName("民族")]
-        [StringLength(10, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public string Nationality { get; set; }
+        public Guid NationId { get; set; }
+        /// <summary>
+        /// 民族
+        /// </summary>
+        [DisplayName("民族")]
+        public Nation Nation{ get; set; }
 
         /// <summary>
         /// 电话
@@ -83,16 +86,20 @@ namespace PartyMemberManager.Dal.Entities
         public string Phone { get; set; }
 
         /// <summary>
-        /// 所在部门
+        /// 所属部门
         /// </summary>
-        [DisplayName("所在部门")]
+        [DisplayName("所属部门")]
         public Guid DepartmentId { get; set; }
         /// <summary>
-        /// 所在部门
+        /// 所属部门
         /// </summary>
-        [DisplayName("所在部门")]
+        [DisplayName("所属部门")]
         public Department Department { get; set; }
-
+        /// <summary>
+        /// 所属部门
+        /// </summary>
+        [DisplayName("所属部门")]
+        public string DepartmentDisplay { get => Department == null ? "" : Department.Name; }
         /// <summary>
         /// 所在班级
         /// </summary>

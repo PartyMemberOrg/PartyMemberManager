@@ -1,0 +1,63 @@
+﻿@model PartyMemberManager.Dal.Entities.PartyActivist
+@{
+    Layout = "_LayoutEmpty";
+    ViewData["Title"] = "Edit";
+}
+<div class="row form-padding-top">
+    <div class="col-md-12">
+        <form asp-action="Edit">
+            <partial name="_PartialEdit" model="@Model" />
+        </form>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/lib/layui/layui.js"></script>
+    <script>
+        layui.use('form', function () {
+            var form = layui.form;
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#PartyMemberType").change(function () {
+                var partyMemberType = $("#PartyMemberType").val();
+                switch (partyMemberType) {
+                    case "@((int)PartyMemberType.学生)":
+                        $("#ClassGroup").show();
+                        $("#DutyGroup").hide();
+                        break;
+                    case "@((int)PartyMemberType.教师)":
+                        $("#ClassGroup").hide();
+                        $("#DutyGroup").show();
+                        break;
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#BirthDate',
+                type: 'month',
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#BirthDate',
+                type: 'month',
+            });
+            laydate.render({
+                elem: '#ApplicationTime',
+            });
+            laydate.render({
+                elem: '#ActiveApplicationTime',
+            });
+        });
+    </script>
+}

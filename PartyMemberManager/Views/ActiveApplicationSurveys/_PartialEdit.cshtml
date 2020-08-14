@@ -7,35 +7,38 @@
             <label asp-for="Year" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <input asp-for="Year" class="form-control"  id="year"  value="@DateTime.Now.Year"/>
+            <input asp-for="Year" class="form-control" id="year" value="@DateTime.Now.Year" />
             <span asp-validation-for="Year" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
 </div>
-<div class="form-group">
-    <div class="row">
-        <div class="@LabelDivDefaultClass">
-            <label asp-for="SchoolArea" asp-required="true" class="control-label"></label>
-        </div>
-        <div class="@InputDivDefaultClass">
-            <select asp-for="SchoolArea" asp-items="@Html.GetEnumSelectList(typeof(SchoolArea))" class="form-control"></select>
-            <span asp-validation-for="SchoolArea" class="text-danger alidate-message-offset @ValidateSpanDefaultClass "></span>
-        </div>
-    </div>
-</div>
-<div class="form-group" id="DepartmentContainer">
-    <div class="row">
-        <div class="@LabelDivDefaultClass">
-            <label asp-for="DepartmentId" asp-required="true" class="control-label"></label>
-        </div>
-        <div class="@InputDivDefaultClass">
-            <select asp-for="DepartmentId" asp-items="@ViewBag.Departments" class="form-control">
-                <option value="">-请选择-</option>
-            </select>
-            <span asp-validation-for="DepartmentId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+@if (CurrentUser.Roles > Role.学院党委)
+{
+    <div class="form-group">
+        <div class="row">
+            <div class="@LabelDivDefaultClass">
+                <label asp-for="SchoolArea" asp-required="true" class="control-label"></label>
+            </div>
+            <div class="@InputDivDefaultClass">
+                <select asp-for="SchoolArea" asp-items="@Html.GetEnumSelectList(typeof(SchoolArea))" class="form-control"></select>
+                <span asp-validation-for="SchoolArea" class="text-danger alidate-message-offset @ValidateSpanDefaultClass "></span>
+            </div>
         </div>
     </div>
-</div>
+    <div class="form-group" id="DepartmentContainer">
+        <div class="row">
+            <div class="@LabelDivDefaultClass">
+                <label asp-for="DepartmentId" asp-required="true" class="control-label"></label>
+            </div>
+            <div class="@InputDivDefaultClass">
+                <select asp-for="DepartmentId" asp-items="@ViewBag.Departments" class="form-control">
+                    <option value="">-请选择-</option>
+                </select>
+                <span asp-validation-for="DepartmentId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+            </div>
+        </div>
+    </div>
+}
 <div class="form-group">
     <div class="row">
         <div class="@LabelDivDefaultClass">
@@ -64,8 +67,19 @@
             <label asp-for="TrainTotal" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <input asp-for="TrainTotal" class="form-control"/>
+            <input asp-for="TrainTotal" class="form-control" />
             <span asp-validation-for="TrainTotal" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Proportion" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="Proportion" class="form-control" />
+            <span asp-validation-for="Proportion" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
 </div>

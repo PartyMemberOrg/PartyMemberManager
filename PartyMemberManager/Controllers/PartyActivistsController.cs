@@ -18,27 +18,28 @@ using PartyMemberManager.Core.Enums;
 
 namespace PartyMemberManager.Controllers
 {
-    public class ActiveApplicationSurveysController : PartyMemberDataControllerBase<ActiveApplicationSurvey>
+    public class PartyActivistsController : PartyMemberDataControllerBase<PartyActivist>
     {
 
-        public ActiveApplicationSurveysController(ILogger<ActiveApplicationSurveysController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
+        public PartyActivistsController(ILogger<PartyActivistsController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
         {
         }
 
-        // GET: ActiveApplicationSurveys
+        // GET: PartyActivists
         public async Task<IActionResult> Index(int page = 1)
         {
-            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
-            return View(await _context.ActiveApplicationSurveies.Include(d => d.Department).OrderBy(a => a.Ordinal).GetPagedDataAsync(page));
+            var partyActives = _context.PartyActivists;
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d=>d.Ordinal), "Id", "Name");
+            ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d=>d.Ordinal), "Id", "Name");
+            return View(await partyActives.ToListAsync());
         }
-
         /// <summary>
         /// 获取数据（通过ajax调用)
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, string year, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, string year, string name,int page = 1, int limit = 10)
         {
             JsonResultDatasModel<ActiveApplicationSurvey> jsonResult = new JsonResultDatasModel<ActiveApplicationSurvey>
             {
@@ -90,7 +91,7 @@ namespace PartyMemberManager.Controllers
             }
             return Json(jsonResult);
         }
-        // GET: ActiveApplicationSurveys/Details/5
+        // GET: PartyActivists/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -98,26 +99,28 @@ namespace PartyMemberManager.Controllers
                 return NotFoundData();
             }
 
-            var activeApplicationSurvey = await _context.ActiveApplicationSurveies
+            var partyActivist = await _context.PartyActivists
+                    .Include(p => p.Department)
             .SingleOrDefaultAsync(m => m.Id == id);
-            if (activeApplicationSurvey == null)
+            if (partyActivist == null)
             {
                 return NotFoundData();
             }
 
-            return View(activeApplicationSurvey);
+            return View(partyActivist);
         }
 
-        // GET: ActiveApplicationSurveys/Create
+        // GET: PartyActivists/Create
         public IActionResult Create()
         {
-            ActiveApplicationSurvey activeApplicationSurvey = new ActiveApplicationSurvey();
+            PartyActivist partyActivist = new PartyActivist();
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
-            return View(activeApplicationSurvey);
+            ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
+            return View(partyActivist);
         }
 
 
-        // GET: ActiveApplicationSurveys/Edit/5
+        // GET: PartyActivists/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -125,18 +128,19 @@ namespace PartyMemberManager.Controllers
                 return NotFoundData();
             }
 
-            var activeApplicationSurvey = await _context.ActiveApplicationSurveies.SingleOrDefaultAsync(m => m.Id == id);
-            if (activeApplicationSurvey == null)
+            var partyActivist = await _context.PartyActivists.SingleOrDefaultAsync(m => m.Id == id);
+            if (partyActivist == null)
             {
                 return NotFoundData();
             }
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
-            return View(activeApplicationSurvey);
+            ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
+            return View(partyActivist);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("Year,SchoolArea,Term,Total,TrainTotal,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ActiveApplicationSurvey activeApplicationSurvey)
+        public override async Task<IActionResult> Save([Bind("ApplicationTime,ActiveApplicationTime,Duty,Name,JobNo,IDNumber,Sex,PartyMemberType,BirthDate,Nationality,Phone,DepartmentId,Class,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PartyActivist partyActivist)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -147,46 +151,34 @@ namespace PartyMemberManager.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    ActiveApplicationSurvey activeApplicationSurveyInDb = await _context.ActiveApplicationSurveies.FindAsync(activeApplicationSurvey.Id);
-                    if (activeApplicationSurveyInDb != null)
+                    PartyActivist partyActivistInDb = await _context.PartyActivists.FindAsync(partyActivist.Id);
+                    if (partyActivistInDb != null)
                     {
-                        activeApplicationSurveyInDb.Year = activeApplicationSurvey.Year;
-                        activeApplicationSurveyInDb.Term = activeApplicationSurvey.Term;
-                        activeApplicationSurveyInDb.Total = activeApplicationSurvey.Total;
-                        activeApplicationSurveyInDb.TrainTotal = activeApplicationSurvey.TrainTotal;
-                        activeApplicationSurveyInDb.Proportion = (double)(activeApplicationSurvey.TrainTotal) / (double)activeApplicationSurvey.Total;
-                        activeApplicationSurveyInDb.Id = activeApplicationSurvey.Id;
-                        activeApplicationSurveyInDb.CreateTime = DateTime.Now;
-                        activeApplicationSurveyInDb.OperatorId = CurrentUser.Id;
-                        activeApplicationSurveyInDb.Ordinal = _context.ActiveApplicationSurveies.Count() + 1;
-                        activeApplicationSurveyInDb.IsDeleted = activeApplicationSurvey.IsDeleted;
-                        if (CurrentUser.Roles == Role.学院党委)
-                        {
-                            activeApplicationSurveyInDb.SchoolArea = _context.Departments.Find(CurrentUser.DepartmentId).SchoolArea;
-                            activeApplicationSurveyInDb.DepartmentId = CurrentUser.DepartmentId.Value;
-                        }
-                        else
-                        {
-                            activeApplicationSurveyInDb.SchoolArea = activeApplicationSurvey.SchoolArea;
-                            activeApplicationSurveyInDb.DepartmentId = activeApplicationSurvey.DepartmentId;
-                        }
-                        _context.Update(activeApplicationSurveyInDb);
+                        partyActivistInDb.ApplicationTime = partyActivist.ApplicationTime;
+                        partyActivistInDb.ActiveApplicationTime = partyActivist.ActiveApplicationTime;
+                        partyActivistInDb.Duty = partyActivist.Duty;
+                        partyActivistInDb.Name = partyActivist.Name;
+                        partyActivistInDb.JobNo = partyActivist.JobNo;
+                        partyActivistInDb.IDNumber = partyActivist.IDNumber;
+                        partyActivistInDb.Sex = partyActivist.Sex;
+                        partyActivistInDb.PartyMemberType = partyActivist.PartyMemberType;
+                        partyActivistInDb.BirthDate = partyActivist.BirthDate;
+                        partyActivistInDb.NationId = partyActivist.NationId;
+                        partyActivistInDb.Phone = partyActivist.Phone;
+                        partyActivistInDb.DepartmentId = partyActivist.DepartmentId;
+                        partyActivistInDb.Department = partyActivist.Department;
+                        partyActivistInDb.Class = partyActivist.Class;
+                        partyActivistInDb.Id = partyActivist.Id;
+                        partyActivistInDb.CreateTime = DateTime.Now;
+                        partyActivistInDb.OperatorId = CurrentUser.Id;
+                        partyActivistInDb.Ordinal = _context.PartyActivists.Count()+1;
+                        partyActivistInDb.IsDeleted = partyActivist.IsDeleted;
+                        _context.Update(partyActivistInDb);
                     }
                     else
                     {
-                        activeApplicationSurvey.Proportion = (double)(activeApplicationSurvey.TrainTotal) / (double)activeApplicationSurvey.Total;
-                        if (CurrentUser.Roles == Role.学院党委)
-                        {
-                            activeApplicationSurvey.SchoolArea = _context.Departments.Find(CurrentUser.DepartmentId).SchoolArea;
-                            activeApplicationSurvey.DepartmentId = CurrentUser.DepartmentId.Value;
-                        }
-                        else
-                        {
-                            activeApplicationSurvey.SchoolArea = activeApplicationSurvey.SchoolArea;
-                            activeApplicationSurvey.DepartmentId = activeApplicationSurvey.DepartmentId;
-                        }
-                        //activeApplicationSurvey.Id = Guid.NewGuid();
-                        _context.Add(activeApplicationSurvey);
+                        //partyActivist.Id = Guid.NewGuid();
+                        _context.Add(partyActivist);
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -226,9 +218,9 @@ namespace PartyMemberManager.Controllers
         }
 
 
-        private bool ActiveApplicationSurveyExists(Guid id)
+        private bool PartyActivistExists(Guid id)
         {
-            return _context.ActiveApplicationSurveies.Any(e => e.Id == id);
+            return _context.PartyActivists.Any(e => e.Id == id);
         }
     }
 }

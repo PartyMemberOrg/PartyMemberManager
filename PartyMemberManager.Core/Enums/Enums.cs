@@ -58,8 +58,8 @@ namespace PartyMemberManager.Core.Enums
     /// </summary>
     public enum PartyMemberType
     {
-        教师 = 1,
-        学生 = 2,
+        学生 = 1,
+        教师 = 2,
     }
     /// <summary>
     /// 授权类型

@@ -1,0 +1,154 @@
+﻿@model PartyMemberManager.Dal.Entities.PartyActivist
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input type="hidden" asp-for="Id" />
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Name" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="JobNo" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="JobNo" class="form-control" />
+            <span asp-validation-for="JobNo" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="IDNumber" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="IDNumber" class="form-control" />
+            <span asp-validation-for="IDNumber" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Sex" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <select asp-for="Sex" asp-items="@Html.GetEnumSelectList(typeof(Sex))" class="form-control">
+                <option>--请选择--</option>
+            </select>
+            <span asp-validation-for="Sex" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="PartyMemberType" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <select asp-for="PartyMemberType" asp-items="@Html.GetEnumSelectList(typeof(PartyMemberType))" class="form-control">
+                <option>--请选择--</option>
+            </select>
+            <span asp-validation-for="PartyMemberType" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="BirthDate" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="BirthDate" class="form-control" placeholder="yyyy-MM" />
+            <span asp-validation-for="BirthDate" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="NationId" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <select asp-for="NationId" class="form-control" asp-items="@ViewBag.Nations">
+                <option>--请选择--</option>
+            </select>
+            <span asp-validation-for="NationId" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Phone" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="Phone" class="form-control" />
+            <span asp-validation-for="Phone" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="DepartmentId" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <select asp-for="DepartmentId" class="form-control" asp-items="@ViewBag.Departments">
+                <option>--请选择--</option>
+            </select>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="ApplicationTime" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="ApplicationTime" class="form-control" placeholder="yyyy-MM-dd" />
+            <span asp-validation-for="ApplicationTime" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="ActiveApplicationTime" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="ActiveApplicationTime" class="form-control" placeholder="yyyy-MM-dd" />
+            <span asp-validation-for="ActiveApplicationTime" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group" id="ClassGroup">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Class" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="Class" class="form-control" />
+            <span asp-validation-for="Class" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group" id="DutyGroup" style="display:none">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Duty" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="Duty" class="form-control" />
+            <span asp-validation-for="Duty" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
