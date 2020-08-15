@@ -167,6 +167,10 @@ namespace PartyMemberManager.Controllers
                         }
                         else
                         {
+                            if (activeApplicationSurvey.SchoolArea.ToString() == null)
+                                throw new PartyMemberException("请选择校区");
+                            if (activeApplicationSurvey.DepartmentId == null)
+                                throw new PartyMemberException("请选择部门");
                             activeApplicationSurveyInDb.SchoolArea = activeApplicationSurvey.SchoolArea;
                             activeApplicationSurveyInDb.DepartmentId = activeApplicationSurvey.DepartmentId;
                         }
@@ -182,6 +186,10 @@ namespace PartyMemberManager.Controllers
                         }
                         else
                         {
+                            if (activeApplicationSurvey.SchoolArea.ToString() == null)
+                                throw new PartyMemberException("请选择校区");
+                            if (activeApplicationSurvey.DepartmentId == null)
+                                throw new PartyMemberException("请选择部门");
                             activeApplicationSurvey.SchoolArea = activeApplicationSurvey.SchoolArea;
                             activeApplicationSurvey.DepartmentId = activeApplicationSurvey.DepartmentId;
                         }

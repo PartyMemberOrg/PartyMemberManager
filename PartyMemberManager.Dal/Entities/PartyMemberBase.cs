@@ -10,6 +10,25 @@ namespace PartyMemberManager.Dal.Entities
 {
     public class PartyMemberBase : EntityBase
     {
+
+        /// <summary>
+        /// 年度
+        /// </summary>
+        [DisplayName("年度")]
+        [StringLength(4, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public string Year { get; set; }
+        /// <summary>
+        /// 学期
+        /// </summary>
+        [DisplayName("学期")]
+        public Term Term { get; set; }
+
+        /// <summary>
+        /// 学期
+        /// </summary>
+        [DisplayName("学期")]
+        public string TermDisplay { get => Term.ToString(); }
         /// <summary>
         /// 姓名
         /// </summary>
@@ -33,7 +52,7 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("身份证号")]
         [StringLength(20, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public string IDNumber { get; set; }
+        public string IdNumber { get; set; }
 
         /// <summary>
         /// 性别
@@ -71,24 +90,33 @@ namespace PartyMemberManager.Dal.Entities
         /// 民族
         /// </summary>
         [DisplayName("民族")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public Guid NationId { get; set; }
         /// <summary>
         /// 民族
         /// </summary>
         [DisplayName("民族")]
-        public Nation Nation{ get; set; }
+        public Nation Nation { get; set; }
+        /// <summary>
+        /// 民族
+        /// </summary>
+        [DisplayName("民族")]
+        [NotMapped]
+        public string NationDisplay { get => Nation == null ? "" : Nation.Name; }
 
         /// <summary>
         /// 电话
         /// </summary>
         [DisplayName("电话")]
         [StringLength(50, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Phone { get; set; }
 
         /// <summary>
         /// 所属部门
         /// </summary>
         [DisplayName("所属部门")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public Guid DepartmentId { get; set; }
         /// <summary>
         /// 所属部门

@@ -3,9 +3,55 @@
 @{
     ViewData["Title"] = "Index";
 }
-<p style="margin-bottom:14px;">
-    <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,800)" class="layui-btn layui-btn-primary">+添加</a>
-</p>
+    <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px">
+        <div class="layui-input-inline" style="width:80px">
+            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,800)" class="layui-btn layui-btn-primary">+添加</a>
+        </div>
+        <div>
+            <label class="layui-form-label" style="padding:5px">年份:</label>
+            <div class="layui-input-inline" style="width:80px">
+                <input name="Year" type="text" class="layui-input" id="kwyear" placeholder="yyyy" style="width:80px;" />
+            </div>
+        </div>
+        <div>
+            <label class="layui-form-label" style="padding:5px">学期:</label>
+            <div class="layui-input-inline" style="width:120px">
+                <select name="term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="layui-input" id="term">
+                    <option value="">-请选择学期-</option>
+                </select>
+            </div>
+        </div>
+        @if (CurrentUser.Roles > Role.学院党委)
+        {
+            <div>
+                <label class="layui-form-label" style="padding:5px">部门:</label>
+                <div class="layui-input-inline" style="width:300px">
+                    <select name="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input" id="department">
+                        <option value="">-请选择部门-</option>
+                    </select>
+                </div>
+            </div>
+        }
+        <div>
+            <div class="layui-input-inline" style="width:300px">
+                <input name="name" type="text" class="layui-input" placeholder="请输入学号/工号/姓名" id="keyword" />
+            </div>
+        </div>
+        <div>
+            <div class="layui-input-inline" style="width:80px">
+                <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
+                    <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
+                </a>
+            </div>
+        </div>
+        <div>
+            <div class="layui-input-inline" style="width:80px">
+                <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="importExcel()">
+                    <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>导入Excel
+                </a>
+            </div>
+        </div>
+    </div>
 <table class="layui-hide" id="datatable"></table>
 @Html.AntiForgeryToken()
 <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
@@ -50,7 +96,7 @@
             layui.use('table', function () {
                 var table = layui.table;
                 table.reload('dataGrid', {
-                    url: '@Url.Action("GetDatas")'
+                    url: '@Url.Action("GetDatasWithFilter")'
                 });
             });
         }
@@ -60,7 +106,7 @@
 
                 tableObject = table.render({
                     elem: '#datatable'
-                    , url: '@Url.Action("GetDatas")'
+                    , url: '@Url.Action("GetDatasWithFilter")'
                     , page: true //开启分页
                     , limits: [10, 20, 50]
                     , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
@@ -68,14 +114,16 @@
                     , cols: [[
                         //{ type: 'checkbox' }
                         //,
+                        { field: 'year', title: '年份', width: '50', align: 'center' },
+                        { field: 'termDisplay', title: '学期', align: 'center' },
                         { field: 'name', title: '姓名', align: 'center' },
                         { field: 'jobNo', title: '学号/工号', align: 'center' },
-                        { field: 'iDNumber', title: '身份证号', align: 'center' },
-                        { field: 'sexDisplay', title: '性别', align: 'center' },
+                        { field: 'idNumber', title: '身份证号', align: 'center'},
+                        { field: 'sexDisplay', title: '性别',width:'50', align: 'center' },
                         { field: 'birthDate', title: '出生年月', align: 'center' },
-                        { field: 'nation.name', title: '民族',align: 'center' },
+                        { field: 'nationDisplay', title: '民族', width: '50', align: 'center', templet: '#optNationNameTpl' },
                         { field: 'phone', title: '电话', align: 'center' },
-                        { field: 'partyMemberTypeDisplay', title: '类别', align: 'center' },
+                        { field: 'partyMemberTypeDisplay', title: '类别', width: '50', align: 'center' },
                         { field: 'departmentDisplay', title: '所属部门', align: 'center', templet: '#optDepartmentNameTpl' },
                         { field: 'class', title: '班级', align: 'center' },
                         { field: 'applicationTime', title: '提交入党申请时间', align: 'center' },
@@ -85,6 +133,26 @@
                     ]]
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);
+                    }
+                });
+            });
+        }
+                /**过滤数据 */
+        function tablefilter() {
+            //此处Id不要#号
+            var tableId = "dataGrid";
+            layui.use('table', function () {
+                var table = layui.table;
+                table.reload(tableId, {
+                    url: '@Url.Action("GetDatasWithFilter")'
+                    , where: {
+                        year: $("#kwyear").val(),
+                        departmentId: $("#department").val(),
+                        keyword: $("#keyword").val(),
+                        term: $("#term").val()
+                    }
+                    , done: function (res, curr, count) {
+                        fillPatientList(res,curr,count);showHideScrollBars(res.data.length);
                     }
                 });
             });
@@ -125,5 +193,17 @@
     <script type="text/html" id="optDepartmentNameTpl">
         {{d.departmentDisplay}}
     </script>
-}
+    <script type="text/html" id="optNationNameTpl">
+        {{d.nationDisplay}}
+    </script>
+    <script type="text/javascript">
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#kwyear',
+                type: 'year',
+            });
+        });
+    </script>
 
+}

@@ -49,6 +49,10 @@
         layui.use('laydate', function () {
             var laydate = layui.laydate;
             laydate.render({
+                elem: '#Year',
+                type: 'year',
+            });
+            laydate.render({
                 elem: '#BirthDate',
                 type: 'month',
             });

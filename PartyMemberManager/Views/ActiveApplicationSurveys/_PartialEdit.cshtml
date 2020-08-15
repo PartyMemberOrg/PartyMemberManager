@@ -20,7 +20,9 @@
                 <label asp-for="SchoolArea" asp-required="true" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">
-                <select asp-for="SchoolArea" asp-items="@Html.GetEnumSelectList(typeof(SchoolArea))" class="form-control"></select>
+                <select asp-for="SchoolArea" asp-items="@Html.GetEnumSelectList(typeof(SchoolArea))" class="form-control">
+                    <option value="">-请选择-</option>
+                </select>
                 <span asp-validation-for="SchoolArea" class="text-danger alidate-message-offset @ValidateSpanDefaultClass "></span>
             </div>
         </div>
