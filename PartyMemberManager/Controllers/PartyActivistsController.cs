@@ -39,7 +39,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId,string term, string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId,string term, string partyMemberType,string keyword, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<PartyActivist> jsonResult = new JsonResultDatasModel<PartyActivist>
             {
@@ -58,9 +58,13 @@ namespace PartyMemberManager.Controllers
                 {
                     filter = filter.And(d => d.Name.Contains(keyword)|| d.JobNo.Contains(keyword));
                 }
+                if (partyMemberType != null)
+                {
+                    filter = filter.And(d => d.PartyMemberType==(PartyMemberType)Enum.Parse(typeof(PartyMemberType), partyMemberType));
+                }
                 if (term != null)
                 {
-                    filter = filter.And(d => d.Term==(Term)Enum.Parse(typeof(Term),term));
+                    filter = filter.And(d => d.Term == (Term)Enum.Parse(typeof(Term), term));
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {

@@ -1,0 +1,95 @@
+﻿@model PartyMemberManager.Dal.Entities.TrainClass
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input type="hidden" asp-for="Id" />
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Year" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="Year" class="form-control" placeholder="yyyy" />
+            <span asp-validation-for="Year" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Term" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <select asp-for="Term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="form-control"></select>
+            <span asp-validation-for="Term" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Name" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+@if (CurrentUser.Roles > Role.学院党委)
+{
+    <div class="form-group" id="DepartmentContainer">
+        <div class="row">
+            <div class="@LabelDivDefaultClass">
+                <label asp-for="DepartmentId" asp-required="true" class="control-label"></label>
+            </div>
+            <div class="@InputDivDefaultClass">
+                <select asp-for="DepartmentId" asp-items="@ViewBag.Departments" class="form-control">
+                    <option value="">-请选择-</option>
+                </select>
+                <span asp-validation-for="DepartmentId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+            </div>
+        </div>
+    </div>
+}
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="TrainClassTypeId" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <select asp-for="TrainClassTypeId" class="form-control" asp-items="@ViewBag.TrainClassTypeId"></select>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="StartTime" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="StartTime" class="form-control" placeholder="yyyy-MM-dd" />
+            <span asp-validation-for="StartTime" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="PSGradeProportion" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="PSGradeProportion" class="form-control" />
+            <span asp-validation-for="PSGradeProportion" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="CsGradeProportion" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <input asp-for="CsGradeProportion" class="form-control" />
+            <span asp-validation-for="CsGradeProportion" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,50 @@
+﻿@model PartyMemberManager.Dal.Entities.TrainClass
+@{
+    Layout = "_LayoutEmpty";
+    ViewData["Title"] = "Create";
+}
+<div class="row form-padding-top">
+    <div class="col-md-12">
+        <form asp-action="Create">
+            <partial name="_PartialEdit" model="@Model" />
+        </form>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/lib/layui/layui.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#CsGradeProportion").change(function () {
+                valideTotal();
+            });
+        });
+        layui.use('form', function () {
+            var form = layui.form;
+        });
+        /**计算比例 */
+        function valideTotal() {
+            var ps = parseInt($("#PSGradeProportion").val());
+            var cs = parseInt($("#CsGradeProportion").val());
+            var scale = ps + cs;
+            if (scale != 100) {
+                layui.open({
+                    content: "比例总和不是100"
+                });
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#Year',
+                type: 'year',
+            });
+            laydate.render({
+                elem: '#StartTime',
+            });
+        });
+    </script>
+}
