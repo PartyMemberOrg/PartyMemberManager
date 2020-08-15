@@ -1,0 +1,129 @@
+﻿@model IEnumerable<PartyMemberManager.Dal.Entities.ActivistTrainResult>
+
+        @{
+        ViewData["Title"] = "Index";
+        }
+        
+        <h1>列表</h1>
+        
+        <p style="margin-bottom:14px;">
+                <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
+        </p>
+        <table class="layui-hide" id="datatable"></table>
+        @Html.AntiForgeryToken()
+        <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
+        @section Scripts{
+        <script src="~/lib/contentmenu/js/index.js"></script>
+        <script src="~/lib/Sortable/Sortable.js"></script>
+            <script type="text/javascript">
+        var tableObject = null;
+        $(document).ready(function () {
+            $("body").width(770);
+            InitTable();
+        });
+        
+        function Delete(id) {
+            var url="@Url.Action("Delete")";
+            DeleteData(url, id, function () {
+                tableObject.reload();
+            });
+        }
+        /**
+        * 数据上移
+        * @@param id
+        */
+        function ItemUp(id) {
+            DataOrdinalUpDown('@Url.Action("ItemUpDown")',id,true,
+                function () {
+                    RefreshTable();
+            });
+        }
+        /**
+         * 数据下移
+         * @@param id
+         */
+        function ItemDown(id) {
+            DataOrdinalUpDown('@Url.Action("ItemUpDown")',id,false,
+                function () {
+                    RefreshTable();
+            });
+        }
+        /**刷新表格 */
+        function RefreshTable() {
+            layui.use('table', function () {
+                var table = layui.table;
+                table.reload('dataGrid', {
+                    url: '@Url.Action("GetDatas")'
+                });
+            });
+        }
+        function InitTable() {
+            layui.use('table', function () {
+                var table = layui.table;
+        
+                tableObject = table.render({
+                    elem: '#datatable'
+                    , url: '@Url.Action("GetDatas")'
+                    , page: true //开启分页
+                    , limits: [10, 20, 50]
+                    , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                    , id: 'dataGrid'
+                    , cols: [[
+                        //{ type: 'checkbox' }
+                        //,
+            { field: 'partyActivistId', title: 'PartyActivistId', align: 'center' },
+            { field: 'trainClassId', title: 'TrainClassId', align: 'center' },
+            { field: 'psGrade', title: 'PsGrade', align: 'center' },
+            { field: 'csGrade', title: 'CsGrade', align: 'center' },
+            { field: 'totalGrade', title: 'TotalGrade', align: 'center' },
+            { field: 'isPass', title: 'IsPass', align: 'center' },
+            { field: 'isPrint', title: 'IsPrint', align: 'center' },
+            { field: 'printTime', title: 'PrintTime', align: 'center' },
+            { field: 'id', title: 'Id', align: 'center' },
+            { field: 'createTime', title: 'CreateTime', align: 'center' },
+            { field: 'operatorId', title: 'OperatorId', align: 'center' },
+            { field: 'ordinal', title: 'Ordinal', align: 'center' },
+            { field: 'isDeleted', title: 'IsDeleted', align: 'center' },
+                        { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
+                    ]]
+                    , done: function (res, curr, count) {
+                        showHideScrollBars(res.data.length);
+                    }
+                });
+            });
+        }
+        /**显示隐藏滚动条 */
+        function showHideScrollBars(count) {
+            if (count > 11) {
+                $("body").css("overflow-y", "auto");
+            }
+            else {
+                $("body").css("overflow-y", "hidden");
+                $(document).scrollTop(0);
+            }
+        }
+        /**显示操作菜单 */
+        function showOperatMenu(event, id) {
+            var contextMenu = new ContextMenu();
+            contextMenu.addMenuItem("编辑", function () {
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 500, 400);
+            })
+            contextMenu.addMenuItem("删除", function () {
+                Delete(id);
+            })
+            contextMenu.addMenuItem("上移", function () {
+                ItemUp(id);
+            })
+            contextMenu.addMenuItem("下移", function () {
+                ItemDown(id);
+            })
+            contextMenu.showMenu(event);
+        }
+        </script>
+        <script type="text/html" id="optTpl">
+            <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
+                <img src="~/images/gridmenu1x.png" />
+            </a>
+        </script>
+        }
+

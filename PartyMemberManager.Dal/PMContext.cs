@@ -24,13 +24,14 @@ namespace PartyMemberManager.Dal
         public virtual DbSet<OperatorModule> OperatorModules { get; set; }
         public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<TrainClassType> TrainClassTypes { get; set; }
-        public virtual DbSet<TrainClass> TrainClasses { get; set; }
-        public virtual DbSet<TrainResult> TrainResults { get; set; }
-        public virtual DbSet<CadreTrain> CadreTrains { get; set; }
-        public virtual DbSet<PartyActivist> PartyActivists { get; set; }
-        public virtual DbSet<PotentialMember> PotentialMembers { get; set; }
         public virtual DbSet<Nation> Nations { get; set; }
+        public virtual DbSet<CadreTrain> CadreTrains { get; set; }
         public virtual DbSet<ActiveApplicationSurvey> ActiveApplicationSurveies { get; set; }
+        public virtual DbSet<TrainClass> TrainClasses { get; set; }
+        public virtual DbSet<PartyActivist> PartyActivists { get; set; }
+        public virtual DbSet<ActivistTrainResult> ActivistTrainResults { get; set; }
+        public virtual DbSet<PotentialMember> PotentialMembers { get; set; }
+        public virtual DbSet<PotentialTrainResult> PotentialTrainResults { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -71,6 +72,12 @@ namespace PartyMemberManager.Dal
                 .WithMany()
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<TrainClass>()
+                .HasOne(o => o.Department)
+                .WithMany()
+                .HasForeignKey(o => o.DepartmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<ActiveApplicationSurvey>()
                 .HasOne(o => o.Department)
                 .WithMany()
@@ -88,10 +95,25 @@ namespace PartyMemberManager.Dal
                 .HasForeignKey(p => p.NationId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<TrainClass>()
-                .HasOne(o => o.Department)
+            modelBuilder.Entity<ActivistTrainResult>()
+                .HasOne(a => a.TrainClass)
                 .WithMany()
-                .HasForeignKey(o => o.DepartmentId)
+                .HasForeignKey(a => a.TrainClassId);
+
+            modelBuilder.Entity<ActivistTrainResult>()
+                .HasOne(a => a.PartyActivist)
+                .WithMany()
+                .HasForeignKey(a => a.PartyActivistId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<PotentialTrainResult>()
+                .HasOne(p => p.TrainClass)
+                .WithMany()
+                .HasForeignKey(p => p.TrainClassId);
+
+            modelBuilder.Entity<PotentialTrainResult>()
+                .HasOne(p => p.PotentialMember)
+                .WithMany()
+                .HasForeignKey(a => a.PotentialMemberId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

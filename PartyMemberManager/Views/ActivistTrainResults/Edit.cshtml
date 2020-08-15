@@ -1,0 +1,160 @@
+﻿@model PartyMemberManager.Dal.Entities.ActivistTrainResult
+
+        @{
+        Layout = "_LayoutEmpty";
+        ViewData["Title"] = "Edit";
+        }
+        <div class="row form-padding-top">
+            <div class="col-md-12">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="@LabelDivDefaultClass">
+                                            <label asp-for="PartyActivistId" class="control-label"></label>
+                                        </div>
+                                        <div>
+                                            <select asp-for="PartyActivistId" class="form-control" asp-items="ViewBag.PartyActivistId"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="@LabelDivDefaultClass">
+                                            <label asp-for="TrainClassId" class="control-label"></label>
+                                        </div>
+                                        <div>
+                                            <select asp-for="TrainClassId" class="form-control" asp-items="ViewBag.TrainClassId"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="@LabelDivDefaultClass">
+                                            <label asp-for="PsGrade" class="control-label"></label>
+                                        </div>
+                                        <div>
+                                            <input asp-for="PsGrade" class="form-control" />
+                                            <span asp-validation-for="PsGrade" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="@LabelDivDefaultClass">
+                                            <label asp-for="CsGrade" class="control-label"></label>
+                                        </div>
+                                        <div>
+                                            <input asp-for="CsGrade" class="form-control" />
+                                            <span asp-validation-for="CsGrade" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="@LabelDivDefaultClass">
+                                            <label asp-for="TotalGrade" class="control-label"></label>
+                                        </div>
+                                        <div>
+                                            <input asp-for="TotalGrade" class="form-control" />
+                                            <span asp-validation-for="TotalGrade" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="@LabelDivDefaultClass">
+                                            <label asp-for="IsPass" class="control-label"></label>
+                                        </div>
+                                        <div class="form-check @InputDivDefaultClass">
+                                            <div class="layui-form">
+                                                <div class="layui-form-item" style="margin-bottom:0px;margin-top:-5px">
+                                                    <input type="checkbox" name="IsPass" lay-skin="primary" value="true" title="" @(Model.IsPass ? "checked" : "" )>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="@LabelDivDefaultClass">
+                                            <label asp-for="IsPrint" class="control-label"></label>
+                                        </div>
+                                        <div class="form-check @InputDivDefaultClass">
+                                            <div class="layui-form">
+                                                <div class="layui-form-item" style="margin-bottom:0px;margin-top:-5px">
+                                                    <input type="checkbox" name="IsPrint" lay-skin="primary" value="true" title="" @(Model.IsPrint ? "checked" : "" )>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="@LabelDivDefaultClass">
+                                            <label asp-for="PrintTime" class="control-label"></label>
+                                        </div>
+                                        <div>
+                                            <input asp-for="PrintTime" class="form-control" />
+                                            <span asp-validation-for="PrintTime" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            <input type="hidden" asp-for="Id" />
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="@LabelDivDefaultClass">
+                                            <label asp-for="CreateTime" class="control-label"></label>
+                                        </div>
+                                        <div>
+                                            <input asp-for="CreateTime" class="form-control" />
+                                            <span asp-validation-for="CreateTime" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="@LabelDivDefaultClass">
+                                            <label asp-for="OperatorId" class="control-label"></label>
+                                        </div>
+                                        <div>
+                                            <input asp-for="OperatorId" class="form-control" />
+                                            <span asp-validation-for="OperatorId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="@LabelDivDefaultClass">
+                                            <label asp-for="Ordinal" class="control-label"></label>
+                                        </div>
+                                        <div>
+                                            <input asp-for="Ordinal" class="form-control" />
+                                            <span asp-validation-for="Ordinal" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="@LabelDivDefaultClass">
+                                            <label asp-for="IsDeleted" class="control-label"></label>
+                                        </div>
+                                        <div class="form-check @InputDivDefaultClass">
+                                            <div class="layui-form">
+                                                <div class="layui-form-item" style="margin-bottom:0px;margin-top:-5px">
+                                                    <input type="checkbox" name="IsDeleted" lay-skin="primary" value="true" title="" @(Model.IsDeleted ? "checked" : "" )>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+<div class="form-group">
+    <input type="submit" value="Save" class="btn btn-primary" />
+</div>
+</form>
+</div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
