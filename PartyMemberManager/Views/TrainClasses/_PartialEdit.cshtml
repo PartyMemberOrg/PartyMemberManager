@@ -18,7 +18,9 @@
             <label asp-for="Term" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <select asp-for="Term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="form-control"></select>
+            <select asp-for="Term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="form-control">
+                <optipn>-请选择学期-</optipn>
+            </select>
             <span asp-validation-for="Term" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>

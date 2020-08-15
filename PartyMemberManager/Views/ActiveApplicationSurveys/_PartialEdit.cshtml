@@ -8,7 +8,7 @@
         </div>
         <div class="@InputDivDefaultClass">
             <input asp-for="Year" class="form-control" id="year" value="@DateTime.Now.Year" />
-            <span asp-validation-for="Year" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+            <span asp-validation-for="Year" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
 </div>
@@ -21,9 +21,9 @@
             </div>
             <div class="@InputDivDefaultClass">
                 <select asp-for="SchoolArea" asp-items="@Html.GetEnumSelectList(typeof(SchoolArea))" class="form-control">
-                    <option value="">-请选择-</option>
+                    <option value="">-请选择校区-</option>
                 </select>
-                <span asp-validation-for="SchoolArea" class="text-danger alidate-message-offset @ValidateSpanDefaultClass "></span>
+                <span asp-validation-for="SchoolArea" class="text-danger validate-message-offset @ValidateSpanDefaultClass "></span>
             </div>
         </div>
     </div>
@@ -34,7 +34,7 @@
             </div>
             <div class="@InputDivDefaultClass">
                 <select asp-for="DepartmentId" asp-items="@ViewBag.Departments" class="form-control">
-                    <option value="">-请选择-</option>
+                    <option value="">-请选择部门-</option>
                 </select>
                 <span asp-validation-for="DepartmentId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
             </div>
@@ -48,7 +48,7 @@
         </div>
         <div class="@InputDivDefaultClass">
             <select asp-for="Term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="form-control"></select>
-            <span asp-validation-for="Term" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+            <span asp-validation-for="Term" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
 </div>
@@ -59,7 +59,7 @@
         </div>
         <div class="@InputDivDefaultClass">
             <input asp-for="Total" class="form-control" />
-            <span asp-validation-for="Total" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+            <span asp-validation-for="Total" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
 </div>
@@ -70,7 +70,7 @@
         </div>
         <div class="@InputDivDefaultClass">
             <input asp-for="TrainTotal" class="form-control" />
-            <span asp-validation-for="TrainTotal" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+            <span asp-validation-for="TrainTotal" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
 </div>
@@ -81,7 +81,7 @@
         </div>
         <div class="@InputDivDefaultClass">
             <input asp-for="Proportion" class="form-control" />
-            <span asp-validation-for="Proportion" class="text-danger alidate-message-offset @ValidateSpanDefaultClass"></span>
+            <span asp-validation-for="Proportion" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
 </div>

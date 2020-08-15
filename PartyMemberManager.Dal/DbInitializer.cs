@@ -108,8 +108,8 @@ namespace PartyMemberManager.Dal
                 ParentModuleId = module.Id,
                 Id = Guid.NewGuid(),
                 CreateTime = DateTime.Now,
-                Name = "党校管理",
-                Controller = "PartySchools",
+                Name = "培训班类型",
+                Controller = "TrainClassTypes",
                 Action = null,
                 Ordinal = 106,
                 Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员

@@ -20,7 +20,7 @@
         </div>
         <div class="@InputDivDefaultClass">
             <select asp-for="Term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="form-control">
-                <option>--请选择--</option>
+                <option>--请选择学期--</option>
             </select>
             <span asp-validation-for="Term" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
@@ -66,7 +66,7 @@
         </div>
         <div class="@InputDivDefaultClass">
             <select asp-for="Sex" asp-items="@Html.GetEnumSelectList(typeof(Sex))" class="form-control">
-                <option>--请选择--</option>
+                <option>-请选择性别-</option>
             </select>
             <span asp-validation-for="Sex" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
@@ -79,7 +79,7 @@
         </div>
         <div class="@InputDivDefaultClass">
             <select asp-for="PartyMemberType" asp-items="@Html.GetEnumSelectList(typeof(PartyMemberType))" class="form-control">
-                <option>--请选择--</option>
+                <option>-请选择类型-</option>
             </select>
             <span asp-validation-for="PartyMemberType" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
@@ -103,7 +103,7 @@
         </div>
         <div class="@InputDivDefaultClass">
             <select asp-for="NationId" class="form-control" asp-items="@ViewBag.Nations">
-                <option>--请选择--</option>
+                <option>-请选择民族-</option>
             </select>
             <span asp-validation-for="NationId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
@@ -129,7 +129,7 @@
             </div>
             <div class="@InputDivDefaultClass">
                 <select asp-for="DepartmentId" class="form-control" asp-items="@ViewBag.Departments">
-                    <option>--请选择--</option>
+                    <option>-请选择部门-</option>
                 </select>
             </div>
         </div>
