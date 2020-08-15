@@ -108,9 +108,9 @@ namespace PartyMemberManager.Controllers
                     nationInDb.Code = nation.Code;
                     nationInDb.Name = nation.Name;
                     nationInDb.Id = nation.Id;
-                    nationInDb.CreateTime = nation.CreateTime;
-                    nationInDb.OperatorId = nation.OperatorId;
-                    nationInDb.Ordinal = nation.Ordinal;
+                    nationInDb.CreateTime = DateTime.Now;
+                    nationInDb.OperatorId = CurrentUser.Id;
+                    nationInDb.Ordinal = _context.Nations.Count()+1;
                     nationInDb.IsDeleted = nation.IsDeleted;
                     _context.Update(nationInDb);
                     await _context.SaveChangesAsync();
@@ -151,15 +151,18 @@ namespace PartyMemberManager.Controllers
                         nationInDb.Code = nation.Code;
                         nationInDb.Name = nation.Name;
                         nationInDb.Id = nation.Id;
-                        nationInDb.CreateTime = nation.CreateTime;
-                        nationInDb.OperatorId = nation.OperatorId;
-                        nationInDb.Ordinal = nation.Ordinal;
+                        nationInDb.CreateTime = DateTime.Now;
+                        nationInDb.OperatorId = CurrentUser.Id;
+                        nationInDb.Ordinal = _context.Nations.Count() + 1;
                         nationInDb.IsDeleted = nation.IsDeleted;
                         _context.Update(nationInDb);
                     }
                     else
                     {
                         //nation.Id = Guid.NewGuid();
+                        nation.CreateTime = DateTime.Now;
+                        nation.OperatorId = CurrentUser.Id;
+                        nation.Ordinal = _context.Nations.Count() + 1;
                         _context.Add(nation);
                     }
                     await _context.SaveChangesAsync();

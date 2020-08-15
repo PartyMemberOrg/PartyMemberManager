@@ -194,6 +194,10 @@ namespace PartyMemberManager.Controllers
                             activeApplicationSurvey.DepartmentId = activeApplicationSurvey.DepartmentId;
                         }
                         //activeApplicationSurvey.Id = Guid.NewGuid();
+                        activeApplicationSurvey.CreateTime = DateTime.Now;
+                        activeApplicationSurvey.OperatorId = CurrentUser.Id;
+                        activeApplicationSurvey.Ordinal = _context.ActiveApplicationSurveies.Count() + 1;
+                        activeApplicationSurvey.IsDeleted = activeApplicationSurvey.IsDeleted;
                         _context.Add(activeApplicationSurvey);
                     }
                     await _context.SaveChangesAsync();

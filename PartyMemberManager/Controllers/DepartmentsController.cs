@@ -100,6 +100,10 @@ namespace PartyMemberManager.Controllers
                     else
                     {
                         //department.Id = Guid.NewGuid();
+                        department.CreateTime = DateTime.Now;
+                        department.OperatorId = CurrentUser.Id;
+                        department.Ordinal = _context.Departments.Count() + 1;
+                        department.IsDeleted = department.IsDeleted;
                         _context.Add(department);
                     }
                     await _context.SaveChangesAsync();

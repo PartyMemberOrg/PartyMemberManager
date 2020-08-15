@@ -179,6 +179,9 @@ namespace PartyMemberManager.Controllers
                     else
                     {
                         //trainClass.Id = Guid.NewGuid();
+                        trainClass.CreateTime = DateTime.Now;
+                        trainClass.OperatorId = CurrentUser.Id;
+                        trainClass.Ordinal = _context.TrainClasses.Count() + 1;
                         _context.Add(trainClass);
                     }
                     await _context.SaveChangesAsync();

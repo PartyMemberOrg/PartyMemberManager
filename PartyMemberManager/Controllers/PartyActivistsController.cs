@@ -220,6 +220,9 @@ namespace PartyMemberManager.Controllers
                             if (partyActivist.DepartmentId == null)
                                 throw new PartyMemberException("请选择部门");
                         }
+                        partyActivist.CreateTime = DateTime.Now;
+                        partyActivist.OperatorId = CurrentUser.Id;
+                        partyActivist.Ordinal = _context.PartyActivists.Count() + 1;
                         _context.Add(partyActivist);
                     }
                     await _context.SaveChangesAsync();

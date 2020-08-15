@@ -100,6 +100,9 @@ namespace PartyMemberManager.Controllers
                     else
                     {
                         //trainClassType.Id = Guid.NewGuid();
+                        trainClassType.CreateTime = DateTime.Now;
+                        trainClassType.OperatorId = CurrentUser.Id;
+                        trainClassType.Ordinal = _context.TrainClassTypes.Count() + 1;
                         _context.Add(trainClassType);
                     }
                     await _context.SaveChangesAsync();
