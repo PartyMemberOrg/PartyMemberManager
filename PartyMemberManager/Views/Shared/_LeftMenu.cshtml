@@ -1,133 +1,133 @@
 ﻿@model IEnumerable<Module>
-    <ul class="menu" lay-filter="test">
-        <li class="menuitem" onclick="openLink('@Url.Action("RightIndex", "Home")')">
-            <img src="~/images/Postoperative.png" data-icon="/images/Postoperative.png" data-icon-sel="/images/PostoperativeSel.png" width="16" height="16" />
-            <a class="" href="javascript:openLink('@Url.Action("RightIndex", "Home")')">首页</a>
+<ul class="menu" lay-filter="test">
+    <li class="menuitem" onclick="openLink('@Url.Action("RightIndex", "Home")')">
+        <img src="~/images/Postoperative.png" data-icon="/images/Postoperative.png" data-icon-sel="/images/PostoperativeSel.png" width="16" height="16" />
+        <a class="" href="javascript:openLink('@Url.Action("RightIndex", "Home")')">首页</a>
+    </li>
+    @if (CurrentUser.Roles >= Role.学院党委)
+    {
+        <li class="menuitem" onclick="openLink()">
+            <img src="~/images/SystemConfig.png" data-icon="/images/SystemConfig.png" data-icon-sel="/images/SystemConfigSel.png" width="16" height="16" />
+            <a class="" href="javascript:0">入党积极分子</a>
         </li>
-        @if (CurrentUser.Roles >= Role.学院党委)
+        @if (Model != null && Model.Count() > 0)
+        {
+            if (Model.Any(m => m.Controller == "ActiveApplicationSurveys"))
+            {
+                <li class="subitem">
+                    <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
+                    <a class="" href="javascript:openLink('@Url.Action("Index", "ActiveApplicationSurveys")')">入党积极分子摸底</a>
+                </li>
+            }
+            if (Model.Any(m => m.Controller == "TrainClasses"))
+            {
+                <li class="subitem">
+                    <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
+                    <a class="" href="javascript:openLink('@Url.Action("Index", "TrainClasses")')">入党积极分子培训班</a>
+                </li>
+            }
+            if (Model.Any(m => m.Controller == "PartyActivists"))
+            {
+                <li class="subitem">
+                    <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
+                    <a class="" href="javascript:openLink('@Url.Action("Index", "PartyActivists")')">入党积极分子名单</a>
+                </li>
+            }
+            if (Model.Any(m => m.Controller == "TrainResults"))
+            {
+                <li class="subitem">
+                    <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
+                    <a class="" href="javascript:openLink('@Url.Action("Index", "TrainResults")')">入党积极分子成绩</a>
+                </li>
+            }
+        }
+        <li class="menuitem" onclick="openLink()">
+            <img src="~/images/NutritionSupport.png" data-icon="/images/NutritionSupport.png" data-icon-sel="/images/NutritionSupportSel.png" width="16" height="16" />
+            <a class="" href="javascript:0">发展对象</a>
+        </li>
+        @if (Model != null && Model.Count() > 0)
+        {
+            if (Model.Any(m => m.Controller == "TrainClasses"))
+            {
+                <li class="subitem">
+                    <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
+                    <a class="" href="javascript:openLink('@Url.Action("Index", "TrainClasses")')">发展对象培训班</a>
+                </li>
+            }
+            if (Model.Any(m => m.Controller == "PotentialMembers"))
+            {
+                <li class="subitem">
+                    <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
+                    <a class="" href="javascript:openLink('@Url.Action("Index", "PotentialMembers")')">发展对象名单</a>
+                </li>
+            }
+            if (Model.Any(m => m.Controller == "TrainResults"))
+            {
+                <li class="subitem">
+                    <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
+                    <a class="" href="javascript:openLink('@Url.Action("Index", "TrainResults")')">发展对象成绩</a>
+                </li>
+            }
+        }
+        @if (CurrentUser.Roles >= Role.学校党委)
         {
             <li class="menuitem" onclick="openLink()">
-                <img src="~/images/SystemConfig.png" data-icon="/images/SystemConfig.png" data-icon-sel="/images/SystemConfigSel.png" width="16" height="16" />
-                <a class="" href="javascript:0">入党积极分子</a>
+                <img src="~/images/NutritionScreen.png" data-icon="/images/NutritionScreen.png" data-icon-sel="/images/NutritionScreenSel.png" width="16" height="16" />
+                <a class="" href="javascript:0">省一级干部培训</a>
             </li>
-            @if (Model != null && Model.Count() > 0)
-            {
-                if (Model.Any(m => m.Controller == "ActiveApplicationSurveys"))
-                {
-                    <li class="subitem">
-                        <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
-                        <a class="" href="javascript:openLink('@Url.Action("Index", "ActiveApplicationSurveys")')">入党积极分子摸底</a>
-                    </li>
-                }
-                if (Model.Any(m => m.Controller == "PartyActivists"))
-                {
-                    <li class="subitem">
-                        <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
-                        <a class="" href="javascript:openLink('@Url.Action("Index", "PartyActivists")')">入党积极分子名单</a>
-                    </li>
-                }
-                if (Model.Any(m => m.Controller == "TrainClasses"))
-                {
-                    <li class="subitem">
-                        <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
-                        <a class="" href="javascript:openLink('@Url.Action("Index", "TrainClasses")')">入党积极分子培训班</a>
-                    </li>
-                }
-                if (Model.Any(m => m.Controller == "TrainResults"))
-                {
-                    <li class="subitem">
-                        <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
-                        <a class="" href="javascript:openLink('@Url.Action("Index", "TrainResults")')">入党积极分子成绩</a>
-                    </li>
-                }
-            }
             <li class="menuitem" onclick="openLink()">
                 <img src="~/images/NutritionSupport.png" data-icon="/images/NutritionSupport.png" data-icon-sel="/images/NutritionSupportSel.png" width="16" height="16" />
-                <a class="" href="javascript:0">发展对象</a>
+                <a class="" href="javascript:0">领导干部培训</a>
+            </li>
+            <li class="menuitem" onclick="openLink()">
+                <img src="~/images/SystemSet.png" data-icon="/images/SystemSet.png" data-icon-sel="/images/SystemSetSel.png" width="16" height="16" />
+                <a class="" href="javascript:0">系统管理</a>
             </li>
             @if (Model != null && Model.Count() > 0)
             {
-                if (Model.Any(m => m.Controller == "PotentialMembers"))
+                if (Model.Any(m => m.Controller == "Operators"))
                 {
                     <li class="subitem">
                         <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
-                        <a class="" href="javascript:openLink('@Url.Action("Index", "PotentialMembers")')">发展对象名单</a>
+                        <a class="" href="javascript:openLink('@Url.Action("Index", "Operators")')">账号管理</a>
                     </li>
                 }
-                if (Model.Any(m => m.Controller == "TrainClasses"))
+                if (Model.Any(m => m.Controller == "ModuleFunctions"))
                 {
                     <li class="subitem">
                         <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
-                        <a class="" href="javascript:openLink('@Url.Action("Index", "TrainClasses")')">发展对象培训班</a>
+                        <a class="" href="javascript:openLink('@Url.Action("Index", "ModuleFunctions")')">角色权限</a>
                     </li>
                 }
-                if (Model.Any(m => m.Controller == "TrainResults"))
+                if (Model.Any(m => m.Controller == "OperatorModules"))
                 {
                     <li class="subitem">
                         <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
-                        <a class="" href="javascript:openLink('@Url.Action("Index", "TrainResults")')">发展对象成绩</a>
+                        <a class="" href="javascript:openLink('@Url.Action("Index", "OperatorModules")')">账号权限</a>
                     </li>
                 }
-            }
-            @if (CurrentUser.Roles >= Role.学校党委)
-            {
-                <li class="menuitem" onclick="openLink()">
-                    <img src="~/images/NutritionScreen.png" data-icon="/images/NutritionScreen.png" data-icon-sel="/images/NutritionScreenSel.png" width="16" height="16" />
-                    <a class="" href="javascript:0">省一级干部培训</a>
-                </li>
-                <li class="menuitem" onclick="openLink()">
-                    <img src="~/images/NutritionSupport.png" data-icon="/images/NutritionSupport.png" data-icon-sel="/images/NutritionSupportSel.png" width="16" height="16" />
-                    <a class="" href="javascript:0">领导干部培训</a>
-                </li>
-                <li class="menuitem" onclick="openLink()">
-                    <img src="~/images/SystemSet.png" data-icon="/images/SystemSet.png" data-icon-sel="/images/SystemSetSel.png" width="16" height="16" />
-                    <a class="" href="javascript:0">系统管理</a>
-                </li>
-                @if (Model != null && Model.Count() > 0)
+                if (Model.Any(m => m.Controller == "Departments"))
                 {
-                    if (Model.Any(m => m.Controller == "Operators"))
-                    {
-                        <li class="subitem">
-                            <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
-                            <a class="" href="javascript:openLink('@Url.Action("Index", "Operators")')">账号管理</a>
-                        </li>
-                    }
-                    if (Model.Any(m => m.Controller == "ModuleFunctions"))
-                    {
-                        <li class="subitem">
-                            <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
-                            <a class="" href="javascript:openLink('@Url.Action("Index", "ModuleFunctions")')">角色权限</a>
-                        </li>
-                    }
-                    if (Model.Any(m => m.Controller == "OperatorModules"))
-                    {
-                        <li class="subitem">
-                            <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
-                            <a class="" href="javascript:openLink('@Url.Action("Index", "OperatorModules")')">账号权限</a>
-                        </li>
-                    }
-                    if (Model.Any(m => m.Controller == "Departments"))
-                    {
-                        <li class="subitem">
-                            <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
-                            <a class="" href="javascript:openLink('@Url.Action("Index", "Departments")')">部门管理</a>
-                        </li>
-                    }
-                    if (Model.Any(m => m.Controller == "Nations"))
-                    {
-                        <li class="subitem">
-                            <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
-                            <a class="" href="javascript:openLink('@Url.Action("Index", "Nations")')">民族管理</a>
-                        </li>
-                    }
-                    if (Model.Any(m => m.Controller == "TrainClassTypes"))
-                    {
-                        <li class="subitem">
-                            <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
-                            <a class="" href="javascript:openLink('@Url.Action("Index", "TrainClassTypes")')">培训班类型</a>
-                        </li>
-                    }
+                    <li class="subitem">
+                        <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
+                        <a class="" href="javascript:openLink('@Url.Action("Index", "Departments")')">部门管理</a>
+                    </li>
+                }
+                if (Model.Any(m => m.Controller == "Nations"))
+                {
+                    <li class="subitem">
+                        <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
+                        <a class="" href="javascript:openLink('@Url.Action("Index", "Nations")')">民族管理</a>
+                    </li>
+                }
+                if (Model.Any(m => m.Controller == "TrainClassTypes"))
+                {
+                    <li class="subitem">
+                        <img src="~/images/nextButton.png" data-icon="/images/nextButton.png" data-icon-sel="/images/nextButton.png" width="16" height="16" />
+                        <a class="" href="javascript:openLink('@Url.Action("Index", "TrainClassTypes")')">培训班类型</a>
+                    </li>
                 }
             }
         }
-    </ul>
+    }
+</ul>

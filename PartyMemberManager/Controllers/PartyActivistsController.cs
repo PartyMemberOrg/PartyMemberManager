@@ -195,7 +195,7 @@ namespace PartyMemberManager.Controllers
                             partyActivistInDb.Term = partyActivist.Term;
 
                         if (CurrentUser.Roles == Role.学院党委)
-                            partyActivistInDb.DepartmentId = CurrentUser.DepartmentId.Value;
+                            partyActivistInDb.DepartmentId = CurrentUser.DepartmentId.HasValue ? CurrentUser.DepartmentId.Value : Guid.Empty; 
                         else
                         {
                             if (partyActivist.DepartmentId == null)
@@ -214,7 +214,7 @@ namespace PartyMemberManager.Controllers
                         if (partyActivist.Term.ToString() == null)
                             throw new PartyMemberException("请选择学期");
                         if (CurrentUser.Roles == Role.学院党委)
-                            partyActivist.DepartmentId = CurrentUser.DepartmentId.Value;
+                            partyActivist.DepartmentId = CurrentUser.DepartmentId.Value; 
                         else
                         {
                             if (partyActivist.DepartmentId == null)

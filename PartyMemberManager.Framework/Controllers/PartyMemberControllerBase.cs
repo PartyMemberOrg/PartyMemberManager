@@ -47,7 +47,7 @@ namespace PartyMemberManager.Framework.Controllers
                     
                 };
                 currentUser = @operator;
-                currentUser.DepartmentId = _context.Operators.Find(@operator.Id).DepartmentId;
+                @operator.DepartmentId = _context.Operators.Find(@operator.Id).DepartmentId;
                 return @operator;
             }
         }

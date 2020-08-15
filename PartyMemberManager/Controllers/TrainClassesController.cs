@@ -178,7 +178,11 @@ namespace PartyMemberManager.Controllers
                         trainClassInDb.CreateTime = DateTime.Now;
                         trainClassInDb.OperatorId = CurrentUser.Id;
                         trainClassInDb.Ordinal =_context.TrainClasses.Count()+1;
-                        _context.Update(trainClassInDb);
+                        if (CurrentUser.Roles == Role.学院党委)
+                            trainClassInDb.DepartmentId = CurrentUser.DepartmentId.Value; 
+                        else
+                            trainClassInDb.DepartmentId = trainClass.DepartmentId;
+                       _context.Update(trainClassInDb);
                     }
                     else
                     {
@@ -186,6 +190,8 @@ namespace PartyMemberManager.Controllers
                         trainClass.CreateTime = DateTime.Now;
                         trainClass.OperatorId = CurrentUser.Id;
                         trainClass.Ordinal = _context.TrainClasses.Count() + 1;
+                        if (CurrentUser.Roles == Role.学院党委)
+                            trainClass.DepartmentId = CurrentUser.DepartmentId.Value;
                         _context.Add(trainClass);
                     }
                     await _context.SaveChangesAsync();
