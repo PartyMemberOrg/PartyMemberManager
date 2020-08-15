@@ -30,7 +30,7 @@ namespace PartyMemberManager.Controllers
         {
             var pMContext = _context.TrainClasses.Include(t => t.TrainClassType);
             ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderByDescending(d => d.Code), "Id", "Name");
-            ViewBag.Departments = new SelectList(_context.Departments.OrderByDescending(d => d.Ordinal), "Id", "Name");
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(await pMContext.ToListAsync());
         }
         /// <summary>
@@ -39,7 +39,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(Guid? trainClassTypeId,Guid departmentId,string keyword, string year, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? trainClassTypeId,Guid? departmentId,string keyword, string year,string term, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<TrainClass> jsonResult = new JsonResultDatasModel<TrainClass>
             {
@@ -58,6 +58,10 @@ namespace PartyMemberManager.Controllers
                 {
                     filter = filter.And(d => d.TrainClassTypeId == trainClassTypeId);
                 }
+                if (term != null)
+                {
+                    filter = filter.And(d => d.Term == (Term)Enum.Parse(typeof(Term),term));
+                }
                 if (departmentId != null)
                 {
                     filter = filter.And(d => d.DepartmentId == departmentId);
@@ -68,7 +72,7 @@ namespace PartyMemberManager.Controllers
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {
-                    var data = await _context.Set<TrainClass>().Include(d => d.TrainClassType).Where(filter).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<TrainClass>().Include(d => d.TrainClassType).Include(d=>d.Department).Where(filter).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<TrainClass>().Count();
@@ -78,7 +82,7 @@ namespace PartyMemberManager.Controllers
                 {
                     if (CurrentUser.DepartmentId == null)
                         throw new PartyMemberException("该用户不合法，请设置该用户所属部门");
-                    var data = await _context.Set<TrainClass>().Where(filter).Include(d => d.TrainClassType).Where(d => d.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<TrainClass>().Where(filter).Include(d => d.TrainClassType).Include(d => d.Department).Where(d => d.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<TrainClass>().Count();
@@ -123,7 +127,7 @@ namespace PartyMemberManager.Controllers
         {
             TrainClass trainClass = new TrainClass();
             ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderByDescending(d => d.Code), "Id", "Name");
-            ViewBag.Departments = new SelectList(_context.Departments.OrderByDescending(d => d.Ordinal), "Id", "Name");
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(trainClass);
         }
 
@@ -142,13 +146,13 @@ namespace PartyMemberManager.Controllers
                 return NotFoundData();
             }
             ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderByDescending(d => d.Code), "Id", "Name");
-            ViewBag.Departments = new SelectList(_context.Departments.OrderByDescending(d => d.Ordinal), "Id", "Name");
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(trainClass);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("Year,Term,Name,TrainClassTypeId,StartTime,PSGradeProportion,CsGradeProportion,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] TrainClass trainClass)
+        public override async Task<IActionResult> Save([Bind("Year,Term,Name,TrainClassTypeId,StartTime,PsGradeProportion,CsGradeProportion,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] TrainClass trainClass)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -168,7 +172,7 @@ namespace PartyMemberManager.Controllers
                         trainClassInDb.TrainClassTypeId = trainClass.TrainClassTypeId;
                         trainClassInDb.TrainClassType = trainClass.TrainClassType;
                         trainClassInDb.StartTime = trainClass.StartTime;
-                        trainClassInDb.PSGradeProportion = trainClass.PSGradeProportion;
+                        trainClassInDb.PsGradeProportion = trainClass.PsGradeProportion;
                         trainClassInDb.CsGradeProportion = trainClass.CsGradeProportion;
                         trainClassInDb.Id = trainClass.Id;
                         trainClassInDb.CreateTime = DateTime.Now;

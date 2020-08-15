@@ -26,7 +26,7 @@
         <div>
             <label class="layui-form-label" style="padding:5px">部门:</label>
             <div class="layui-input-inline" style="width:300px">
-                <select name="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input" id="department">
+                <select name="departmentId" asp-items="@ViewBag.Departments" class="layui-input" id="department">
                     <option value="">-请选择部门-</option>
                 </select>
             </div>
@@ -110,10 +110,10 @@
             { field: 'year', title: '年份', align: 'center' },
             { field: 'termDisplay', title: '学期', align: 'center' },
             { field: 'name', title:'名称', align: 'center' },
-                        { field: 'trainClassTypeId', title: '培训班类型', align: 'center' },
+                        { field: 'trainClassTypeDisplay', title: '培训班类型', align: 'center', templet: '#optClassTypeNameTpl' },
                         { field: 'departmentDisplay', title: '所属部门', align: 'center', templet: '#optDepartmentNameTpl' },
             { field: 'startTime', title: '开始时间', align: 'center' },
-            { field: 'pSGradeProportion', title: '平时成绩比例', align: 'center' },
+            { field: 'psGradeProportion', title: '平时成绩比例', align: 'center' },
             { field: 'csGradeProportion', title: '考试成绩比例', align: 'center' },
             { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
                     ]]
@@ -157,7 +157,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 500, 400);
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 800, 800);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);
@@ -178,6 +178,9 @@
     </script>
     <script type="text/html" id="optDepartmentNameTpl">
         {{d.departmentDisplay}}
+    </script>
+    <script type="text/html" id="optClassTypetNameTpl">
+        {{d.trainClassTypeDisplay}}
     </script>
     <script type="text/javascript">
         layui.use('laydate', function () {

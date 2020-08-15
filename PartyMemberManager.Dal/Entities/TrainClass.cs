@@ -87,7 +87,7 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("平时成绩占比")]
         [Range(0, 100, ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public int PSGradeProportion { get; set; }
+        public int PsGradeProportion { get; set; }
 
         /// <summary>
         /// 考试成绩比例
