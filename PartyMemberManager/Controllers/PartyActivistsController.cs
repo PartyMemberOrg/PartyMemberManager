@@ -15,6 +15,10 @@ using Microsoft.AspNetCore.Http;
 using PartyMemberManager.Dal;
 using PartyMemberManager.Dal.Entities;
 using PartyMemberManager.Core.Enums;
+using System.IO;
+using Newtonsoft.Json;
+using System.Data;
+using ExcelCore;
 
 namespace PartyMemberManager.Controllers
 {
@@ -28,7 +32,7 @@ namespace PartyMemberManager.Controllers
         // GET: PartyActivists
         public async Task<IActionResult> Index(int page = 1)
         {
-            var partyActives = _context.PartyActivists.Include(d=>d.Department).Include(d=>d.Nation);
+            var partyActives = _context.PartyActivists.Include(d => d.Department).Include(d => d.Nation);
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(await partyActives.OrderBy(a => a.Ordinal).GetPagedDataAsync(page));
@@ -39,7 +43,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId,string term, string partyMemberType,string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, string term, string partyMemberType, string keyword, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<PartyActivist> jsonResult = new JsonResultDatasModel<PartyActivist>
             {
@@ -56,11 +60,11 @@ namespace PartyMemberManager.Controllers
                 }
                 if (keyword != null)
                 {
-                    filter = filter.And(d => d.Name.Contains(keyword)|| d.JobNo.Contains(keyword));
+                    filter = filter.And(d => d.Name.Contains(keyword) || d.JobNo.Contains(keyword));
                 }
                 if (partyMemberType != null)
                 {
-                    filter = filter.And(d => d.PartyMemberType==(PartyMemberType)Enum.Parse(typeof(PartyMemberType), partyMemberType));
+                    filter = filter.And(d => d.PartyMemberType == (PartyMemberType)Enum.Parse(typeof(PartyMemberType), partyMemberType));
                 }
                 if (term != null)
                 {
@@ -68,8 +72,8 @@ namespace PartyMemberManager.Controllers
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {
-                    var data = await _context.Set<PartyActivist>().Include(d => d.Department).Include(d=>d.Nation).Where(filter)
-                        .OrderByDescending(o => o.Year).ThenByDescending(d=>d.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<PartyActivist>().Include(d => d.Department).Include(d => d.Nation).Where(filter)
+                        .OrderByDescending(o => o.Year).ThenByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<PartyActivist>().Count();
@@ -195,7 +199,7 @@ namespace PartyMemberManager.Controllers
                             partyActivistInDb.Term = partyActivist.Term;
 
                         if (CurrentUser.Roles == Role.学院党委)
-                            partyActivistInDb.DepartmentId = CurrentUser.DepartmentId.HasValue ? CurrentUser.DepartmentId.Value : Guid.Empty; 
+                            partyActivistInDb.DepartmentId = CurrentUser.DepartmentId.HasValue ? CurrentUser.DepartmentId.Value : Guid.Empty;
                         else
                         {
                             if (partyActivist.DepartmentId == null)
@@ -214,7 +218,7 @@ namespace PartyMemberManager.Controllers
                         if (partyActivist.Term.ToString() == null)
                             throw new PartyMemberException("请选择学期");
                         if (CurrentUser.Roles == Role.学院党委)
-                            partyActivist.DepartmentId = CurrentUser.DepartmentId.Value; 
+                            partyActivist.DepartmentId = CurrentUser.DepartmentId.Value;
                         else
                         {
                             if (partyActivist.DepartmentId == null)
@@ -262,7 +266,182 @@ namespace PartyMemberManager.Controllers
             return Json(jsonResult);
         }
 
+        /// <summary>
+        /// 导入入党积极分子
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Import()
+        {
+            return View();
+        }
 
+        public async Task<IActionResult> Import(IFormFile file)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "数据保存成功"
+            };
+            try
+            {
+                if (file != null)
+                {
+                    Stream stream = file.OpenReadStream();
+                    var filePath = Path.GetTempFileName();
+                    var fileStream = System.IO.File.Create(filePath);
+                    await file.CopyToAsync(fileStream);
+                    await fileStream.FlushAsync();
+                    fileStream.Close();
+                    #region 导入一般事项
+                    DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
+                    int rowIndex = 0;
+                    string fieldsTeacher = "姓名,性别,出生年月,民族,所在部门,工号,身份证号,联系电话,提交入党申请时间,备注";
+                    string fieldsStudent = "姓名,学号,身份证号,性别,出生年月,民族,所在学院,所在班级,联系电话,提交入党申请时间,担任职务,备注";
+                    string[] fieldListTeacher = fieldsTeacher.Split(',');
+                    string[] fieldListStudent = fieldsStudent.Split(',');
+                    bool isTeacher = true;
+                    if (table.Columns.Contains("学号"))
+                        isTeacher = false;
+                    if (isTeacher)
+                    {
+                        foreach (string field in fieldListTeacher)
+                        {
+                            if (!table.Columns.Contains(field))
+                                throw new PartyMemberException($"缺少【{field}】列");
+                        }
+                    }
+                    else
+                    {
+                        foreach (string field in fieldListStudent)
+                        {
+                            if (!table.Columns.Contains(field))
+                                throw new PartyMemberException($"缺少【{field}】列");
+                        }
+                    }
+                    foreach (DataRow row in table.Rows)
+                    {
+                        rowIndex++;
+                        PartyActivist partyActivist = new PartyActivist
+                        {
+                            Id = Guid.NewGuid(),
+                            CreateTime = DateTime.Now,
+                            Ordinal = rowIndex,
+                            OperatorId=CurrentUser.Id,
+                        };
+                        if (isTeacher)
+                        {
+                            string nameField = "姓名";
+                            string sexField = "性别";
+                            string birthdayField = "出生年月";
+                            string nationField = "民族";
+                            string departmentField = "所在部门";
+                            string empNoField = "工号";
+                            string idField = "身份证号";
+                            string phoneField = "联系电话";
+                            string timeField = "提交入党申请时间";
+                            string remarkField = "备注";
+                            string name = row[nameField].ToString();
+                            string sex = row[sexField].ToString();
+                            string birthday = row[birthdayField].ToString();
+                            string nation = row[nationField].ToString();
+                            string department = row[departmentField].ToString();
+                            string empNo = row[empNoField].ToString();
+                            string id = row[idField].ToString();
+                            string phone = row[phoneField].ToString();
+                            string time = row[timeField].ToString();
+                            string remark = row[remarkField].ToString();
+                            Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
+                            Guid nationId = nationData.Id;
+                            Department departmentData = _context.Departments.Where(d => d.Name == department).FirstOrDefault();
+                            Guid departmentId = departmentData.Id;
+                            partyActivist.Name = name;
+                            partyActivist.Sex = Sex.Parse<Sex>(sex);
+                            partyActivist.BirthDate = birthday;
+                            partyActivist.NationId = nationId;
+                            partyActivist.DepartmentId = departmentId;
+                            partyActivist.JobNo = empNo;
+                            partyActivist.IdNumber = id;
+                            partyActivist.Phone = phone;
+                            partyActivist.ApplicationTime = time;
+                        }
+                        else
+                        {
+                            string nameField = "姓名";
+                            string sexField = "性别";
+                            string birthdayField = "出生年月";
+                            string nationField = "民族";
+                            string idField = "身份证号";
+                            string phoneField = "联系电话";
+                            string timeField = "提交入党申请时间";
+                            string remarkField = "备注";
+                            string studentNoField = "学号";
+                            string collegeField = "所在学院";
+                            string classField = "所在班级";
+                            string titleField = "担任职务";
+                            string name = row[nameField].ToString();
+                            string sex = row[sexField].ToString();
+                            string birthday = row[birthdayField].ToString();
+                            string nation = row[nationField].ToString();
+                            string id = row[idField].ToString();
+                            string phone = row[phoneField].ToString();
+                            string time = row[timeField].ToString();
+                            string remark = row[remarkField].ToString();
+                            string studentNo = row[studentNoField].ToString();
+                            string college = row[collegeField].ToString();
+                            string @class = row[classField].ToString();
+                            string title = row[titleField].ToString();
+                            Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
+                            Guid nationId = nationData.Id;
+                            Department departmentData = _context.Departments.Where(d => d.Name == college).FirstOrDefault();
+                            Guid departmentId = departmentData.Id;
+                            partyActivist.Name = name;
+                            partyActivist.Sex = Sex.Parse<Sex>(sex);
+                            partyActivist.BirthDate = birthday;
+                            partyActivist.NationId = nationId;
+                            partyActivist.DepartmentId = departmentId;
+                            partyActivist.JobNo = studentNo;
+                            partyActivist.IdNumber = id;
+                            partyActivist.Phone = phone;
+                            partyActivist.ApplicationTime = time;
+                            partyActivist.Class = @class;
+                            partyActivist.Duty = title;
+                        }
+                        _context.PartyActivists.Add(partyActivist);
+                        await _context.SaveChangesAsync();
+                    }
+                    #endregion
+                }
+                else
+                {
+                    jsonResult.Code = -1;
+                    jsonResult.Message = "请选择文件";
+                }
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "入党积极分子导入错误";
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (JsonReaderException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "JSON文件内容格式错误";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
         private bool PartyActivistExists(Guid id)
         {
             return _context.PartyActivists.Any(e => e.Id == id);
