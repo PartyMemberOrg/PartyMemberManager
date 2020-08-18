@@ -443,7 +443,8 @@ function showImport(url, postUrl, title, width = 600, height = 400, callBack) {
                         url: postUrl,
                         data: data,
                         type: "post",
-                        dataType: "json",
+                        contentType: false,
+                        processData: false,
                         success: function (response) {
                             if (response.code == 0) {
                                 clearError($(body).find('form'));
