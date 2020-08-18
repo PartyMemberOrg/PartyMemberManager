@@ -1,27 +1,68 @@
 ﻿@model IEnumerable<PartyMemberManager.Dal.Entities.ActivistTrainResult>
 
-        @{
-        ViewData["Title"] = "Index";
-        }
-        
-        <h1>列表</h1>
-        
-        <p style="margin-bottom:14px;">
-                <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
-        </p>
-        <table class="layui-hide" id="datatable"></table>
-        @Html.AntiForgeryToken()
-        <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
-        @section Scripts{
-        <script src="~/lib/contentmenu/js/index.js"></script>
-        <script src="~/lib/Sortable/Sortable.js"></script>
-            <script type="text/javascript">
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px">
+    @*<div class="layui-input-inline" style="width:60px">
+        <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,800)" class="layui-btn layui-btn-primary">+添加</a>
+    </div>*@
+    @if (CurrentUser.Roles > Role.学院党委)
+    {
+        <div>
+            <label class="layui-form-label" style="padding:5px">部门:</label>
+            <div class="layui-input-inline" style="width:200px">
+                <select name="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input" id="department">
+                    <option value="">-请选择部门-</option>
+                </select>
+            </div>
+        </div>
+    }
+    <div>
+        <label class="layui-form-label" style="padding:5px">培训班:</label>
+        <div class="layui-input-inline" style="width:300px">
+            <select name="trainClassId" asp-items="@ViewBag.TrainClasses" class="layui-input" id="trainClass">
+                <option value="">-请选择培训班-</option>
+            </select>
+        </div>
+    </div>
+    <div>
+        <div class="layui-input-inline" style="width:80px;margin-top:5px">
+            <input type="checkbox" name="isPass" lay-skin="primary" id="isPass" value="false">是否合格
+        </div>
+    </div>
+    <div>
+        <div class="layui-input-inline" style="width:130px;margin-top:5px">
+            <input type="checkbox" name="isPrint" lay-skin="primary" id="isPrint" value="false">是否已打印证书
+        </div>
+    </div>
+    <div>
+        <div class="layui-input-inline" style="width:300px">
+            <input name="keyword" type="text" class="layui-input" placeholder="请输入学号/工号/姓名" id="keyword" />
+        </div>
+    </div>
+    <div>
+        <div class="layui-input-inline" style="width:80px">
+            <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
+                <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
+            </a>
+        </div>
+    </div>
+</div>
+<table class="layui-hide" id="datatable"></table>
+@Html.AntiForgeryToken()
+<link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
+@section Scripts{
+    <script src="~/lib/contentmenu/js/index.js"></script>
+    <script src="~/lib/Sortable/Sortable.js"></script>
+    <script type="text/javascript">
         var tableObject = null;
         $(document).ready(function () {
-            $("body").width(770);
+            $("body").width($(window).width());
             InitTable();
         });
-        
+
         function Delete(id) {
             var url="@Url.Action("Delete")";
             DeleteData(url, id, function () {
@@ -53,17 +94,17 @@
             layui.use('table', function () {
                 var table = layui.table;
                 table.reload('dataGrid', {
-                    url: '@Url.Action("GetDatas")'
+                    url: '@Url.Action("GetDatasWithFilter")'
                 });
             });
         }
         function InitTable() {
             layui.use('table', function () {
                 var table = layui.table;
-        
+
                 tableObject = table.render({
                     elem: '#datatable'
-                    , url: '@Url.Action("GetDatas")'
+                    , url: '@Url.Action("GetDatasWithFilter")'
                     , page: true //开启分页
                     , limits: [10, 20, 50]
                     , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
@@ -71,23 +112,42 @@
                     , cols: [[
                         //{ type: 'checkbox' }
                         //,
-            { field: 'partyActivistId', title: 'PartyActivistId', align: 'center' },
-            { field: 'trainClassId', title: 'TrainClassId', align: 'center' },
-            { field: 'psGrade', title: 'PsGrade', align: 'center' },
-            { field: 'csGrade', title: 'CsGrade', align: 'center' },
-            { field: 'totalGrade', title: 'TotalGrade', align: 'center' },
-            { field: 'isPass', title: 'IsPass', align: 'center' },
-            { field: 'isPrint', title: 'IsPrint', align: 'center' },
-            { field: 'printTime', title: 'PrintTime', align: 'center' },
-            { field: 'id', title: 'Id', align: 'center' },
-            { field: 'createTime', title: 'CreateTime', align: 'center' },
-            { field: 'operatorId', title: 'OperatorId', align: 'center' },
-            { field: 'ordinal', title: 'Ordinal', align: 'center' },
-            { field: 'isDeleted', title: 'IsDeleted', align: 'center' },
-                        { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
+                        { field: 'trainClassYearDisplay', title: '年份', align: 'center', templet: '#optTrainClassYearTpl'},
+                        { field: 'trainClassTermDisplay', title: '学期', align: 'center', templet: '#optTrainClassTermTpl'},
+                        { field: 'trainClassDisplay', title: '培训班', align: 'center', templet: '#optTrainClassDisplayTpl'},
+                        { field: 'partyActivistJobNoDisplay', title: '学号/工号', align: 'center', templet: '#optPartyActivistJobNoTpl'},
+                        { field: 'partyActivistNameDisplay', title: '姓名', align: 'center', templet: '#optPartyActivistNameoTpl'},
+                        { field: 'psGrade', title: '平时成绩', align: 'center',edit: 'text' },
+                        { field: 'csGrade', title: '考试成绩', align: 'center',edit: 'text' },
+                        { field: 'totalGrade', title: '总成绩', align: 'center' },
+                        { field: 'isPass', title: '是否合格', align: 'center', templet: function (d) { return d.isDeleted ? "是" : "否" } },
+                        { field: 'isPrint', title: '是否已打印', align: 'center', templet: function (d) { return d.isDeleted ? "是" : "否" } },
+                        { field: 'printTime', title: '打印时间', align: 'center'},
+                        { field: 'id', title: '操作',  align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);
+                    }
+                });
+            });
+        }
+                        /**过滤数据 */
+        function tablefilter() {
+            //此处Id不要#号
+            var tableId = "dataGrid";
+            layui.use('table', function () {
+                var table = layui.table;
+                table.reload(tableId, {
+                    url: '@Url.Action("GetDatasWithFilter")'
+                    , where: {
+                        departmentId: $("#department").val(),
+                        keyword: $("#keyword").val(),
+                        isPass: $("#isPass").val(),
+                        isPrint: $("#isPrint").val(),
+                        trainClassId: $("#trainClass").val()
+                    }
+                    , done: function (res, curr, count) {
+                        fillPatientList(res,curr,count);showHideScrollBars(res.data.length);
                     }
                 });
             });
@@ -105,8 +165,11 @@
         /**显示操作菜单 */
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
+            contextMenu.addMenuItem("打印", function () {
+                showEdit('@Url.Action("Print")'+'/' + id, '@Url.Action("Save")', '打印', 800, 800);
+            })
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 500, 400);
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 800, 800);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);
@@ -119,11 +182,26 @@
             })
             contextMenu.showMenu(event);
         }
-        </script>
-        <script type="text/html" id="optTpl">
-            <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
-                <img src="~/images/gridmenu1x.png" />
-            </a>
-        </script>
-        }
+    </script>
+    <script type="text/html" id="optTpl">
+        <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
+            <img src="~/images/gridmenu1x.png" />
+        </a>
+    </script>
+    <script type="text/html" id="optTrainClassYearTpl">
+        {{d.yearDisplay}}
+    </script>
+    <script type="text/html" id="optTrainClassTermTpl">
+        {{d.termDisplay}}
+    </script>
+    <script type="text/html" id="optTrainClassDisplayTpl">
+        {{d.trainClassDisplay}}
+    </script>
+    <script type="text/html" id="optPartyActivistJobNoTpl">
+        {{d.jobNoDisplay}}
+    </script>
+    <script type="text/html" id="optPartyActivistNameoTpl">
+        {{d.nameDisplay}}
+    </script>
+}
 

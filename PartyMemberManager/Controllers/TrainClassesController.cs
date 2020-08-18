@@ -29,7 +29,10 @@ namespace PartyMemberManager.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             var pMContext = _context.TrainClasses.Include(t => t.TrainClassType);
-            ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderByDescending(d => d.Code), "Id", "Name");
+            if (CurrentUser.Roles == Role.学院党委)
+                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.Where(d => d.Code.StartsWith("4")).OrderByDescending(d => d.Code), "Id", "Name");
+            else
+                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderBy(d => d.Code), "Id", "Name");
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(await pMContext.ToListAsync());
         }
@@ -39,7 +42,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(Guid? trainClassTypeId,Guid? departmentId,string keyword, string year,string term, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? trainClassTypeId, Guid? departmentId, string keyword, string year, string term, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<TrainClass> jsonResult = new JsonResultDatasModel<TrainClass>
             {
@@ -60,7 +63,7 @@ namespace PartyMemberManager.Controllers
                 }
                 if (term != null)
                 {
-                    filter = filter.And(d => d.Term == (Term)Enum.Parse(typeof(Term),term));
+                    filter = filter.And(d => d.Term == (Term)Enum.Parse(typeof(Term), term));
                 }
                 if (departmentId != null)
                 {
@@ -72,7 +75,7 @@ namespace PartyMemberManager.Controllers
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {
-                    var data = await _context.Set<TrainClass>().Include(d => d.TrainClassType).Include(d=>d.Department).Where(filter).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<TrainClass>().Include(d => d.TrainClassType).Include(d => d.Department).Where(filter).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<TrainClass>().Count();
@@ -126,8 +129,10 @@ namespace PartyMemberManager.Controllers
         public IActionResult Create()
         {
             TrainClass trainClass = new TrainClass();
-            ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderByDescending(d => d.Code), "Id", "Name");
-            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            if (CurrentUser.Roles == Role.学院党委)
+                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.Where(d => d.Code.StartsWith("4")).OrderByDescending(d => d.Code), "Id", "Name");
+            else
+                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderBy(d => d.Code), "Id", "Name"); ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(trainClass);
         }
 
@@ -145,8 +150,10 @@ namespace PartyMemberManager.Controllers
             {
                 return NotFoundData();
             }
-            ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderByDescending(d => d.Code), "Id", "Name");
-            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            if (CurrentUser.Roles == Role.学院党委)
+                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.Where(d => d.Code.StartsWith("4")).OrderByDescending(d => d.Code), "Id", "Name");
+            else
+                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderBy(d => d.Code), "Id", "Name"); ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(trainClass);
         }
 
@@ -177,12 +184,12 @@ namespace PartyMemberManager.Controllers
                         trainClassInDb.Id = trainClass.Id;
                         trainClassInDb.CreateTime = DateTime.Now;
                         trainClassInDb.OperatorId = CurrentUser.Id;
-                        trainClassInDb.Ordinal =_context.TrainClasses.Count()+1;
+                        trainClassInDb.Ordinal = _context.TrainClasses.Count() + 1;
                         if (CurrentUser.Roles == Role.学院党委)
-                            trainClassInDb.DepartmentId = CurrentUser.DepartmentId.Value; 
+                            trainClassInDb.DepartmentId = CurrentUser.DepartmentId.Value;
                         else
                             trainClassInDb.DepartmentId = trainClass.DepartmentId;
-                       _context.Update(trainClassInDb);
+                        _context.Update(trainClassInDb);
                     }
                     else
                     {

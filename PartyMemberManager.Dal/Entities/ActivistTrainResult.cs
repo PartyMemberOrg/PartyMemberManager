@@ -26,12 +26,32 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("积极分子")]
         [NotMapped]
-        public string PartyActivistNameDisplay { get => PartyActivist == null ? "" : PartyActivist.Name; }
+        public string NameDisplay { get => PartyActivist == null ? "" : PartyActivist.Name; }
         /// <summary>
         /// 积极分子
         /// </summary>
         [DisplayName("积极分子")]
         [NotMapped]
-        public string PartyActivistJobNoDisplay { get => PartyActivist == null ? "" : PartyActivist.JobNo; }
+        public string JobNoDisplay { get => PartyActivist == null ? "" : PartyActivist.JobNo; }
+
+        /// <summary>
+        /// 积极分子
+        /// </summary>
+        [DisplayName("积极分子")]
+        [NotMapped]
+        public string YearDisplay { get => PartyActivist.TrainClass == null ? "" : PartyActivist.TrainClass.Year; }
+        /// <summary>
+        /// 积极分子
+        /// </summary>
+        [DisplayName("积极分子")]
+        [NotMapped]
+        public string TermDisplay { get => PartyActivist.TrainClass == null ? "" : PartyActivist.TrainClass.Term.ToString(); }
+
+        /// <summary>
+        /// 积极分子
+        /// </summary>
+        [DisplayName("积极分子")]
+        [NotMapped]
+        public string TrainClassDisplay { get => PartyActivist.TrainClass == null ? "" : PartyActivist.TrainClass.Name; }
     }
 }

@@ -35,7 +35,11 @@ namespace PartyMemberManager.Controllers
             var partyActives = _context.PartyActivists.Include(d => d.Department).Include(d => d.Nation);
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
-            return View(await partyActives.OrderBy(a => a.Ordinal).GetPagedDataAsync(page));
+            if (CurrentUser.Roles == Role.学院党委)
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
+            else
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
+            return View(await partyActives.Include(d => d.TrainClass).OrderBy(a => a.Ordinal).GetPagedDataAsync(page));
         }
         /// <summary>
         /// 获取数据（通过ajax调用)
@@ -66,14 +70,10 @@ namespace PartyMemberManager.Controllers
                 {
                     filter = filter.And(d => d.PartyMemberType == (PartyMemberType)Enum.Parse(typeof(PartyMemberType), partyMemberType));
                 }
-                if (term != null)
-                {
-                    filter = filter.And(d => d.Term == (Term)Enum.Parse(typeof(Term), term));
-                }
                 if (CurrentUser.Roles > Role.学院党委)
                 {
-                    var data = await _context.Set<PartyActivist>().Include(d => d.Department).Include(d => d.Nation).Where(filter)
-                        .OrderByDescending(o => o.Year).ThenByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<PartyActivist>().Include(d => d.Department).Include(d => d.Nation).Include(d => d.TrainClass).Where(filter)
+                        .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<PartyActivist>().Count();
@@ -83,8 +83,8 @@ namespace PartyMemberManager.Controllers
                 {
                     if (CurrentUser.DepartmentId == null)
                         throw new PartyMemberException("该用户不合法，请设置该用户所属部门");
-                    var data = await _context.Set<PartyActivist>().Where(filter).Include(d => d.Department).Include(d => d.Nation).Where(d => d.DepartmentId == CurrentUser.DepartmentId)
-                        .OrderByDescending(o => o.Year).ThenByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<PartyActivist>().Where(filter).Include(d => d.Department).Include(d => d.Nation).Include(d => d.TrainClass).Where(d => d.DepartmentId == CurrentUser.DepartmentId)
+                        .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<PartyActivist>().Count();
@@ -130,6 +130,10 @@ namespace PartyMemberManager.Controllers
             PartyActivist partyActivist = new PartyActivist();
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
+            if (CurrentUser.Roles == Role.学院党委)
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
+            else
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
             return View(partyActivist);
         }
 
@@ -149,12 +153,16 @@ namespace PartyMemberManager.Controllers
             }
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
+            if (CurrentUser.Roles == Role.学院党委)
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
+            else
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
             return View(partyActivist);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("Year,Term,ApplicationTime,ActiveApplicationTime,Duty,Name,JobNo,IdNumber,Sex,PartyMemberType,BirthDate,NationId,Phone,DepartmentId,Class,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PartyActivist partyActivist)
+        public override async Task<IActionResult> Save([Bind("TrainClassId,ApplicationTime,ActiveApplicationTime,Duty,Name,JobNo,IdNumber,Sex,PartyMemberType,BirthDate,NationId,Phone,DepartmentId,Class,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PartyActivist partyActivist)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -166,9 +174,21 @@ namespace PartyMemberManager.Controllers
                 if (ModelState.IsValid)
                 {
                     PartyActivist partyActivistInDb = await _context.PartyActivists.FindAsync(partyActivist.Id);
+                    if (partyActivist.NationId == null)
+                        throw new PartyMemberException("请选择民族");
+                    if (partyActivist.Sex.ToString() == null)
+                        throw new PartyMemberException("请选择性别");
+                    if (partyActivist.TrainClassId == null)
+                        throw new PartyMemberException("请选择培训班");
+                    if (CurrentUser.Roles == Role.学院党委)
+                        partyActivist.DepartmentId = CurrentUser.DepartmentId.Value;
+                    else
+                    {
+                        if (partyActivist.DepartmentId == null)
+                            throw new PartyMemberException("请选择部门");
+                    }
                     if (partyActivistInDb != null)
                     {
-                        partyActivistInDb.Year = partyActivist.Year;
                         partyActivistInDb.ApplicationTime = partyActivist.ApplicationTime;
                         partyActivistInDb.ActiveApplicationTime = partyActivist.ActiveApplicationTime;
                         partyActivistInDb.Duty = partyActivist.Duty;
@@ -185,49 +205,30 @@ namespace PartyMemberManager.Controllers
                         partyActivistInDb.OperatorId = CurrentUser.Id;
                         partyActivistInDb.Ordinal = _context.PartyActivists.Count() + 1;
                         partyActivistInDb.IsDeleted = partyActivist.IsDeleted;
-                        if (partyActivist.NationId == null)
-                            throw new PartyMemberException("请选择民族");
-                        else
-                            partyActivistInDb.NationId = partyActivist.NationId;
-                        if (partyActivist.Sex.ToString() == null)
-                            throw new PartyMemberException("请选择性别");
-                        else
-                            partyActivistInDb.Sex = partyActivist.Sex;
-                        if (partyActivist.Term.ToString() == null)
-                            throw new PartyMemberException("请选择学期");
-                        else
-                            partyActivistInDb.Term = partyActivist.Term;
-
-                        if (CurrentUser.Roles == Role.学院党委)
-                            partyActivistInDb.DepartmentId = CurrentUser.DepartmentId.HasValue ? CurrentUser.DepartmentId.Value : Guid.Empty;
-                        else
-                        {
-                            if (partyActivist.DepartmentId == null)
-                                throw new PartyMemberException("请选择部门");
-                            partyActivistInDb.DepartmentId = partyActivist.DepartmentId;
-                        }
+                        partyActivistInDb.TrainClassId = partyActivist.TrainClassId;
+                        partyActivistInDb.DepartmentId = partyActivist.DepartmentId;
                         _context.Update(partyActivistInDb);
                     }
                     else
                     {
                         //partyActivist.Id = Guid.NewGuid();
-                        if (partyActivist.NationId == null)
-                            throw new PartyMemberException("请选择民族");
-                        if (partyActivist.Sex.ToString() == null)
-                            throw new PartyMemberException("请选择性别");
-                        if (partyActivist.Term.ToString() == null)
-                            throw new PartyMemberException("请选择学期");
-                        if (CurrentUser.Roles == Role.学院党委)
-                            partyActivist.DepartmentId = CurrentUser.DepartmentId.Value;
-                        else
-                        {
-                            if (partyActivist.DepartmentId == null)
-                                throw new PartyMemberException("请选择部门");
-                        }
                         partyActivist.CreateTime = DateTime.Now;
                         partyActivist.OperatorId = CurrentUser.Id;
                         partyActivist.Ordinal = _context.PartyActivists.Count() + 1;
+                        var partyActivistOld = _context.PartyActivists.Where(d => d.JobNo == partyActivist.JobNo).FirstOrDefault();
+                        if (partyActivistOld !=null)
+                            throw new PartyMemberException("该学号或工号已经存在");
+
+                        ActivistTrainResult activistTrainResult = new ActivistTrainResult
+                        {
+                            PartyActivistId = partyActivist.Id,
+                            CreateTime = DateTime.Now,
+                            OperatorId = CurrentUser.Id,
+                            IsDeleted = false,
+                            Ordinal = _context.ActivistTrainResults.Count() + 1
+                        };
                         _context.Add(partyActivist);
+                        _context.Add(activistTrainResult);
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -326,7 +327,7 @@ namespace PartyMemberManager.Controllers
                             Id = Guid.NewGuid(),
                             CreateTime = DateTime.Now,
                             Ordinal = rowIndex,
-                            OperatorId=CurrentUser.Id,
+                            OperatorId = CurrentUser.Id,
                         };
                         if (isTeacher)
                         {

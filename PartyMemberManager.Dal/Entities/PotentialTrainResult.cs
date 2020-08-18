@@ -10,26 +10,26 @@ namespace PartyMemberManager.Dal.Entities
     public class PotentialTrainResult : TrainResultBase
     {
         /// <summary>
-        /// 积极分子
+        /// 发展对象
         /// </summary>
-        [DisplayName("积极分子")]
+        [DisplayName("发展对象")]
         public Guid PotentialMemberId { get; set; }
         /// <summary>
-        /// 积极分子
+        /// 发展对象
         /// </summary>
-        [DisplayName("积极分子")]
+        [DisplayName("发展对象")]
         public PotentialMember PotentialMember { get; set; }
 
         /// <summary>
-        /// 积极分子
+        /// 发展对象
         /// </summary>
-        [DisplayName("积极分子")]
+        [DisplayName("发展对象")]
         [NotMapped]
         public string PotentialMemberNameDisplay { get => PotentialMember == null ? "" : PotentialMember.Name; }
         /// <summary>
         /// 积极分子
         /// </summary>
-        [DisplayName("积极分子")]
+        [DisplayName("发展对象")]
         [NotMapped]
         public string PotentialMemberJobNoDisplay { get => PotentialMember == null ? "" : PotentialMember.JobNo; }
     }

@@ -27,7 +27,7 @@ namespace PartyMemberManager.Controllers
         // GET: PotentialTrainResults
         public async Task<IActionResult> Index(int page = 1)
         {
-            var pMContext = _context.PotentialTrainResults.Include(p => p.PotentialMember).Include(p => p.TrainClass);
+            var pMContext = _context.PotentialTrainResults.Include(p => p.PotentialMember);
             return View(await pMContext.ToListAsync());
         }
 
@@ -41,7 +41,6 @@ namespace PartyMemberManager.Controllers
 
             var potentialTrainResult = await _context.PotentialTrainResults
                     .Include(p => p.PotentialMember)
-                    .Include(p => p.TrainClass)
             .SingleOrDefaultAsync(m => m.Id == id);
             if (potentialTrainResult == null)
             {
@@ -75,13 +74,12 @@ namespace PartyMemberManager.Controllers
                 return NotFoundData();
             }
             ViewData["PotentialMemberId"] = new SelectList(_context.PotentialMembers, "Id", "BirthDate", potentialTrainResult.PotentialMemberId);
-            ViewData["TrainClassId"] = new SelectList(_context.TrainClasses, "Id", "Name", potentialTrainResult.TrainClassId);
             return View(potentialTrainResult);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("PotentialMemberId,TrainClassId,PsGrade,CsGrade,TotalGrade,IsPass,IsPrint,PrintTime,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PotentialTrainResult potentialTrainResult)
+        public override async Task<IActionResult> Save([Bind("PotentialMemberId,PsGrade,CsGrade,TotalGrade,IsPass,IsPrint,PrintTime,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PotentialTrainResult potentialTrainResult)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -97,8 +95,6 @@ namespace PartyMemberManager.Controllers
                     {
                         potentialTrainResultInDb.PotentialMemberId = potentialTrainResult.PotentialMemberId;
                         potentialTrainResultInDb.PotentialMember = potentialTrainResult.PotentialMember;
-                        potentialTrainResultInDb.TrainClassId = potentialTrainResult.TrainClassId;
-                        potentialTrainResultInDb.TrainClass = potentialTrainResult.TrainClass;
                         potentialTrainResultInDb.PsGrade = potentialTrainResult.PsGrade;
                         potentialTrainResultInDb.CsGrade = potentialTrainResult.CsGrade;
                         potentialTrainResultInDb.TotalGrade = potentialTrainResult.TotalGrade;

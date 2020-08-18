@@ -5,24 +5,13 @@
 <div class="form-group">
     <div class="row">
         <div class="@LabelDivDefaultClass">
-            <label asp-for="Year" asp-required="true" class="control-label"></label>
+            <label asp-for="TrainClassId" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <input asp-for="Year" class="form-control"  placeholder="yyyy"/>
-            <span asp-validation-for="Year" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
-        </div>
-    </div>
-</div>
-<div class="form-group">
-    <div class="row">
-        <div class="@LabelDivDefaultClass">
-            <label asp-for="Term" asp-required="true" class="control-label"></label>
-        </div>
-        <div class="@InputDivDefaultClass">
-            <select asp-for="Term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="form-control">
-                <option>--请选择学期--</option>
+            <select asp-for="TrainClassId" class="form-control" asp-items="@ViewBag.TrainClasses">
+                <option>-请选择培训班-</option>
             </select>
-            <span asp-validation-for="Term" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+            <span asp-validation-for="TrainClassId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
 </div>

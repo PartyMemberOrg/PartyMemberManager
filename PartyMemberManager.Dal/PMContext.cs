@@ -94,18 +94,17 @@ namespace PartyMemberManager.Dal
                 .WithMany()
                 .HasForeignKey(p => p.NationId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<ActivistTrainResult>()
-                .HasOne(a => a.TrainClass)
+            modelBuilder.Entity<PartyActivist>()
+                .HasOne(p => p.TrainClass)
                 .WithMany()
-                .HasForeignKey(a => a.TrainClassId);
+                .HasForeignKey(p => p.TrainClassId);
 
             modelBuilder.Entity<ActivistTrainResult>()
                 .HasOne(a => a.PartyActivist)
                 .WithMany()
                 .HasForeignKey(a => a.PartyActivistId)
                 .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<PotentialTrainResult>()
+            modelBuilder.Entity<PotentialMember>()
                 .HasOne(p => p.TrainClass)
                 .WithMany()
                 .HasForeignKey(p => p.TrainClassId);

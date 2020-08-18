@@ -12,23 +12,34 @@ namespace PartyMemberManager.Dal.Entities
     {
 
         /// <summary>
-        /// 年度
+        /// 培训班
         /// </summary>
-        [DisplayName("年度")]
-        [StringLength(4, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public string Year { get; set; }
+        [DisplayName("培训班")]
+        public Guid? TrainClassId { get; set; }
         /// <summary>
-        /// 学期
+        /// 培训班
         /// </summary>
-        [DisplayName("学期")]
-        public Term Term { get; set; }
+        [DisplayName("培训班")]
+        public TrainClass TrainClass { get; set; }
 
         /// <summary>
-        /// 学期
+        /// 培训班
         /// </summary>
-        [DisplayName("学期")]
-        public string TermDisplay { get => Term.ToString(); }
+        [DisplayName("培训班名称")]
+        [NotMapped]
+        public string TrainClassDisplay { get => TrainClass == null ? "" : TrainClass.Name; }
+        /// <summary>
+        /// 培训班
+        /// </summary>
+        [DisplayName("培训班学期")]
+        [NotMapped]
+        public string TrainClassTermDisplay { get => TrainClass == null ? "" : TrainClass.Term.ToString(); }
+        /// <summary>
+        /// 培训班
+        /// </summary>
+        [DisplayName("培训班年份")]
+        [NotMapped]
+        public string TrainClassYearDisplay { get => TrainClass == null ? "" : TrainClass.Year; }
         /// <summary>
         /// 姓名
         /// </summary>
@@ -90,7 +101,6 @@ namespace PartyMemberManager.Dal.Entities
         /// 民族
         /// </summary>
         [DisplayName("民族")]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public Guid NationId { get; set; }
         /// <summary>
         /// 民族
@@ -116,7 +126,6 @@ namespace PartyMemberManager.Dal.Entities
         /// 所属部门
         /// </summary>
         [DisplayName("所属部门")]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public Guid DepartmentId { get; set; }
         /// <summary>
         /// 所属部门

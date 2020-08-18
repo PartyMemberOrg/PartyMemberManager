@@ -25,13 +25,11 @@
         });
         /**计算比例 */
         function valideTotal() {
-            var ps = parseInt($("#PSGradeProportion").val());
+            var ps = parseInt($("#PsGradeProportion").val());
             var cs = parseInt($("#CsGradeProportion").val());
             var scale = ps + cs;
             if (scale != 100) {
-                layui.open({
-                    content: "比例总和不是100"
-                });
+                layer.alert("比例综合不等于100");
             }
         }
     </script>
