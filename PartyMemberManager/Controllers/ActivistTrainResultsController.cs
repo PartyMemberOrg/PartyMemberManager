@@ -37,7 +37,7 @@ namespace PartyMemberManager.Controllers
             return View(await pMContext.ToListAsync());
         }
 
-        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, bool isPass, bool isPrint, Guid? trainClassId, string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, string isPass, string isPrint, Guid? trainClassId, string keyword, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<ActivistTrainResult> jsonResult = new JsonResultDatasModel<ActivistTrainResult>
             {
@@ -54,7 +54,7 @@ namespace PartyMemberManager.Controllers
                 }
                 if (departmentId != null)
                 {
-                    filter = filter.And(d => d.PartyActivist.DepartmentId== departmentId);
+                    filter = filter.And(d => d.PartyActivist.DepartmentId==departmentId);
                 }
                 //if (!string.IsNullOrEmpty(year))
                 //{
@@ -64,13 +64,13 @@ namespace PartyMemberManager.Controllers
                 //{
                 //    filter = filter.And(d => d.PartyActivist.TrainClass.Term ==(Term)Enum.Parse(typeof(Term), term));
                 //}
-                if (isPass)
+                if (!string.IsNullOrEmpty(isPass))
                 {
-                    filter = filter.And(d => d.IsPass == true);
+                    filter = filter.And(d => d.IsPass == (isPass=="true"));
                 }
-                if (isPrint)
+                if (!string.IsNullOrEmpty(isPrint))
                 {
-                    filter = filter.And(d => d.IsPrint == true);
+                    filter = filter.And(d => d.IsPrint == (isPrint == "true"));
                 }
                 if (trainClassId != null)
                 {

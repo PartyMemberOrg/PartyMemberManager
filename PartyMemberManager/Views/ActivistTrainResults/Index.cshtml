@@ -6,8 +6,8 @@
 
 <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px">
     @*<div class="layui-input-inline" style="width:60px">
-        <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,800)" class="layui-btn layui-btn-primary">+添加</a>
-    </div>*@
+            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,800)" class="layui-btn layui-btn-primary">+添加</a>
+        </div>*@
     @if (CurrentUser.Roles > Role.学院党委)
     {
         <div>
@@ -28,13 +28,23 @@
         </div>
     </div>
     <div>
-        <div class="layui-input-inline" style="width:80px;margin-top:5px">
-            <input type="checkbox" name="isPass" lay-skin="primary" id="isPass" value="false">是否合格
+        <label class="layui-form-label" style="padding:5px">是否合格:</label>
+        <div class="layui-input-inline" style="width:80px;">
+            <select name="isPass" class="layui-input" id="isPass">
+                <option value="">-全部-</option>
+                <option value="true">-合格-</option>
+                <option value="false">-不合格-</option>
+            </select>
         </div>
     </div>
     <div>
-        <div class="layui-input-inline" style="width:130px;margin-top:5px">
-            <input type="checkbox" name="isPrint" lay-skin="primary" id="isPrint" value="false">是否已打印证书
+        <label class="layui-form-label" style="padding:5px;width:100px">是否打印证书:</label>
+        <div class="layui-input-inline" style="width:80px;">
+            <select name="isPrint" class="layui-input" id="isPrint">
+                <option value="">-全部-</option>
+                <option value="true">-已打印-</option>
+                <option value="false">-未打印-</option>
+            </select>
         </div>
     </div>
     <div>
