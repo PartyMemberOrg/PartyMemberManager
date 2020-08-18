@@ -54,7 +54,7 @@ namespace PartyMemberManager.Controllers
                 }
                 if (departmentId != null)
                 {
-                    filter = filter.And(d => d.PartyActivist.DepartmentId==departmentId);
+                    filter = filter.And(d => d.PartyActivist.DepartmentId == departmentId);
                 }
                 //if (!string.IsNullOrEmpty(year))
                 //{
@@ -66,7 +66,7 @@ namespace PartyMemberManager.Controllers
                 //}
                 if (!string.IsNullOrEmpty(isPass))
                 {
-                    filter = filter.And(d => d.IsPass == (isPass=="true"));
+                    filter = filter.And(d => d.IsPass == (isPass == "true"));
                 }
                 if (!string.IsNullOrEmpty(isPrint))
                 {
@@ -229,7 +229,58 @@ namespace PartyMemberManager.Controllers
             return Json(jsonResult);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SaveGradeData(string[] datas)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "数据保存成功"
+            };
+            try
+            {
+                foreach (var item in datas)
+                {
+                    string[] itemSub = item.Split(",");
+                    if (itemSub.Length == 3)
+                    {
+                        Guid id = Guid.Parse(itemSub[0]);
+                        ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.Include(d => d.PartyActivist.TrainClass).Where(d=>d.Id==id).FirstOrDefaultAsync();
+                        if (activistTrainResult != null)
+                        {
+                            activistTrainResult.PsGrade = int.Parse(itemSub[1]);
+                            activistTrainResult.CsGrade = int.Parse(itemSub[2]);
+                            activistTrainResult.TotalGrade = activistTrainResult.PartyActivist.TrainClass.PsGradeProportion * activistTrainResult.PsGrade / 100 + activistTrainResult.PartyActivist.TrainClass.CsGradeProportion * activistTrainResult.CsGrade / 100;
+                            if (activistTrainResult.TotalGrade >= 60)
+                                activistTrainResult.IsPass = true;
+                            else
+                                activistTrainResult.IsPass = false;
+                            _context.Update(activistTrainResult);
+                        }
+                    }
 
+                }
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "更新数据库错误";
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
         private bool ActivistTrainResultExists(Guid id)
         {
             return _context.ActivistTrainResults.Any(e => e.Id == id);
