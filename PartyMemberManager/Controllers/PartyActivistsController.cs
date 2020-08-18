@@ -308,7 +308,7 @@ namespace PartyMemberManager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Import(PartyActivistImportViewModel model, IFormFile file)
+        public async Task<IActionResult> Import(PartyActivistImportViewModel model)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -319,6 +319,7 @@ namespace PartyMemberManager.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    IFormFile file = model.File;
                     if (file != null)
                     {
                         TrainClass trainClass = await _context.TrainClasses.FindAsync(model.TrainClassId);
@@ -363,10 +364,9 @@ namespace PartyMemberManager.Controllers
                                 CreateTime = DateTime.Now,
                                 Ordinal = rowIndex,
                                 OperatorId = CurrentUser.Id,
-                                //TrainClassId=trainClass.Id,
-                                Year=trainClass.Year,
-                                Term=trainClass.Term,
-                                Class=""
+                                TrainClassId=trainClass.Id,
+                                //Year=trainClass.Year,
+                                //Term=trainClass.Term,
                             };
                             if (isTeacher)
                             {

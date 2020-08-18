@@ -1,4 +1,5 @@
-﻿using NPOI.Util.Collections;
+﻿using Microsoft.AspNetCore.Http;
+using NPOI.Util.Collections;
 using PartyMemberManager.Core.Enums;
 using System;
 using System.Collections.Generic;
@@ -48,6 +49,13 @@ namespace PartyMemberManager.Models
         /// 所属培训班
         /// </summary>
         [DisplayName("培训班")]
+        [Required]
         public Guid TrainClassId { get; set; }
+        /// <summary>
+        /// 文件
+        /// </summary>
+        [DisplayName("文件")]
+        [Required]
+        public IFormFile File { get; set; }
     }
 }

@@ -1,9 +1,9 @@
 ﻿@model PartyActivistImportViewModel
-<form action="">
+<form action="@Url.Action("Import")" method="post" enctype="multipart/form-data" >
     <div class="form-group">
         <div class="row">
             <div class="@LabelDivDefaultClass">
-                <label asp-for="TrainClassTypeId" asp-required="true" class="control-label"></label>
+                <label asp-for="TrainClassTypeId" asp-required="false" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">
                 <select asp-for="TrainClassTypeId" asp-items="@ViewBag.TrainClassTypeId" class="layui-input">
@@ -16,7 +16,7 @@
     <div class="form-group">
         <div class="row">
             <div class="@LabelDivDefaultClass">
-                <label asp-for="YearBegin" asp-required="true" class="control-label"></label>
+                <label asp-for="YearBegin" asp-required="false" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">
                 <div>
@@ -32,7 +32,7 @@
     <div class="form-group">
         <div class="row">
             <div class="@LabelDivDefaultClass">
-                <label asp-for="Term" asp-required="true" class="control-label"></label>
+                <label asp-for="Term" asp-required="false" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">
                 <select asp-for="Term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="layui-input">
@@ -47,7 +47,7 @@
         <div class="form-group">
             <div class="row">
                 <div class="@LabelDivDefaultClass">
-                    <label asp-for="DepartmentId" asp-required="true" class="control-label"></label>
+                    <label asp-for="DepartmentId" asp-required="false" class="control-label"></label>
                 </div>
                 <div class="@InputDivDefaultClass">
                     <select asp-for="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input">
@@ -78,10 +78,11 @@
     <div class="form-group">
         <div class="row">
             <div class="@LabelDivDefaultClass">
-                <label for="file" class="control-label"></label>
+                <label asp-for="File" asp-required="true" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">
-                <input id="file" name="file" type="file" class="layui-input" />
+                <input asp-for="File" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="layui-input" />
+                <span asp-validation-for="TrainClassId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
             </div>
         </div>
     </div>

@@ -209,7 +209,7 @@
         }
 
         function importExcel() {
-            showEdit('@Url.Action("Import")', '@Url.Action("Import")', '编辑', 400, 500);
+            showImport('@Url.Action("Import")', '@Url.Action("Import")', '编辑', 400, 500, function () { location.reload(); });
         }
     </script>
     <script type="text/html" id="optTpl">

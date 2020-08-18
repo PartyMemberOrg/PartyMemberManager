@@ -411,7 +411,7 @@ function showContent(url, title, width = 600, height = 400) {
 }
 
 /**
- * 文件上传对话框
+ * 显示编辑对话框
  * @param {String} url - 编辑页面的url
  * @param {String} postUrl - 数据保存Action的url，通过ajax提交保存
  * @param {String} title - 编辑窗体标题
@@ -419,7 +419,7 @@ function showContent(url, title, width = 600, height = 400) {
  * @param {Integer} height - 编辑窗口高度
  * @param {Function} callBack - 编辑结束并保存后的回调函数
  */
-function showFileUpload(url, postUrl, title, width = 600, height = 300, callBack) {
+function showImport(url, postUrl, title, width = 600, height = 400, callBack) {
     top.layui.use('layer', function () {
         var layer = top.layui.layer;
         layer.ready(function () {
@@ -428,23 +428,27 @@ function showFileUpload(url, postUrl, title, width = 600, height = 300, callBack
                 title: title
                 , area: [width.toString() + 'px', height.toString() + 'px']
                 , type: 2
-                , content: [url, 'no']
+                , content: [url, 'no']//第二个参数no，表示不显示iframe滚动条
                 , btnAlign: 'c'
                 , btn: ['导入']
                 , yes: function (index, layero) {
                     var body = layer.getChildFrame('body', index);
+                    var valid = $(body).find('form').valid();
+                    if (!valid) {
+                        showError("数据验证错误，请检查数据后再提交");
+                        return;
+                    }
                     var data = new FormData($(body).find('form')[0]);
                     $.ajax({
                         url: postUrl,
                         data: data,
                         type: "post",
                         dataType: "json",
-                        contentType: false,
-                        processData: false,
                         success: function (response) {
                             if (response.code == 0) {
+                                clearError($(body).find('form'));
                                 layer.close(index);
-                                showMessage("数据保存成功");
+                                showMessage("数据导入成功");
                                 //如果有回调函数，则执行回调函数,否则直接刷新页面
                                 if (callBack != null)
                                     callBack(data);
@@ -452,6 +456,7 @@ function showFileUpload(url, postUrl, title, width = 600, height = 300, callBack
                                     location.reload();
                             }
                             else {
+                                displayErrorMessage($(body).find('form'), response);
                                 layer.msg(response.message, {
                                     icon: 2,
                                     time: 2000
@@ -461,8 +466,8 @@ function showFileUpload(url, postUrl, title, width = 600, height = 300, callBack
                                     });
                             }
                         },
-                        error: function (data) {
-                            showError("保存数据时发生错误");
+                        error: function () {
+                            showError("导入数据时发生错误");
                         }
                     });
                 }
