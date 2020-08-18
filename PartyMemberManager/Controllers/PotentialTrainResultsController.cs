@@ -14,6 +14,7 @@ using PartyMemberManager.Framework.Models.JsonModels;
 using Microsoft.AspNetCore.Http;
 using PartyMemberManager.Dal;
 using PartyMemberManager.Dal.Entities;
+using PartyMemberManager.Core.Enums;
 
 namespace PartyMemberManager.Controllers
 {
@@ -28,7 +29,84 @@ namespace PartyMemberManager.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             var pMContext = _context.PotentialTrainResults.Include(p => p.PotentialMember);
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            if (CurrentUser.Roles == Role.学院党委)
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.OrderBy(d => d.Ordinal).Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value), "Id", "Name");
+            else
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(await pMContext.ToListAsync());
+        }
+        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, string isPass, string isPrint, Guid? trainClassId, string keyword, int page = 1, int limit = 10)
+        {
+            JsonResultDatasModel<PotentialTrainResult> jsonResult = new JsonResultDatasModel<PotentialTrainResult>
+            {
+                Code = 0,
+                Msg = ""
+            };
+
+            try
+            {
+                var filter = PredicateBuilder.True<PotentialTrainResult>();
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    filter = filter.And(d => d.PotentialMember.Name.Contains(keyword) || d.PotentialMember.JobNo.Contains(keyword));
+                }
+                if (departmentId != null)
+                {
+                    filter = filter.And(d => d.PotentialMember.DepartmentId == departmentId);
+                }
+                //if (!string.IsNullOrEmpty(year))
+                //{
+                //    filter = filter.And(d => d.PartyActivist.TrainClass.Year==year);
+                //}
+                //if (!string.IsNullOrEmpty(term))
+                //{
+                //    filter = filter.And(d => d.PartyActivist.TrainClass.Term ==(Term)Enum.Parse(typeof(Term), term));
+                //}
+                if (!string.IsNullOrEmpty(isPass))
+                {
+                    filter = filter.And(d => d.IsPass == (isPass == "true"));
+                }
+                if (!string.IsNullOrEmpty(isPrint))
+                {
+                    filter = filter.And(d => d.IsPrint == (isPrint == "true"));
+                }
+                if (trainClassId != null)
+                {
+                    filter = filter.And(d => d.PotentialMember.TrainClassId == trainClassId);
+                }
+                if (CurrentUser.Roles > Role.学院党委)
+                {
+                    var data = await _context.Set<PotentialTrainResult>().Include(d => d.PotentialMember).Include(d => d.PotentialMember.TrainClass).Where(filter).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    if (data == null)
+                        throw new PartyMemberException("未找到数据");
+                    jsonResult.Count = _context.Set<ActivistTrainResult>().Count();
+                    jsonResult.Data = data.Data;
+                }
+                else
+                {
+                    if (CurrentUser.DepartmentId == null)
+                        throw new PartyMemberException("该用户不合法，请设置该用户所属部门");
+                    var data = await _context.Set<PotentialTrainResult>().Include(d => d.PotentialMember).Include(d => d.PotentialMember.TrainClass).Where(filter).Where(d => d.PotentialMember.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    if (data == null)
+                        throw new PartyMemberException("未找到数据");
+                    jsonResult.Count = _context.Set<ActivistTrainResult>().Count();
+                    jsonResult.Data = data.Data;
+                }
+            }
+
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Msg = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Msg = "发生系统错误";
+            }
+            return Json(jsonResult);
         }
 
         // GET: PotentialTrainResults/Details/5

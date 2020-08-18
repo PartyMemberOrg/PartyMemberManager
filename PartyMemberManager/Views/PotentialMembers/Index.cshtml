@@ -1,27 +1,72 @@
 ﻿@model IEnumerable<PartyMemberManager.Dal.Entities.PotentialMember>
 
-        @{
-        ViewData["Title"] = "Index";
-        }
-        
-        <h1>列表</h1>
-        
-        <p style="margin-bottom:14px;">
-                <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
-        </p>
-        <table class="layui-hide" id="datatable"></table>
-        @Html.AntiForgeryToken()
-        <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
-        @section Scripts{
-        <script src="~/lib/contentmenu/js/index.js"></script>
-        <script src="~/lib/Sortable/Sortable.js"></script>
-            <script type="text/javascript">
+@{
+    ViewData["Title"] = "Index";
+}
+
+@*<p style="margin-bottom:14px;">
+        <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
+    </p>*@
+<div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px">
+    <div>
+        <label class="layui-form-label" style="padding:5px">年份:</label>
+        <div class="layui-input-inline" style="width:80px">
+            <input name="Year" type="text" class="layui-input" id="kwyear" placeholder="yyyy" style="width:80px;" />
+        </div>
+    </div>
+    <div>
+        <label class="layui-form-label" style="padding:5px">学期:</label>
+        <div class="layui-input-inline" style="width:120px">
+            <select name="term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="layui-input" id="term">
+                <option value="">-请选择学期-</option>
+            </select>
+        </div>
+    </div>
+    @if (CurrentUser.Roles > Role.学院党委)
+    {
+        <div>
+            <label class="layui-form-label" style="padding:5px">部门:</label>
+            <div class="layui-input-inline" style="width:200px">
+                <select name="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input" id="department">
+                    <option value="">-请选择部门-</option>
+                </select>
+            </div>
+        </div>
+    }
+    <div>
+        <label class="layui-form-label" style="padding:5px">类型:</label>
+        <div class="layui-input-inline" style="width:120px">
+            <select name="partyMemberType" asp-items="@Html.GetEnumSelectList(typeof(PartyMemberType))" class="layui-input" id="partyMemberType">
+                <option value="">-请选择类型-</option>
+            </select>
+        </div>
+    </div>
+    <div>
+        <div class="layui-input-inline" style="width:300px">
+            <input name="name" type="text" class="layui-input" placeholder="请输入学号/工号/姓名" id="keyword" />
+        </div>
+    </div>
+    <div>
+        <div class="layui-input-inline" style="width:80px">
+            <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
+                <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
+            </a>
+        </div>
+    </div>
+</div>
+<table class="layui-hide" id="datatable"></table>
+@Html.AntiForgeryToken()
+<link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
+@section Scripts{
+    <script src="~/lib/contentmenu/js/index.js"></script>
+    <script src="~/lib/Sortable/Sortable.js"></script>
+    <script type="text/javascript">
         var tableObject = null;
         $(document).ready(function () {
-            $("body").width(770);
+            $("body").width($(window).width());
             InitTable();
         });
-        
+
         function Delete(id) {
             var url="@Url.Action("Delete")";
             DeleteData(url, id, function () {
@@ -60,7 +105,7 @@
         function InitTable() {
             layui.use('table', function () {
                 var table = layui.table;
-        
+
                 tableObject = table.render({
                     elem: '#datatable'
                     , url: '@Url.Action("GetDatas")'
@@ -71,23 +116,19 @@
                     , cols: [[
                         //{ type: 'checkbox' }
                         //,
-            { field: 'potentialMemberTime', title: 'PotentialMemberTime', align: 'center' },
-            { field: 'trainClassId', title: 'TrainClassId', align: 'center' },
-            { field: 'name', title: 'Name', align: 'center' },
-            { field: 'jobNo', title: 'JobNo', align: 'center' },
-            { field: 'idNumber', title: 'IdNumber', align: 'center' },
-            { field: 'sex', title: 'Sex', align: 'center' },
-            { field: 'partyMemberType', title: 'PartyMemberType', align: 'center' },
-            { field: 'birthDate', title: 'BirthDate', align: 'center' },
-            { field: 'nationId', title: 'NationId', align: 'center' },
-            { field: 'phone', title: 'Phone', align: 'center' },
-            { field: 'departmentId', title: 'DepartmentId', align: 'center' },
-            { field: 'class', title: 'Class', align: 'center' },
-            { field: 'id', title: 'Id', align: 'center' },
-            { field: 'createTime', title: 'CreateTime', align: 'center' },
-            { field: 'operatorId', title: 'OperatorId', align: 'center' },
-            { field: 'ordinal', title: 'Ordinal', align: 'center' },
-            { field: 'isDeleted', title: 'IsDeleted', align: 'center' },
+                        { field: 'year', title: '年份', align: 'center', templet: '#optYearTpl' },
+                        { field: 'termDisplay', title: '学期', align: 'center', templet: '#optTermTpl' },
+                        { field: 'trainClassDisplay', title: '培训班', align: 'center', templet: '#optTrainClassNameTpl' },
+                        { field: 'name', title: '姓名', align: 'center' },
+                        { field: 'jobNo', title: '工号/学号', align: 'center' },
+                        { field: 'idNumber', title: '身份证号', align: 'center' },
+                        { field: 'sexDisplay', title: '性别', align: 'center' },
+                        { field: 'partyMemberTypeDisplay', title: '类别', align: 'center' },
+                        { field: 'departmentDisplay', title: '所属部门', align: 'center', templet: '#optDepartmentNameTpl' },
+                        { field: 'class', title: '班级', align: 'center' },
+                        { field: 'applicationTime', title: '提交入党申请时间', align: 'center' },
+                        { field: 'activeApplicationTime', title: '确定为入党积极分子时间', align: 'center' },
+                        { field: 'potentialMemberTime', title: '列为发展对象时间', align: 'center' },
                         { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
@@ -123,11 +164,29 @@
             })
             contextMenu.showMenu(event);
         }
-        </script>
-        <script type="text/html" id="optTpl">
-            <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
-                <img src="~/images/gridmenu1x.png" />
-            </a>
-        </script>
-        }
+    </script>
+    <script type="text/html" id="optTpl">
+        <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
+            <img src="~/images/gridmenu1x.png" />
+        </a>
+    </script>
+    <script type="text/html" id="optTrainClassYearTpl">
+        {{d.yearDisplay}}
+    </script>
+    <script type="text/html" id="optTrainClassTermTpl">
+        {{d.termDisplay}}
+    </script>
+    <script type="text/html" id="optTrainClassDisplayTpl">
+        {{d.trainClassDisplay}}
+    </script>
+    <script type="text/javascript">
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#kwyear',
+                type: 'year',
+            });
+        });
+    </script>
+}
 

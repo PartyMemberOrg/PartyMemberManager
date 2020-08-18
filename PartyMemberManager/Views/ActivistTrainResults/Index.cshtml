@@ -4,62 +4,69 @@
     ViewData["Title"] = "Index";
 }
 
-<div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px">
-    @*<div class="layui-input-inline" style="width:60px">
+    <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px">
+        @*<div class="layui-input-inline" style="width:60px">
             <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,800)" class="layui-btn layui-btn-primary">+添加</a>
         </div>*@
-    @if (CurrentUser.Roles > Role.学院党委)
-    {
+        @if (CurrentUser.Roles > Role.学院党委)
+        {
+            <div>
+                <label class="layui-form-label" style="padding:5px">部门:</label>
+                <div class="layui-input-inline" style="width:200px">
+                    <select name="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input" id="department">
+                        <option value="">-请选择部门-</option>
+                    </select>
+                </div>
+            </div>
+        }
         <div>
-            <label class="layui-form-label" style="padding:5px">部门:</label>
-            <div class="layui-input-inline" style="width:200px">
-                <select name="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input" id="department">
-                    <option value="">-请选择部门-</option>
+            <label class="layui-form-label" style="padding:5px">培训班:</label>
+            <div class="layui-input-inline" style="width:300px">
+                <select name="trainClassId" asp-items="@ViewBag.TrainClasses" class="layui-input" id="trainClass">
+                    <option value="">-请选择培训班-</option>
                 </select>
             </div>
         </div>
-    }
-    <div>
-        <label class="layui-form-label" style="padding:5px">培训班:</label>
-        <div class="layui-input-inline" style="width:300px">
-            <select name="trainClassId" asp-items="@ViewBag.TrainClasses" class="layui-input" id="trainClass">
-                <option value="">-请选择培训班-</option>
-            </select>
+        <div>
+            <label class="layui-form-label" style="padding:5px">是否合格:</label>
+            <div class="layui-input-inline" style="width:80px;">
+                <select name="isPass" class="layui-input" id="isPass">
+                    <option value="">-全部-</option>
+                    <option value="true">-合格-</option>
+                    <option value="false">-不合格-</option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <label class="layui-form-label" style="padding:5px;width:100px">是否打印证书:</label>
+            <div class="layui-input-inline" style="width:80px;">
+                <select name="isPrint" class="layui-input" id="isPrint">
+                    <option value="">-全部-</option>
+                    <option value="true">-已打印-</option>
+                    <option value="false">-未打印-</option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <div class="layui-input-inline" style="width:300px">
+                <input name="keyword" type="text" class="layui-input" placeholder="请输入学号/工号/姓名" id="keyword" />
+            </div>
+        </div>
+        <div>
+            <div class="layui-input-inline" style="width:80px">
+                <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
+                    <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
+                </a>
+            </div>
+        </div>
+        <div>
+            <div class="layui-input-inline" style="width:80px">
+                <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="addToPotential()">
+                    <i class="layui-icon layui-icon-release" style="font-size: 14px; color: #FFFFFF;"></i>加入发展对象
+                </a>
+            </div>
         </div>
     </div>
-    <div>
-        <label class="layui-form-label" style="padding:5px">是否合格:</label>
-        <div class="layui-input-inline" style="width:80px;">
-            <select name="isPass" class="layui-input" id="isPass">
-                <option value="">-全部-</option>
-                <option value="true">-合格-</option>
-                <option value="false">-不合格-</option>
-            </select>
-        </div>
-    </div>
-    <div>
-        <label class="layui-form-label" style="padding:5px;width:100px">是否打印证书:</label>
-        <div class="layui-input-inline" style="width:80px;">
-            <select name="isPrint" class="layui-input" id="isPrint">
-                <option value="">-全部-</option>
-                <option value="true">-已打印-</option>
-                <option value="false">-未打印-</option>
-            </select>
-        </div>
-    </div>
-    <div>
-        <div class="layui-input-inline" style="width:300px">
-            <input name="keyword" type="text" class="layui-input" placeholder="请输入学号/工号/姓名" id="keyword" />
-        </div>
-    </div>
-    <div>
-        <div class="layui-input-inline" style="width:80px">
-            <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
-                <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
-            </a>
-        </div>
-    </div>
-</div>
 <table class="layui-hide" id="datatable"></table>
 @Html.AntiForgeryToken()
 <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
@@ -120,8 +127,8 @@
                     , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
                     , id: 'dataGrid'
                     , cols: [[
-                        //{ type: 'checkbox' }
-                        //,
+                        { type: 'checkbox' }
+                        ,
                         { field: 'trainClassYearDisplay', title: '年份', align: 'center', templet: '#optTrainClassYearTpl'},
                         { field: 'trainClassTermDisplay', title: '学期', align: 'center', templet: '#optTrainClassTermTpl'},
                         { field: 'trainClassDisplay', title: '培训班', align: 'center', templet: '#optTrainClassDisplayTpl'},
@@ -178,12 +185,12 @@
             contextMenu.addMenuItem("打印", function () {
                 showEdit('@Url.Action("Print")'+'/' + id, '@Url.Action("Save")', '打印', 800, 800);
             })
-            contextMenu.addMenuItem("编辑", function () {
+            @*contextMenu.addMenuItem("编辑", function () {
                 showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 800, 800);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);
-            })
+            })*@
             contextMenu.addMenuItem("上移", function () {
                 ItemUp(id);
             })

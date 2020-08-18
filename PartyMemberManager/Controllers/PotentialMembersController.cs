@@ -14,6 +14,7 @@ using PartyMemberManager.Framework.Models.JsonModels;
 using Microsoft.AspNetCore.Http;
 using PartyMemberManager.Dal;
 using PartyMemberManager.Dal.Entities;
+using PartyMemberManager.Core.Enums;
 
 namespace PartyMemberManager.Controllers
 {
@@ -28,6 +29,12 @@ namespace PartyMemberManager.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             var pMContext = _context.PotentialMembers.Include(p => p.Department).Include(p => p.Nation).Include(p => p.TrainClass);
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
+            if (CurrentUser.Roles == Role.学院党委)
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
+            else
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
             return View(await pMContext.ToListAsync());
         }
 
@@ -56,9 +63,12 @@ namespace PartyMemberManager.Controllers
         public IActionResult Create()
         {
             PotentialMember potentialMember = new PotentialMember();
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Code");
-            ViewData["NationId"] = new SelectList(_context.Nations, "Id", "Code");
-            ViewData["TrainClassId"] = new SelectList(_context.TrainClasses, "Id", "Name");
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
+            if (CurrentUser.Roles == Role.学院党委)
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
+            else
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
             return View(potentialMember);
         }
 
@@ -76,9 +86,12 @@ namespace PartyMemberManager.Controllers
             {
                 return NotFoundData();
             }
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Code", potentialMember.DepartmentId);
-            ViewData["NationId"] = new SelectList(_context.Nations, "Id", "Code", potentialMember.NationId);
-            ViewData["TrainClassId"] = new SelectList(_context.TrainClasses, "Id", "Name", potentialMember.TrainClassId);
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
+            if (CurrentUser.Roles == Role.学院党委)
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
+            else
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
             return View(potentialMember);
         }
 
@@ -101,24 +114,17 @@ namespace PartyMemberManager.Controllers
                         potentialMemberInDb.PotentialMemberTime = potentialMember.PotentialMemberTime;
                         potentialMemberInDb.TrainClassId = potentialMember.TrainClassId;
                         potentialMemberInDb.TrainClass = potentialMember.TrainClass;
-                        potentialMemberInDb.TrainClassDisplay = potentialMember.TrainClassDisplay;
-                        potentialMemberInDb.TrainClassTermDisplay = potentialMember.TrainClassTermDisplay;
-                        potentialMemberInDb.TrainClassYearDisplay = potentialMember.TrainClassYearDisplay;
                         potentialMemberInDb.Name = potentialMember.Name;
                         potentialMemberInDb.JobNo = potentialMember.JobNo;
                         potentialMemberInDb.IdNumber = potentialMember.IdNumber;
                         potentialMemberInDb.Sex = potentialMember.Sex;
-                        potentialMemberInDb.SexDisplay = potentialMember.SexDisplay;
                         potentialMemberInDb.PartyMemberType = potentialMember.PartyMemberType;
-                        potentialMemberInDb.PartyMemberTypeDisplay = potentialMember.PartyMemberTypeDisplay;
                         potentialMemberInDb.BirthDate = potentialMember.BirthDate;
                         potentialMemberInDb.NationId = potentialMember.NationId;
                         potentialMemberInDb.Nation = potentialMember.Nation;
-                        potentialMemberInDb.NationDisplay = potentialMember.NationDisplay;
                         potentialMemberInDb.Phone = potentialMember.Phone;
                         potentialMemberInDb.DepartmentId = potentialMember.DepartmentId;
                         potentialMemberInDb.Department = potentialMember.Department;
-                        potentialMemberInDb.DepartmentDisplay = potentialMember.DepartmentDisplay;
                         potentialMemberInDb.Class = potentialMember.Class;
                         potentialMemberInDb.Id = potentialMember.Id;
                         potentialMemberInDb.CreateTime = potentialMember.CreateTime;
