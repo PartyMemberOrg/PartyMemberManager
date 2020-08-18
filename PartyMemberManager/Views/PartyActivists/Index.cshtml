@@ -207,6 +207,10 @@
             })
             contextMenu.showMenu(event);
         }
+
+        function importExcel() {
+            showEdit('@Url.Action("Import")', '@Url.Action("Import")', '编辑', 400, 500);
+        }
     </script>
     <script type="text/html" id="optTpl">
         <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
