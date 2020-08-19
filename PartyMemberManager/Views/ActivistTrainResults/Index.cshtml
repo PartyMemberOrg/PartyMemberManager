@@ -20,10 +20,10 @@
         </div>
     }
     <div>
-        <label class="layui-form-label" style="padding:5px">培训班:</label>
-        <div class="layui-input-inline" style="width:300px">
-            <select name="trainClassId" asp-items="@ViewBag.TrainClasses" class="layui-input" id="trainClass">
-                <option value="">-请选择培训班-</option>
+        <label class="layui-form-label" style="padding:5px">学年/学期:</label>
+        <div class="layui-input-inline" style="width:240px">
+            <select name="trainClassId" asp-items="@ViewBag.TrainClasses" class="layui-input" id="trainClassId">
+                <option value="">-请选择学年/学期-</option>
             </select>
         </div>
     </div>
@@ -74,7 +74,7 @@
         </div>
     </div>
 </div>
-<table class="layui-hide" id="datatable"></table>
+<table class="layui-hide" id="datatable" lay-filter="datatable"></table>
 <div>
     <div class="layui-input-inline" style="width:80px;margin-top:10px">
         <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="saveGrade()">
@@ -92,6 +92,7 @@
         $(document).ready(function () {
             $("body").width($(window).width());
             InitTable();
+
         });
 
         function Delete(id) {
@@ -142,14 +143,14 @@
                     , id: 'dataGrid'
                     , cols: [[
                         { type: 'checkbox', fixed: 'left' },
-                        //{ field: 'gid', title: 'Id', sort: 'true', templet: '#optIdoTpl',hide:'true'},
-                        { field: 'trainClassYearDisplay', title: '年份', align: 'center', templet: '#optTrainClassYearTpl'},
-                        { field: 'trainClassTermDisplay', title: '学期', align: 'center', templet: '#optTrainClassTermTpl'},
+                        { field: 'yearTermDisplay', title: '学年/学期', align: 'center', templet: '#optYearTermTpl'},
                         { field: 'trainClassDisplay', title: '培训班', align: 'center', templet: '#optTrainClassDisplayTpl'},
                         { field: 'partyActivistJobNoDisplay', title: '学号/工号', align: 'center', templet: '#optPartyActivistJobNoTpl'},
-                        { field: 'partyActivistNameDisplay', title: '姓名', align: 'center', templet: '#optPartyActivistNameoTpl'},
-                        { field: 'psGrade', title: '平时成绩', align: 'center',edit: 'text' },
-                        { field: 'csGrade', title: '考试成绩', align: 'center',edit: 'text' },
+                        { field: 'partyActivistNameDisplay', title: '姓名', align: 'center', templet: '#optPartyActivistNameoTpl' },
+                        { field: 'psGrade', title: '平时成绩', align: 'center', edit: 'text', templet: function (d) { return '<input type="text" id="inputGrade" class="form-control"  style="width:100%;height:26px" value="' + d.psGrade + '">' } },
+                        { field: 'csGrade', title: '考试成绩', align: 'center', edit: 'text', templet: function (d) { return '<input type="text" id="inputGrade" class="form-control"  style="width:100%;height:26px" value="' + d.csGrade + '">' } },
+                        //{ field: 'psGrade', title: '平时成绩', align: 'center', edit: 'text'},
+                        //{ field: 'csGrade', title: '考试成绩', align: 'center', edit: 'text'},
                         { field: 'totalGrade', title: '总成绩', align: 'center' },
                         { field: 'isPass', title: '是否合格', align: 'center', templet: function (d) { return d.isPass ? "是" : "否" } },
                         { field: 'isPrint', title: '是否已打印', align: 'center', templet: function (d) { return d.isPrint ? "是" : "否" } },
@@ -188,12 +189,15 @@
         function saveGrade() {
             var tableId = "dataGrid";
             var datasSubmit = new Array();
+            var errName;
             layui.use('table', function () {
                 var datas = layui.table.cache[tableId];
                 for (i = 0; i < datas.length; i++)
                 {
-                    var item = datas[i].id + "," + datas[i].psGrade + "," + datas[i].csGrade;
-                    datasSubmit.push(item);
+                    if (datas[i].psGrad>=0 && datas[i].psGrade<=100 && datas[i].csGrade>=0 && datas[i].csGrade<=100) {
+                        var item = datas[i].id + "," + datas[i].psGrade + "," + datas[i].csGrade;
+                        datasSubmit.push(item);
+                    }
                 }
             });
             $.ajax({
@@ -208,6 +212,22 @@
                 }
             });
 
+        }
+
+        function addToPotential() {
+            var datas = null;
+            layui.use('table', function () {
+                var table = layui.table;
+                table.on('checkbox(datatable)', function (obj) {
+                    var checkStatus = table.checkStatus('datatable');
+                    if (checkStatus != null)
+                        for (i = 0; i < checkStatus.length; i++) {
+                            if (checkStatus[i].isPass == true)
+                                datas+=(checkStatus[i].id)+",";
+                        }
+                });
+            });
+            showEdit('@Url.Action("Create", "PotentialMembers")' + '/' + datas, '@Url.Action("Save", "PotentialMembers")', '列为发展对象', 800, 800);
         }
         /**显示隐藏滚动条 */
         function showHideScrollBars(count) {
@@ -245,11 +265,8 @@
             <img src="~/images/gridmenu1x.png" />
         </a>
     </script>
-    <script type="text/html" id="optTrainClassYearTpl">
-        {{d.yearDisplay}}
-    </script>
-    <script type="text/html" id="optTrainClassTermTpl">
-        {{d.termDisplay}}
+    <script type="text/html" id="optYearTermTpl">
+        {{d.yearTermDisplay}}
     </script>
     <script type="text/html" id="optTrainClassDisplayTpl">
         {{d.trainClassDisplay}}
@@ -262,6 +279,20 @@
     </script>
     <script type="text/html" id="optIdoTpl">
         {{d.id}}
+    </script>
+    <script>
+        /*验证表格输入*/
+        layui.use('table', function () {
+            var table = layui.table;
+            table.on('edit(datatable)', function (obj) {
+                var data = obj.data;
+                if (isNaN(data.psGrade) || isNaN(data.csGrade)) {
+                    layer.msg("输入了非数值！");
+                }
+                if (data.psGrade < 0 || data.psGrade > 100 || data.csGrade < 0 || data.csGrade > 100)
+                    layer.msg("成绩不在0-100之间！");
+            });
+        });
     </script>
 }
 

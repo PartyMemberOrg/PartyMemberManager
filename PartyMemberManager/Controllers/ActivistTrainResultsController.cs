@@ -31,9 +31,9 @@ namespace PartyMemberManager.Controllers
             var pMContext = _context.ActivistTrainResults.Include(a => a.PartyActivist).Include(d => d.PartyActivist.TrainClass);
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             if (CurrentUser.Roles == Role.学院党委)
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.OrderBy(d => d.Ordinal).Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value), "Id", "Name");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.OrderBy(d => d.Ordinal).Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value), "Id", "YearTerm");
             else
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.OrderBy(d => d.Ordinal), "Id", "Name");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.OrderBy(d => d.Ordinal), "Id", "YearTerm");
             return View(await pMContext.ToListAsync());
         }
 
@@ -56,14 +56,6 @@ namespace PartyMemberManager.Controllers
                 {
                     filter = filter.And(d => d.PartyActivist.DepartmentId == departmentId);
                 }
-                //if (!string.IsNullOrEmpty(year))
-                //{
-                //    filter = filter.And(d => d.PartyActivist.TrainClass.Year==year);
-                //}
-                //if (!string.IsNullOrEmpty(term))
-                //{
-                //    filter = filter.And(d => d.PartyActivist.TrainClass.Term ==(Term)Enum.Parse(typeof(Term), term));
-                //}
                 if (!string.IsNullOrEmpty(isPass))
                 {
                     filter = filter.And(d => d.IsPass == (isPass == "true"));
@@ -250,7 +242,7 @@ namespace PartyMemberManager.Controllers
                         {
                             activistTrainResult.PsGrade = int.Parse(itemSub[1]);
                             activistTrainResult.CsGrade = int.Parse(itemSub[2]);
-                            activistTrainResult.TotalGrade = activistTrainResult.PartyActivist.TrainClass.PsGradeProportion * activistTrainResult.PsGrade / 100 + activistTrainResult.PartyActivist.TrainClass.CsGradeProportion * activistTrainResult.CsGrade / 100;
+                            activistTrainResult.TotalGrade =Math.Round(activistTrainResult.PartyActivist.TrainClass.PsGradeProportion * activistTrainResult.PsGrade / 100 + activistTrainResult.PartyActivist.TrainClass.CsGradeProportion * activistTrainResult.CsGrade / 100,2);
                             if (activistTrainResult.TotalGrade >= 60)
                                 activistTrainResult.IsPass = true;
                             else

@@ -80,7 +80,7 @@
             <label asp-for="BirthDate" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <input asp-for="BirthDate" class="form-control" placeholder="yyyy-MM" />
+            <input id="BirthDate" name="BirthDate" class="form-control" placeholder="yyyy-MM"  readonly value="@Model.BirthDate"/>
             <span asp-validation-for="BirthDate" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
@@ -130,7 +130,7 @@
             <label asp-for="ApplicationTime" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <input asp-for="ApplicationTime" class="form-control" placeholder="yyyy-MM-dd" />
+            <input id="ApplicationTime" name="ApplicationTime" class="form-control" placeholder="yyyy-MM-dd" readonly value="@Model.ApplicationTime" />
             <span asp-validation-for="ApplicationTime" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
@@ -141,7 +141,7 @@
             <label asp-for="ActiveApplicationTime" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <input asp-for="ActiveApplicationTime" class="form-control" placeholder="yyyy-MM-dd" />
+            <input id="ActiveApplicationTime" name="ActiveApplicationTime" class="form-control" placeholder="yyyy-MM-dd" readonly  value="@Model.ActiveApplicationTime"/>
             <span asp-validation-for="ActiveApplicationTime" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>

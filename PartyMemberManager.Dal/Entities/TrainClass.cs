@@ -30,7 +30,14 @@ namespace PartyMemberManager.Dal.Entities
         /// 学期
         /// </summary>
         [DisplayName("学期")]
+        [NotMapped]
         public string TermDisplay { get => Term.ToString(); }
+
+        /// <summary>
+        /// 年度学期
+        /// </summary>
+        [DisplayName("学年/学期")]
+        public string YearTerm { get; set; }
         /// <summary>
         /// 培训班名称
         /// </summary>
@@ -79,7 +86,7 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("开始时间")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public string StartTime { get; set; }
+        public DateTime StartTime { get; set; }
 
         /// <summary>
         /// 平时成绩比例

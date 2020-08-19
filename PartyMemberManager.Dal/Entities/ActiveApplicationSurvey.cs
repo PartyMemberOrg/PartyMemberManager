@@ -1,4 +1,5 @@
-﻿using PartyMemberManager.Core.Enums;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using PartyMemberManager.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,6 +17,23 @@ namespace PartyMemberManager.Dal.Entities
         [StringLength(4, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Year { get; set; }
+
+        /// <summary>
+        /// 学期
+        /// </summary>
+        [DisplayName("学期")]
+        public Term Term { get; set; }
+
+        /// <summary>
+        /// 学期
+        /// </summary>
+        [DisplayName("学期")]
+        public string TermDisplay { get => Term.ToString(); }
+        /// <summary>
+        /// 年度学期
+        /// </summary>
+        [DisplayName("学年/学期")]
+        public string YearTerm { get; set; }
 
         /// <summary>
         /// 校区
@@ -44,22 +62,10 @@ namespace PartyMemberManager.Dal.Entities
         public string DepartmentDisplay { get => Department == null ? "" : Department.Name; }
 
         /// <summary>
-        /// 学期
-        /// </summary>
-        [DisplayName("学期")]
-        public Term Term { get; set; }
-
-        /// <summary>
-        /// 学期
-        /// </summary>
-        [DisplayName("学期")]
-        public string TermDisplay { get => Term.ToString(); }
-
-        /// <summary>
         /// 学生总人数
         /// </summary>
         [DisplayName("学生总人数")]
-        [Range(1,5000,ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [Range(1, 5000, ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public int Total { get; set; }
 
@@ -69,7 +75,7 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("拟培训人数")]
         [Range(1, 1000, ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public int TrainTotal{ get; set; }
+        public int TrainTotal { get; set; }
 
         /// <summary>
         /// 培训比例
