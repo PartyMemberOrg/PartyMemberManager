@@ -426,13 +426,13 @@ namespace PartyMemberManager.Controllers
                                 string remarkField = "备注";
                                 string name = row[nameField].ToString();
                                 string sex = row[sexField].ToString();
-                                DateTime birthday = Convert.ToDateTime(row[birthdayField].ToString());
+                                string birthday = row[birthdayField].ToString();
                                 string nation = row[nationField].ToString();
                                 string department = row[departmentField].ToString();
                                 string empNo = row[empNoField].ToString();
                                 string id = row[idField].ToString();
                                 string phone = row[phoneField].ToString();
-                                DateTime time = Convert.ToDateTime(row[timeField].ToString());
+                                string time = row[timeField].ToString();
                                 string remark = row[remarkField].ToString();
                                 //跳过姓名为空的记录
                                 if (string.IsNullOrEmpty(name)) continue;
@@ -457,13 +457,13 @@ namespace PartyMemberManager.Controllers
                                 Guid departmentId = departmentData.Id;
                                 partyActivist.Name = name;
                                 partyActivist.Sex = Sex.Parse<Sex>(sex);
-                                partyActivist.BirthDate = birthday;
+                                partyActivist.BirthDate = birthdayValue;
                                 partyActivist.NationId = nationId;
                                 partyActivist.DepartmentId = departmentId;
                                 partyActivist.JobNo = empNo;
                                 partyActivist.IdNumber = id;
                                 partyActivist.Phone = phone;
-                                partyActivist.ApplicationTime = time;
+                                partyActivist.ApplicationTime = timeValue;
                             }
                             else
                             {
@@ -481,11 +481,11 @@ namespace PartyMemberManager.Controllers
                                 string titleField = "担任职务";
                                 string name = row[nameField].ToString();
                                 string sex = row[sexField].ToString();
-                                DateTime birthday = Convert.ToDateTime(row[birthdayField].ToString());
+                                string birthday = row[birthdayField].ToString();
                                 string nation = row[nationField].ToString();
                                 string id = row[idField].ToString();
                                 string phone = row[phoneField].ToString();
-                                DateTime time = Convert.ToDateTime(row[timeField].ToString());
+                                string time = row[timeField].ToString();
                                 string remark = row[remarkField].ToString();
                                 string studentNo = row[studentNoField].ToString();
                                 string college = row[collegeField].ToString();
@@ -514,15 +514,15 @@ namespace PartyMemberManager.Controllers
                                 Guid departmentId = departmentData.Id;
                                 partyActivist.Name = name;
                                 partyActivist.Sex = Sex.Parse<Sex>(sex);
-                                partyActivist.BirthDate = birthday;
+                                partyActivist.BirthDate = birthdayValue;
                                 partyActivist.NationId = nationId;
                                 partyActivist.DepartmentId = departmentId;
                                 partyActivist.JobNo = studentNo;
                                 partyActivist.IdNumber = id;
                                 partyActivist.Phone = phone;
-                                partyActivist.ApplicationTime = time;
+                                partyActivist.ApplicationTime = timeValue;
                                 //该字段不允许为空有问题
-                                partyActivist.ActiveApplicationTime = time;
+                                partyActivist.ActiveApplicationTime = timeValue;
                                 partyActivist.Class = @class;
                                 partyActivist.Duty = title;
                             }

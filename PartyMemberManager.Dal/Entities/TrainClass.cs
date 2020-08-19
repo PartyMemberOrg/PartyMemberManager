@@ -37,7 +37,12 @@ namespace PartyMemberManager.Dal.Entities
         /// 年度学期
         /// </summary>
         [DisplayName("学年/学期")]
-        public string YearTerm { get; set; }
+        public Guid YearTermId { get; set; }
+        /// <summary>
+        /// 年度学期
+        /// </summary>
+        [DisplayName("学年/学期")]
+        public YearTerm YearTerm { get; set; }
         /// <summary>
         /// 培训班名称
         /// </summary>

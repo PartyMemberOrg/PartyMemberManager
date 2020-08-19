@@ -179,7 +179,8 @@ namespace PartyMemberManager.Controllers
                     {
                         trainClassInDb.Year = trainClass.Year;
                         trainClassInDb.Term = trainClass.Term;
-                        trainClassInDb.YearTerm= trainClass.Year + "-" + (int.Parse(trainClass.Year) + 1) + "学年" + trainClass.Term;
+                        //trainClassInDb.YearTerm= trainClass.Year + "-" + (int.Parse(trainClass.Year) + 1) + "学年" + trainClass.Term;
+                        trainClassInDb.YearTermId = trainClass.YearTermId;
                         trainClassInDb.Name = trainClass.Name;
                         trainClassInDb.TrainClassTypeId = trainClass.TrainClassTypeId;
                         trainClassInDb.TrainClassType = trainClass.TrainClassType;
@@ -204,7 +205,7 @@ namespace PartyMemberManager.Controllers
                         trainClass.Ordinal = _context.TrainClasses.Count() + 1;
                         if (CurrentUser.Roles == Role.学院党委)
                             trainClass.DepartmentId = CurrentUser.DepartmentId.Value;
-                        trainClass.YearTerm = trainClass.Year + "-" + (int.Parse(trainClass.Year) + 1) + "学年" + trainClass.Term;
+                        //trainClass.YearTerm = trainClass.Year + "-" + (int.Parse(trainClass.Year) + 1) + "学年" + trainClass.Term;
                         _context.Add(trainClass);
                     }
                     await _context.SaveChangesAsync();

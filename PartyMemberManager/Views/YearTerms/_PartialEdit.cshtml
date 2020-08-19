@@ -1,0 +1,37 @@
+﻿@model PartyMemberManager.Dal.Entities.YearTerm
+
+<div class="row form-padding-top">
+    <div class="col-md-12">
+        <form asp-action="Edit">
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="StartYear" asp-required="true" class="control-label"></label>
+                    </div>
+                    <div>
+                        <input asp-for="StartYear" class="form-control" style="float:left;width:70px" />
+                        <span style="float:left;padding:5px 5px;">—</span>
+                        <input asp-for="EndYear" class="form-control" style="float:left;width:70px" readonly="readonly" />
+                        <span style="float:left;padding:5px 5px">学年</span>
+                        <span asp-validation-for="StartYear" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="Term" asp-required="true" class="control-label"></label>
+                    </div>
+                    <div>
+                        <select asp-for="Term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="form-control" style="width:165px;">
+                            <optipn>-请选择学期-</optipn>
+                        </select>
+                        <span asp-validation-for="Term" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

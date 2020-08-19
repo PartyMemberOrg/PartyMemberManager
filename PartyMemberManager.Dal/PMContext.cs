@@ -27,6 +27,7 @@ namespace PartyMemberManager.Dal
         public virtual DbSet<Nation> Nations { get; set; }
         public virtual DbSet<CadreTrain> CadreTrains { get; set; }
         public virtual DbSet<ActiveApplicationSurvey> ActiveApplicationSurveies { get; set; }
+        public virtual DbSet<YearTerm> YearTerms { get; set; }
         public virtual DbSet<TrainClass> TrainClasses { get; set; }
         public virtual DbSet<PartyActivist> PartyActivists { get; set; }
         public virtual DbSet<ActivistTrainResult> ActivistTrainResults { get; set; }
@@ -66,6 +67,10 @@ namespace PartyMemberManager.Dal
 
             modelBuilder.Entity<Department>().HasKey(d => d.Id);
 
+            modelBuilder.Entity<YearTerm>()
+                .HasKey(y => y.Id);
+            modelBuilder.Entity<YearTerm>().HasIndex(y => new { y.StartYear, y.Term }).IsUnique(true);
+
             modelBuilder.Entity<TrainClass>().HasKey(t => t.Id);
             modelBuilder.Entity<TrainClass>()
                 .HasOne(t => t.TrainClassType)
@@ -76,6 +81,12 @@ namespace PartyMemberManager.Dal
                 .HasOne(o => o.Department)
                 .WithMany()
                 .HasForeignKey(o => o.DepartmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TrainClass>()
+                .HasOne(t => t.YearTerm)
+                .WithMany()
+                .HasForeignKey(t=>t.YearTermId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ActiveApplicationSurvey>()

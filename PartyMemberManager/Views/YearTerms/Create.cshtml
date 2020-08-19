@@ -1,0 +1,24 @@
+﻿@model PartyMemberManager.Dal.Entities.YearTerm
+
+@{
+    Layout = "_LayoutEmpty";
+    ViewData["Title"] = "Create";
+}
+<partial name="_PartialEdit" model="@Model" />
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/lib/layui/layui.js"></script>
+    <script>
+        layui.use('form', function () {
+            var form = layui.form;
+        });
+        $(document).ready(function () {
+            $("#StartYear").change(function () {
+                var year = parseInt($(this).val());
+                $("#EndYear").val(year + 1);
+            });
+        });
+    </script>
+}

@@ -8,6 +8,7 @@ using PartyMemberManager.Core.Helpers;
 using PartyMemberManager.Dal.Entities;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.VisualBasic.CompilerServices;
+using System.Net.Http.Headers;
 
 namespace PartyMemberManager.Dal
 {
@@ -29,6 +30,8 @@ namespace PartyMemberManager.Dal
             InitNations(context);
             //初始化培训班类型
             InitTrainClassTypes(context);
+            //初始化学期
+            InitYearTerms(context);
             #endregion
             context.SaveChanges();
         }
@@ -52,7 +55,7 @@ namespace PartyMemberManager.Dal
                 Controller = null,
                 Action = null,
                 Ordinal = 1,
-                Roles =Role.学校党委| Role.系统管理员 | Role.超级管理员
+                Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员
             };
             context.Modules.Add(module);
             Module childModule = new Module
@@ -76,7 +79,7 @@ namespace PartyMemberManager.Dal
                 Controller = "ModuleFunctions",
                 Action = null,
                 Ordinal = 103,
-                Roles =  Role.系统管理员 | Role.超级管理员
+                Roles = Role.系统管理员 | Role.超级管理员
             };
             context.Modules.Add(childModule);
             childModule = new Module
@@ -124,6 +127,18 @@ namespace PartyMemberManager.Dal
                 Controller = "Nations",
                 Action = null,
                 Ordinal = 107,
+                Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(childModule);
+            childModule = new Module
+            {
+                ParentModuleId = module.Id,
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "学期管理",
+                Controller = "YearTerms",
+                Action = null,
+                Ordinal = 108,
                 Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员
             };
             context.Modules.Add(childModule);
@@ -339,7 +354,7 @@ namespace PartyMemberManager.Dal
                     CreateTime = DateTime.Now,
                     Ordinal = context.Departments.Local.Count() + 1,
                     Name = item.Split(" ")[0],
-                    Code= item.Split(" ")[1]
+                    Code = item.Split(" ")[1]
                 };
                 if (item.Contains("长青"))
                 {
@@ -409,6 +424,39 @@ namespace PartyMemberManager.Dal
             #endregion
         }
 
+        private static void InitYearTerms(PMContext context)
+        {
+            if (context.YearTerms.Any())
+                return;
+
+            #region 初始化学期
+            //计算当前的学年和学期
+            int year = DateTime.Today.Year;
+            int month = DateTime.Today.Month;
+            Term term = Term.第一学期;
+            if (month > 2 && month < 8)
+            {
+                term = Term.第二学期;
+                year--;
+            }
+            else
+            {
+                term = Term.第一学期;
+                if (month <= 2)
+                    year--;
+            }
+            YearTerm yearTerm = new YearTerm
+            {
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                IsDeleted = false,
+                Ordinal = 1,
+                StartYear = year,
+                Term = term
+            };
+            context.YearTerms.Add(yearTerm);
+            #endregion
+        }
 
     }
 }
