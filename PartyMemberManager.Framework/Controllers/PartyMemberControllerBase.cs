@@ -84,9 +84,8 @@ namespace PartyMemberManager.Framework.Controllers
         /// <param name="term"></param>
         /// <param name="departmentId"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetTrainClassDatas(Guid? trainClassTypeId, int? year, Term? term, Guid? departmentId)
+        public async Task<IActionResult> GetTrainClassDatas(Guid? trainClassTypeId, Guid? yearTermId, Guid? departmentId)
         {
-            string strYear = year.ToString();
             JsonResultModel<TrainClass> jsonResult = new JsonResultModel<TrainClass>
             {
                 Code = 0,
@@ -101,13 +100,9 @@ namespace PartyMemberManager.Framework.Controllers
                 {
                     filter = filter.And(d => d.TrainClassTypeId == trainClassTypeId);
                 }
-                if (year != null)
+                if (yearTermId != null)
                 {
-                    filter = filter.And(d => d.Year == strYear);
-                }
-                if (term != null)
-                {
-                    filter = filter.And(d => d.Term == term);
+                    filter = filter.And(d => d.YearTermId == yearTermId);
                 }
                 if (departmentId != null)
                 {

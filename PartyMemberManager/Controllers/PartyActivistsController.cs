@@ -318,25 +318,8 @@ namespace PartyMemberManager.Controllers
         /// <returns></returns>
         public IActionResult Import()
         {
-            //计算当前的学年和学期
-            int year = DateTime.Today.Year;
-            int month = DateTime.Today.Month;
-            Term term = Term.第一学期;
-            if (month > 2 && month < 8)
-            {
-                term = Term.第二学期;
-                year--;
-            }
-            else
-            {
-                term = Term.第一学期;
-                if (month <= 2)
-                    year--;
-            }
             PartyActivistImportViewModel model = new PartyActivistImportViewModel
             {
-                YearBegin = year,
-                Term = term,
                 DepartmentId = CurrentUser.DepartmentId.HasValue ? CurrentUser.DepartmentId.Value : Guid.Empty,
             };
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
@@ -348,6 +331,7 @@ namespace PartyMemberManager.Controllers
                 ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.Where(d => d.Code.StartsWith("4")).OrderByDescending(d => d.Code), "Id", "Name");
             else
                 ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderBy(d => d.Code), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term), "Id", "Name");
             return View(model);
         }
 

@@ -1,31 +1,17 @@
 ﻿@model PartyMemberManager.Dal.Entities.TrainClass
 @{ 
-    var yearNext=string.IsNullOrEmpty(Model.Year)? null : ((int.Parse(Model.Year) + 1).ToString());
+    //var yearNext=string.IsNullOrEmpty(Model.Year)? null : ((int.Parse(Model.Year) + 1).ToString());
 }
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 <input type="hidden" asp-for="Id" />
 <div class="form-group">
     <div class="row">
         <div class="@LabelDivDefaultClass">
-            <label asp-for="Year" asp-required="true" class="control-label"></label>
-        </div>
-        <div class="@InputDivDefaultClass layui-input-inline">
-            <input asp-for="Year" class="form-control" style="width:80px;display:inline" id="year" placeholder="yyyy" readonly value="@Model.Year" />-
-            <input type="text" class="form-control" style="width:80px;display:inline" id="yearAdd" readonly value="@yearNext" />
-            <span asp-validation-for="Year" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
-        </div>
-    </div>
-</div>
-<div class="form-group">
-    <div class="row">
-        <div class="@LabelDivDefaultClass">
-            <label asp-for="Term" asp-required="true" class="control-label"></label>
+            <label asp-for="YearTermId" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <select asp-for="Term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="form-control">
-                <optipn>-请选择学期-</optipn>
-            </select>
-            <span asp-validation-for="Term" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+            <select asp-for="YearTermId" class="form-control" asp-items="@ViewBag.YearTermId"></select>
+            <span asp-validation-for="YearTermId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
 </div>

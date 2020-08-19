@@ -16,29 +16,13 @@
     <div class="form-group">
         <div class="row">
             <div class="@LabelDivDefaultClass">
-                <label asp-for="YearBegin" asp-required="false" class="control-label"></label>
+                <label asp-for="YearTermId" asp-required="false" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">
-                <div>
-                    <input asp-for="YearBegin" class="layui-input" style="float:left;width:80px" />
-                    <span style="float:left;">—</span>
-                    <input asp-for="YearEnd" class="layui-input" style="float:left;width:80px" readonly="readonly" />
-                    <span style="float:left;">学年</span>
-                </div>
-                <span asp-validation-for="YearBegin" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="@LabelDivDefaultClass">
-                <label asp-for="Term" asp-required="false" class="control-label"></label>
-            </div>
-            <div class="@InputDivDefaultClass">
-                <select asp-for="Term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="layui-input">
+                <select asp-for="YearTermId" asp-items="@ViewBag.YearTermId" class="layui-input">
                     <option value="">-请选择学期-</option>
                 </select>
-                <span asp-validation-for="Term" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+                <span asp-validation-for="YearTermId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
             </div>
         </div>
     </div>
@@ -93,12 +77,7 @@
             $("#TrainClassTypeId").change(function () {
                 filterTrainClass();
             });
-            $("#YearBegin").change(function () {
-                var year = parseInt($(this).val());
-                $("#YearEnd").val(year + 1);
-                filterTrainClass();
-            });
-            $("#Term").change(function () {
+            $("#YearTermId").change(function () {
                 filterTrainClass();
             });
             $("#DepartmentId").change(function () {
@@ -109,11 +88,10 @@
         /**过滤培训班 */
         function filterTrainClass() {
             var url = '@Url.Action("GetTrainClassDatas")';
-            var trainClassTypeId = parseInt($("#TrainClassTypeId").val());
-            var year = parseInt($("#YearBegin").val());
-            var term = parseInt($("#Term").val());
-            var departmentId = parseInt($("#DepartmentId").val());
-            var where = { trainClassTypeId: trainClassTypeId, year: year, term: term, departmentId: departmentId };
+            var trainClassTypeId = $("#TrainClassTypeId").val();
+            var yearTermId = $("#YearTermId").val();
+            var departmentId = $("#DepartmentId").val();
+            var where = { trainClassTypeId: trainClassTypeId, yearTermId: yearTermId, departmentId: departmentId };
             $.ajax({
                 url: url,
                 data: where,

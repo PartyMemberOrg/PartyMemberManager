@@ -14,29 +14,17 @@ namespace PartyMemberManager.Dal.Entities
     public class TrainClass : EntityBase
     {
         /// <summary>
-        /// 年度
-        /// </summary>
-        [DisplayName("年度")]
-        [StringLength(4, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public string Year { get; set; }
-        /// <summary>
-        /// 学期
-        /// </summary>
-        [DisplayName("学期")]
-        public Term Term { get; set; }
-
-        /// <summary>
         /// 学期
         /// </summary>
         [DisplayName("学期")]
         [NotMapped]
-        public string TermDisplay { get => Term.ToString(); }
+        public string TermDisplay { get => YearTerm == null ? "" : YearTerm.Name; }
 
         /// <summary>
         /// 年度学期
         /// </summary>
         [DisplayName("学年/学期")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public Guid YearTermId { get; set; }
         /// <summary>
         /// 年度学期

@@ -17,21 +17,10 @@ namespace PartyMemberManager.Models
     {
 
         /// <summary>
-        /// 年度
-        /// </summary>
-        [DisplayName("年度")]
-        [Range(1900,2999)]
-        public int YearBegin { get; set; }
-        /// <summary>
-        /// 年度
-        /// </summary>
-        [DisplayName("年度")]
-        public int YearEnd { get => YearBegin + 1; }
-        /// <summary>
         /// 学期
         /// </summary>
         [DisplayName("学期")]
-        public Term? Term { get; set; }
+        public Guid? YearTermId { get; set; }
 
         /// <summary>
         /// 培训班类型

@@ -5,7 +5,7 @@
 }
 <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px">
     <div class="layui-input-inline" style="width:80px">
-        <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,800)" class="layui-btn layui-btn-primary">+添加</a>
+        <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',550,460)" class="layui-btn layui-btn-primary">+添加</a>
     </div>
     <div>
         <label class="layui-form-label" style="padding:5px;width:100px">培训班类型:</label>
@@ -101,14 +101,14 @@
                     , cols: [[
                         //{ type: 'checkbox' }
                         //,
-            { field: 'yearTerm', title: '学年/学期', align: 'center' },
-            { field: 'name', title:'名称', align: 'center' },
+                        { field: 'termDisplay', title: '学年/学期', align: 'center' },
+                        { field: 'name', title:'名称', align: 'center' },
                         { field: 'trainClassTypeDisplay', title: '培训班类型', align: 'center', templet: '#optClassTypeNameTpl' },
                         { field: 'departmentDisplay', title: '所属部门', align: 'center', templet: '#optDepartmentNameTpl' },
                         { field: 'startTime', title: '开始时间', align: 'center', templet: function (d) { return formatDate(d.startTime, 'yyyy-MM-dd');}},
-            { field: 'psGradeProportion', title: '平时成绩比例', align: 'center' },
-            { field: 'csGradeProportion', title: '考试成绩比例', align: 'center' },
-            { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
+                        { field: 'psGradeProportion', title: '平时成绩比例', align: 'center' },
+                        { field: 'csGradeProportion', title: '考试成绩比例', align: 'center' },
+                        { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);
@@ -151,7 +151,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 800, 800);
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 550, 460);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);
