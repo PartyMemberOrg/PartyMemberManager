@@ -154,6 +154,7 @@ namespace PartyMemberManager.Framework.Controllers
         /// <returns></returns>
         public bool TryParseDate(string dateString, out DateTime dateValue)
         {
+            //TODO:考虑用正则表达式先判断，再转换
             if (!DateTime.TryParseExact(dateString, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out dateValue))
             {
                 if (!DateTime.TryParseExact(dateString, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out dateValue))
@@ -187,6 +188,7 @@ namespace PartyMemberManager.Framework.Controllers
         /// <returns></returns>
         public bool TryParseYearMonth(string yearMonthString, out DateTime yearMonthValue)
         {
+            //TODO:考虑用正则表达式先判断，再转换
             if (!DateTime.TryParseExact(yearMonthString, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out yearMonthValue))
             {
                 if (!DateTime.TryParseExact(yearMonthString, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out yearMonthValue))
