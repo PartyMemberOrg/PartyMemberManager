@@ -160,7 +160,47 @@ namespace PartyMemberManager.Controllers
                 ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
             return View(partyActivist);
         }
+        /// <summary>
+        /// 删除数据（通过ajax调用)
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost, ActionName("Delete")]
+        public override  async Task<IActionResult> Delete(Guid? id)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "数据删除成功"
+            };
 
+            try
+            {
+                if (id == null)
+                    throw new PartyMemberException("未传入删除项目的Id");
+                var data = await _context.Set<PartyActivist>().SingleOrDefaultAsync(m => m.Id == id);
+                var dataResult = await _context.Set<ActivistTrainResult>().SingleOrDefaultAsync(m => m.PartyActivistId== id);
+                if (data == null)
+                    throw new PartyMemberException("未找到要删除的数据");
+                ValidateDeleteObject(data);
+                _context.Set<ActivistTrainResult>().Remove(dataResult);
+                _context.Set<PartyActivist>().Remove(data);
+                await _context.SaveChangesAsync();
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public override async Task<IActionResult> Save([Bind("TrainClassId,ApplicationTime,ActiveApplicationTime,Duty,Name,JobNo,IdNumber,Sex,PartyMemberType,BirthDate,NationId,Phone,DepartmentId,Class,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PartyActivist partyActivist)

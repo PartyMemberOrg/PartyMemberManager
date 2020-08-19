@@ -6,8 +6,8 @@
 
 <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px">
     @*<div class="layui-input-inline" style="width:60px">
-        <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,800)" class="layui-btn layui-btn-primary">+添加</a>
-    </div>*@
+            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,800)" class="layui-btn layui-btn-primary">+添加</a>
+        </div>*@
     @if (CurrentUser.Roles > Role.学院党委)
     {
         <div>
@@ -28,17 +28,27 @@
         </div>
     </div>
     <div>
-        <div class="layui-input-inline" style="width:80px;margin-top:5px">
-            <input type="checkbox" name="isPass" lay-skin="primary" id="isPass" value="false">是否合格
+        <label class="layui-form-label" style="padding:5px">是否合格:</label>
+        <div class="layui-input-inline" style="width:80px;">
+            <select name="isPass" class="layui-input" id="isPass">
+                <option value="">-全部-</option>
+                <option value="true">-合格-</option>
+                <option value="false">-不合格-</option>
+            </select>
         </div>
     </div>
     <div>
-        <div class="layui-input-inline" style="width:130px;margin-top:5px">
-            <input type="checkbox" name="isPrint" lay-skin="primary" id="isPrint" value="false">是否已打印证书
+        <label class="layui-form-label" style="padding:5px;width:100px">是否打印证书:</label>
+        <div class="layui-input-inline" style="width:80px;">
+            <select name="isPrint" class="layui-input" id="isPrint">
+                <option value="">-全部-</option>
+                <option value="true">-已打印-</option>
+                <option value="false">-未打印-</option>
+            </select>
         </div>
     </div>
     <div>
-        <div class="layui-input-inline" style="width:300px">
+        <div class="layui-input-inline" style="width:200px">
             <input name="keyword" type="text" class="layui-input" placeholder="请输入学号/工号/姓名" id="keyword" />
         </div>
     </div>
@@ -49,8 +59,29 @@
             </a>
         </div>
     </div>
+    <div>
+        <div class="layui-input-inline" style="width:120px">
+            <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="importExcel()">
+                <i class="layui-icon layui-icon-loading" style="font-size: 14px; color: #FFFFFF;"></i>导入Excel
+            </a>
+        </div>
+    </div>
+    <div>
+        <div class="layui-input-inline" style="width:80px">
+            <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="addToPotential()">
+                <i class="layui-icon layui-icon-release" style="font-size: 14px; color: #FFFFFF;"></i>列为发展对象
+            </a>
+        </div>
+    </div>
 </div>
 <table class="layui-hide" id="datatable"></table>
+<div>
+    <div class="layui-input-inline" style="width:80px;margin-top:10px">
+        <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="saveGrade()">
+            <i class="layui-icon layui-icon-set-fill" style="font-size: 14px; color: #FFFFFF;"></i>保存成绩
+        </a>
+    </div>
+</div>
 @Html.AntiForgeryToken()
 <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
 @section Scripts{
@@ -110,8 +141,8 @@
                     , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
                     , id: 'dataGrid'
                     , cols: [[
-                        //{ type: 'checkbox' }
-                        //,
+                        { type: 'checkbox', fixed: 'left' },
+                        //{ field: 'gid', title: 'Id', sort: 'true', templet: '#optIdoTpl',hide:'true'},
                         { field: 'trainClassYearDisplay', title: '年份', align: 'center', templet: '#optTrainClassYearTpl'},
                         { field: 'trainClassTermDisplay', title: '学期', align: 'center', templet: '#optTrainClassTermTpl'},
                         { field: 'trainClassDisplay', title: '培训班', align: 'center', templet: '#optTrainClassDisplayTpl'},
@@ -120,13 +151,14 @@
                         { field: 'psGrade', title: '平时成绩', align: 'center',edit: 'text' },
                         { field: 'csGrade', title: '考试成绩', align: 'center',edit: 'text' },
                         { field: 'totalGrade', title: '总成绩', align: 'center' },
-                        { field: 'isPass', title: '是否合格', align: 'center', templet: function (d) { return d.isDeleted ? "是" : "否" } },
-                        { field: 'isPrint', title: '是否已打印', align: 'center', templet: function (d) { return d.isDeleted ? "是" : "否" } },
+                        { field: 'isPass', title: '是否合格', align: 'center', templet: function (d) { return d.isPass ? "是" : "否" } },
+                        { field: 'isPrint', title: '是否已打印', align: 'center', templet: function (d) { return d.isPrint ? "是" : "否" } },
                         { field: 'printTime', title: '打印时间', align: 'center'},
                         { field: 'id', title: '操作',  align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);
+
                     }
                 });
             });
@@ -152,6 +184,31 @@
                 });
             });
         }
+        /*保存成绩*/
+        function saveGrade() {
+            var tableId = "dataGrid";
+            var datasSubmit = new Array();
+            layui.use('table', function () {
+                var datas = layui.table.cache[tableId];
+                for (i = 0; i < datas.length; i++)
+                {
+                    var item = datas[i].id + "," + datas[i].psGrade + "," + datas[i].csGrade;
+                    datasSubmit.push(item);
+                }
+            });
+            $.ajax({
+                type:'post',
+                url: '@Url.Action("SaveGradeData")',
+                traditional: true,
+                data: { datas: datasSubmit },
+                dataType:'json',
+                success: function (data) {
+                    layer.msg(data.message);
+                    InitTable();
+                }
+            });
+
+        }
         /**显示隐藏滚动条 */
         function showHideScrollBars(count) {
             if (count > 11) {
@@ -168,8 +225,8 @@
             contextMenu.addMenuItem("打印", function () {
                 showEdit('@Url.Action("Print")'+'/' + id, '@Url.Action("Save")', '打印', 800, 800);
             })
-            contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 800, 800);
+            contextMenu.addMenuItem("列为发展对象", function () {
+                showEdit('@Url.Action("Edit","PotentialMembers")'+'/' + id, '@Url.Action("Save", "PotentialMembers")', '编辑', 800, 800);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);
@@ -202,6 +259,9 @@
     </script>
     <script type="text/html" id="optPartyActivistNameoTpl">
         {{d.nameDisplay}}
+    </script>
+    <script type="text/html" id="optIdoTpl">
+        {{d.id}}
     </script>
 }
 

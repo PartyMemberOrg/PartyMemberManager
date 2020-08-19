@@ -30,9 +30,9 @@ namespace PartyMemberManager.Controllers
         {
             var pMContext = _context.TrainClasses.Include(t => t.TrainClassType);
             if (CurrentUser.Roles == Role.学院党委)
-                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.Where(d => d.Code.StartsWith("4")).OrderByDescending(d => d.Code), "Id", "Name");
+                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.Where(d => d.Code.StartsWith("4")).OrderByDescending(d => d.Ordinal), "Id", "Name");
             else
-                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderBy(d => d.Code), "Id", "Name");
+                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderByDescending(d => d.Ordinal), "Id", "Name");
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(await pMContext.ToListAsync());
         }

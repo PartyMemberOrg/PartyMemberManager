@@ -1,12 +1,13 @@
-﻿@model IEnumerable<PartyMemberManager.Dal.Entities.PartyActivist>
+﻿@model IEnumerable<PartyMemberManager.Dal.Entities.PotentialMember>
 
 @{
     ViewData["Title"] = "Index";
 }
+
+@*<p style="margin-bottom:14px;">
+        <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
+    </p>*@
 <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px">
-    <div class="layui-input-inline" style="width:60px">
-        <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,900)" class="layui-btn layui-btn-primary">+添加</a>
-    </div>
     <div>
         <label class="layui-form-label" style="padding:5px">年份:</label>
         <div class="layui-input-inline" style="width:80px">
@@ -52,13 +53,6 @@
             </a>
         </div>
     </div>
-    <div>
-        <div class="layui-input-inline" style="width:120px">
-            <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="importExcel()">
-                <i class="layui-icon layui-icon-loading" style="font-size: 14px; color: #FFFFFF;"></i>导入Excel
-            </a>
-        </div>
-    </div>
 </div>
 <table class="layui-hide" id="datatable"></table>
 @Html.AntiForgeryToken()
@@ -70,7 +64,7 @@
         var tableObject = null;
         $(document).ready(function () {
             $("body").width($(window).width());
-                InitTable();
+            InitTable();
         });
 
         function Delete(id) {
@@ -104,7 +98,7 @@
             layui.use('table', function () {
                 var table = layui.table;
                 table.reload('dataGrid', {
-                    url: '@Url.Action("GetDatasWithFilter")'
+                    url: '@Url.Action("GetDatas")'
                 });
             });
         }
@@ -114,61 +108,31 @@
 
                 tableObject = table.render({
                     elem: '#datatable'
-                    , url: '@Url.Action("GetDatasWithFilter")'
+                    , url: '@Url.Action("GetDatas")'
                     , page: true //开启分页
                     , limits: [10, 20, 50]
                     , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
                     , id: 'dataGrid'
                     , cols: [[
-                        { type: 'checkbox' }
-                        ,
-                        { field: 'year', title: '年份', align: 'center', templet: '#optYearTpl'},
+                        //{ type: 'checkbox' }
+                        //,
+                        { field: 'year', title: '年份', align: 'center', templet: '#optYearTpl' },
                         { field: 'termDisplay', title: '学期', align: 'center', templet: '#optTermTpl' },
                         { field: 'trainClassDisplay', title: '培训班', align: 'center', templet: '#optTrainClassNameTpl' },
                         { field: 'name', title: '姓名', align: 'center' },
-                        { field: 'jobNo', title: '学号/工号', align: 'center' },
-                        { field: 'idNumber', title: '身份证号', align: 'center'},
+                        { field: 'jobNo', title: '工号/学号', align: 'center' },
+                        { field: 'idNumber', title: '身份证号', align: 'center' },
                         { field: 'sexDisplay', title: '性别', align: 'center' },
-                        { field: 'birthDate', title: '出生年月', align: 'center' },
-                        { field: 'nationDisplay', title: '民族', align: 'center', templet: '#optNationNameTpl' },
-                        { field: 'phone', title: '电话', align: 'center' },
                         { field: 'partyMemberTypeDisplay', title: '类别', align: 'center' },
                         { field: 'departmentDisplay', title: '所属部门', align: 'center', templet: '#optDepartmentNameTpl' },
                         { field: 'class', title: '班级', align: 'center' },
                         { field: 'applicationTime', title: '提交入党申请时间', align: 'center' },
                         { field: 'activeApplicationTime', title: '确定为入党积极分子时间', align: 'center' },
-                        { field: 'duty', title: '职务', align: 'center' },
-                        { field: 'id', title: '操作', align: 'center', templet: '#optTpl' }
+                        { field: 'potentialMemberTime', title: '列为发展对象时间', align: 'center' },
+                        { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);
-                    }
-                });
-                table.on('row(dataGrid)', function (obj) {
-                    var data = obj.data;
-                    layer.alert(JSON.stringify(data), {
-                        title: '当前行数据：'
-                    });
-                });
-            });
-        }
-                /**过滤数据 */
-        function tablefilter() {
-            //此处Id不要#号
-            var tableId = "dataGrid";
-            layui.use('table', function () {
-                var table = layui.table;
-                table.reload(tableId, {
-                    url: '@Url.Action("GetDatasWithFilter")'
-                    , where: {
-                        year: $("#kwyear").val(),
-                        departmentId: $("#department").val(),
-                        keyword: $("#keyword").val(),
-                        term: $("#term").val(),
-                        partyMemberType: $("#partyMemberType").val()
-                    }
-                    , done: function (res, curr, count) {
-                        fillPatientList(res,curr,count);showHideScrollBars(res.data.length);
                     }
                 });
             });
@@ -187,7 +151,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 800, 900);
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 500, 400);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);
@@ -200,30 +164,20 @@
             })
             contextMenu.showMenu(event);
         }
-
-        function importExcel() {
-            showImport('@Url.Action("Import")', '@Url.Action("Import")', '编辑', 400, 500, function () { location.reload(); });
-        }
     </script>
     <script type="text/html" id="optTpl">
         <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
             <img src="~/images/gridmenu1x.png" />
         </a>
     </script>
-    <script type="text/html" id="optDepartmentNameTpl">
-        {{d.departmentDisplay}}
+    <script type="text/html" id="optTrainClassYearTpl">
+        {{d.yearDisplay}}
     </script>
-    <script type="text/html" id="optNationNameTpl">
-        {{d.nationDisplay}}
+    <script type="text/html" id="optTrainClassTermTpl">
+        {{d.termDisplay}}
     </script>
-    <script type="text/html" id="optTrainClassNameTpl">
+    <script type="text/html" id="optTrainClassDisplayTpl">
         {{d.trainClassDisplay}}
-    </script>
-    <script type="text/html" id="optTermTpl">
-        {{d.trainClassTermDisplay}}
-    </script>
-    <script type="text/html" id="optYearTpl">
-        {{d.trainClassYearDisplay}}
     </script>
     <script type="text/javascript">
         layui.use('laydate', function () {
@@ -234,5 +188,5 @@
             });
         });
     </script>
-
 }
+
