@@ -250,7 +250,7 @@ namespace PartyMemberManager.Controllers
                         {
                             activistTrainResult.PsGrade = int.Parse(itemSub[1]);
                             activistTrainResult.CsGrade = int.Parse(itemSub[2]);
-                            activistTrainResult.TotalGrade = activistTrainResult.PartyActivist.TrainClass.PsGradeProportion * activistTrainResult.PsGrade / 100 + activistTrainResult.PartyActivist.TrainClass.CsGradeProportion * activistTrainResult.CsGrade / 100;
+                            activistTrainResult.TotalGrade =Math.Round(activistTrainResult.PartyActivist.TrainClass.PsGradeProportion * activistTrainResult.PsGrade / 100 + activistTrainResult.PartyActivist.TrainClass.CsGradeProportion * activistTrainResult.CsGrade / 100,2);
                             if (activistTrainResult.TotalGrade >= 60)
                                 activistTrainResult.IsPass = true;
                             else
