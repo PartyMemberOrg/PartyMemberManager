@@ -477,6 +477,8 @@ namespace PartyMemberManager.Controllers
                                 partyActivist.IdNumber = id;
                                 partyActivist.Phone = phone;
                                 partyActivist.ApplicationTime = time;
+                                //该字段不允许为空有问题
+                                partyActivist.ActiveApplicationTime = time;
                                 partyActivist.Class = @class;
                                 partyActivist.Duty = title;
                             }
