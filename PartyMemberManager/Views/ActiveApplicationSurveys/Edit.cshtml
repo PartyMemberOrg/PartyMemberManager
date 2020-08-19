@@ -37,4 +37,16 @@
             $("#Proportion").val(scale);
         }
     </script>
+    <script type="text/javascript">
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#year',
+                type: 'year',
+                done: function (value, date) {
+                    $("#yearAdd").val(value*1 + 1);
+                }
+            });
+        });
+    </script>
 }

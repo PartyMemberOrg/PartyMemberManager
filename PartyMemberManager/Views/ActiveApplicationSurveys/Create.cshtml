@@ -42,6 +42,9 @@
             laydate.render({
                 elem: '#year',
                 type: 'year',
+                done: function (value, date) {
+                    $("#yearAdd").val(value*1 + 1);
+                }
             });
         });
     </script>

@@ -167,7 +167,7 @@ namespace PartyMemberManager.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost, ActionName("Delete")]
-        public override  async Task<IActionResult> Delete(Guid? id)
+        public override async Task<IActionResult> Delete(Guid? id)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -180,7 +180,7 @@ namespace PartyMemberManager.Controllers
                 if (id == null)
                     throw new PartyMemberException("未传入删除项目的Id");
                 var data = await _context.Set<PartyActivist>().SingleOrDefaultAsync(m => m.Id == id);
-                var dataResult = await _context.Set<ActivistTrainResult>().SingleOrDefaultAsync(m => m.PartyActivistId== id);
+                var dataResult = await _context.Set<ActivistTrainResult>().SingleOrDefaultAsync(m => m.PartyActivistId == id);
                 if (data == null)
                     throw new PartyMemberException("未找到要删除的数据");
                 ValidateDeleteObject(data);
@@ -404,7 +404,7 @@ namespace PartyMemberManager.Controllers
                                 CreateTime = DateTime.Now,
                                 Ordinal = rowIndex,
                                 OperatorId = CurrentUser.Id,
-                                TrainClassId=trainClass.Id,
+                                TrainClassId = trainClass.Id,
                                 //Year=trainClass.Year,
                                 //Term=trainClass.Term,
                             };
@@ -422,13 +422,13 @@ namespace PartyMemberManager.Controllers
                                 string remarkField = "备注";
                                 string name = row[nameField].ToString();
                                 string sex = row[sexField].ToString();
-                                string birthday = row[birthdayField].ToString();
+                                DateTime birthday = Convert.ToDateTime(row[birthdayField].ToString());
                                 string nation = row[nationField].ToString();
                                 string department = row[departmentField].ToString();
                                 string empNo = row[empNoField].ToString();
                                 string id = row[idField].ToString();
                                 string phone = row[phoneField].ToString();
-                                string time = row[timeField].ToString();
+                                DateTime time = Convert.ToDateTime(row[timeField].ToString());
                                 string remark = row[remarkField].ToString();
                                 Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                                 Guid nationId = nationData.Id;
@@ -460,11 +460,11 @@ namespace PartyMemberManager.Controllers
                                 string titleField = "担任职务";
                                 string name = row[nameField].ToString();
                                 string sex = row[sexField].ToString();
-                                string birthday = row[birthdayField].ToString();
+                                DateTime birthday = Convert.ToDateTime(row[birthdayField].ToString());
                                 string nation = row[nationField].ToString();
                                 string id = row[idField].ToString();
                                 string phone = row[phoneField].ToString();
-                                string time = row[timeField].ToString();
+                                DateTime time = Convert.ToDateTime(row[timeField].ToString());
                                 string remark = row[remarkField].ToString();
                                 string studentNo = row[studentNoField].ToString();
                                 string college = row[collegeField].ToString();

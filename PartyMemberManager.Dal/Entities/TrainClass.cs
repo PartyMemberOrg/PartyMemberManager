@@ -79,7 +79,7 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("开始时间")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public string StartTime { get; set; }
+        public DateTime StartTime { get; set; }
 
         /// <summary>
         /// 平时成绩比例

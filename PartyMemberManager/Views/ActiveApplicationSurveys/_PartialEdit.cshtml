@@ -6,9 +6,21 @@
         <div class="@LabelDivDefaultClass">
             <label asp-for="Year" asp-required="true" class="control-label"></label>
         </div>
-        <div class="@InputDivDefaultClass">
-            <input asp-for="Year" class="form-control" id="year" value="@DateTime.Now.Year" />
+        <div class="@InputDivDefaultClass layui-input-inline">
+            <input asp-for="Year" class="form-control" style="width:80px;display:inline" id="year" placeholder="yyyy" readonly/>-
+            <input type="text" class="form-control" style="width:80px;display:inline" id="yearAdd" readonly/>
             <span asp-validation-for="Year" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="Term" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <select asp-for="Term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="form-control"></select>
+            <span asp-validation-for="Term" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
 </div>
@@ -41,17 +53,6 @@
         </div>
     </div>
 }
-<div class="form-group">
-    <div class="row">
-        <div class="@LabelDivDefaultClass">
-            <label asp-for="Term" asp-required="true" class="control-label"></label>
-        </div>
-        <div class="@InputDivDefaultClass">
-            <select asp-for="Term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="form-control"></select>
-            <span asp-validation-for="Term" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
-        </div>
-    </div>
-</div>
 <div class="form-group">
     <div class="row">
         <div class="@LabelDivDefaultClass">

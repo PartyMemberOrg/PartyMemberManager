@@ -29,6 +29,7 @@ namespace PartyMemberManager.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.ActiveApplicationSurveies = new SelectList(_context.ActiveApplicationSurveies.OrderBy(d => d.Ordinal), "Id", "YearTerm");
             return View(await _context.ActiveApplicationSurveies.Include(d => d.Department).OrderBy(a => a.Ordinal).GetPagedDataAsync(page));
         }
 
@@ -38,7 +39,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, string year, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<ActiveApplicationSurvey> jsonResult = new JsonResultDatasModel<ActiveApplicationSurvey>
             {
@@ -49,10 +50,6 @@ namespace PartyMemberManager.Controllers
             try
             {
                 var filter = PredicateBuilder.True<ActiveApplicationSurvey>();
-                if (!string.IsNullOrEmpty(year))
-                {
-                    filter = filter.And(d => d.Year == year);
-                }
                 if (departmentId != null)
                 {
                     filter = filter.And(d => d.DepartmentId == departmentId);
@@ -152,6 +149,7 @@ namespace PartyMemberManager.Controllers
                     {
                         activeApplicationSurveyInDb.Year = activeApplicationSurvey.Year;
                         activeApplicationSurveyInDb.Term = activeApplicationSurvey.Term;
+                        activeApplicationSurveyInDb.YearTerm = activeApplicationSurvey.Year + "-" + (int.Parse(activeApplicationSurvey.Year) + 1) + "学年" + activeApplicationSurvey.Term;
                         activeApplicationSurveyInDb.Total = activeApplicationSurvey.Total;
                         activeApplicationSurveyInDb.TrainTotal = activeApplicationSurvey.TrainTotal;
                         activeApplicationSurveyInDb.Proportion = (double)(activeApplicationSurvey.TrainTotal) / (double)activeApplicationSurvey.Total;
@@ -198,6 +196,7 @@ namespace PartyMemberManager.Controllers
                         activeApplicationSurvey.OperatorId = CurrentUser.Id;
                         activeApplicationSurvey.Ordinal = _context.ActiveApplicationSurveies.Count() + 1;
                         activeApplicationSurvey.IsDeleted = activeApplicationSurvey.IsDeleted;
+                        activeApplicationSurvey.YearTerm = activeApplicationSurvey.Year + "-" + (int.Parse(activeApplicationSurvey.Year) + 1) + "学年" + activeApplicationSurvey.Term;
                         _context.Add(activeApplicationSurvey);
                     }
                     await _context.SaveChangesAsync();

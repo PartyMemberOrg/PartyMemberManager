@@ -15,14 +15,14 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("提交入党申请时间")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public string ApplicationTime { get; set; }
+        public DateTime ApplicationTime { get; set; }
 
         /// <summary>
         /// 确定入党积极分子时间
         /// </summary>
         [DisplayName("确定入党积极分子时间")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public string ActiveApplicationTime { get; set; }
+        public DateTime ActiveApplicationTime { get; set; }
         /// <summary>
         /// 担任职务
         /// </summary>

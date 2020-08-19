@@ -93,9 +93,8 @@ namespace PartyMemberManager.Dal.Entities
         /// 出身年月
         /// </summary>
         [DisplayName("出生年月")]
-        [StringLength(20, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public string BirthDate { get; set; }
+        public DateTime BirthDate { get; set; }
 
         /// <summary>
         /// 民族
