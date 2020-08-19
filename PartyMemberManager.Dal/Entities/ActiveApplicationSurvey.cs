@@ -19,9 +19,20 @@ namespace PartyMemberManager.Dal.Entities
         public string Year { get; set; }
 
         /// <summary>
+        /// 学期
+        /// </summary>
+        [DisplayName("学期")]
+        public Term Term { get; set; }
+
+        /// <summary>
+        /// 学期
+        /// </summary>
+        [DisplayName("学期")]
+        public string TermDisplay { get => Term.ToString(); }
+        /// <summary>
         /// 年度学期
         /// </summary>
-        [DisplayName("年度学期")]
+        [DisplayName("学年/学期")]
         public string YearTerm { get; set; }
 
         /// <summary>
@@ -49,18 +60,6 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("所属部门")]
         public string DepartmentDisplay { get => Department == null ? "" : Department.Name; }
-
-        /// <summary>
-        /// 学期
-        /// </summary>
-        [DisplayName("学期")]
-        public Term Term { get; set; }
-
-        /// <summary>
-        /// 学期
-        /// </summary>
-        [DisplayName("学期")]
-        public string TermDisplay { get => Term.ToString(); }
 
         /// <summary>
         /// 学生总人数

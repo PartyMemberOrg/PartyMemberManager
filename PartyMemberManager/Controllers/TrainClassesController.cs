@@ -33,6 +33,10 @@ namespace PartyMemberManager.Controllers
                 ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.Where(d => d.Code.StartsWith("4")).OrderByDescending(d => d.Ordinal), "Id", "Name");
             else
                 ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderByDescending(d => d.Ordinal), "Id", "Name");
+            if (CurrentUser.Roles == Role.学院党委)
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Where(d => d.DepartmentId==CurrentUser.DepartmentId).OrderByDescending(d => d.Ordinal), "Id", "Name");
+            else
+                ViewBag.TrainClasses = new SelectList(_context.TrainClassTypes.OrderByDescending(d => d.Ordinal), "Id", "Name");
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(await pMContext.ToListAsync());
         }
@@ -175,6 +179,7 @@ namespace PartyMemberManager.Controllers
                     {
                         trainClassInDb.Year = trainClass.Year;
                         trainClassInDb.Term = trainClass.Term;
+                        trainClassInDb.YearTerm= trainClass.Year + "-" + (int.Parse(trainClass.Year) + 1) + "学年" + trainClass.Term;
                         trainClassInDb.Name = trainClass.Name;
                         trainClassInDb.TrainClassTypeId = trainClass.TrainClassTypeId;
                         trainClassInDb.TrainClassType = trainClass.TrainClassType;
@@ -199,6 +204,7 @@ namespace PartyMemberManager.Controllers
                         trainClass.Ordinal = _context.TrainClasses.Count() + 1;
                         if (CurrentUser.Roles == Role.学院党委)
                             trainClass.DepartmentId = CurrentUser.DepartmentId.Value;
+                        trainClass.YearTerm = trainClass.Year + "-" + (int.Parse(trainClass.Year) + 1) + "学年" + trainClass.Term;
                         _context.Add(trainClass);
                     }
                     await _context.SaveChangesAsync();

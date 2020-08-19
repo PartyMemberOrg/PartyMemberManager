@@ -60,15 +60,13 @@ namespace PartyMemberManager.Controllers
         }
 
         // GET: PotentialMembers/Create
-        public IActionResult Create()
+        public IActionResult Create(string datas)
         {
             PotentialMember potentialMember = new PotentialMember();
-            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
-            ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
             if (CurrentUser.Roles == Role.学院党委)
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "42").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "YearTerm");
             else
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "42").OrderBy(d => d.Ordinal), "Id", "YearTerm");
             return View(potentialMember);
         }
 
@@ -97,7 +95,7 @@ namespace PartyMemberManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("PotentialMemberTime,TrainClassId,Name,JobNo,IdNumber,Sex,PartyMemberType,BirthDate,NationId,Phone,DepartmentId,Class,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PotentialMember potentialMember)
+        public async Task<IActionResult> Save([Bind("PotentialMemberTime,TrainClassId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PotentialMember potentialMember,string datas)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -175,7 +173,71 @@ namespace PartyMemberManager.Controllers
             return Json(jsonResult);
         }
 
+        [HttpPost]
 
+        public async Task<IActionResult> AddToPotential(string[] datas, Guid trainClassId, DateTime potentialMemberTime)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "添加成功"
+            };
+            try
+            {
+                foreach (var item in datas)
+                {
+                    Guid id = Guid.Parse(item);
+                    PartyActivist partyActivist = await _context.PartyActivists.FindAsync(id);
+                    PotentialMember potentialMemberInDb = await _context.PotentialMembers.Where(d => d.JobNo == partyActivist.JobNo).FirstOrDefaultAsync();
+                    if (potentialMemberInDb != null)
+                    {
+                        jsonResult.Code = -2;
+                        jsonResult.Message += potentialMemberInDb.JobNo + " ";
+                    }
+                    PotentialMember potentialMember = new PotentialMember
+                    {
+                        Name = partyActivist.Name,
+                        JobNo = partyActivist.JobNo,
+                        TrainClassId = trainClassId,
+                        IdNumber = partyActivist.IdNumber,
+                        Sex = partyActivist.Sex,
+                        PartyMemberType = partyActivist.PartyMemberType,
+                        BirthDate = partyActivist.BirthDate,
+                        Nation = partyActivist.Nation,
+                        Phone = partyActivist.Phone,
+                        DepartmentId = partyActivist.DepartmentId,
+                        Class = partyActivist.Class,
+                        ActiveApplicationTime = partyActivist.ActiveApplicationTime,
+                        ApplicationTime = partyActivist.ApplicationTime,
+                        PotentialMemberTime = potentialMemberTime
+
+                    };
+                    _context.PotentialMembers.Add(potentialMember);
+                }
+                if (jsonResult.Code == -2)
+                    jsonResult.Message.Replace("添加成功", "已经存在的学号/工号:");
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "更新数据库错误";
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+
+        }
         private bool PotentialMemberExists(Guid id)
         {
             return _context.PotentialMembers.Any(e => e.Id == id);

@@ -1,4 +1,7 @@
 ﻿@model PartyMemberManager.Dal.Entities.TrainClass
+@{ 
+    var yearNext=string.IsNullOrEmpty(Model.Year)? null : ((int.Parse(Model.Year) + 1).ToString());
+}
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 <input type="hidden" asp-for="Id" />
 <div class="form-group">
@@ -6,8 +9,9 @@
         <div class="@LabelDivDefaultClass">
             <label asp-for="Year" asp-required="true" class="control-label"></label>
         </div>
-        <div class="@InputDivDefaultClass">
-            <input asp-for="Year" class="form-control" placeholder="yyyy" />
+        <div class="@InputDivDefaultClass layui-input-inline">
+            <input asp-for="Year" class="form-control" style="width:80px;display:inline" id="year" placeholder="yyyy" readonly value="@Model.Year" />-
+            <input type="text" class="form-control" style="width:80px;display:inline" id="yearAdd" readonly value="@yearNext" />
             <span asp-validation-for="Year" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
@@ -68,7 +72,7 @@
             <label asp-for="StartTime" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <input asp-for="StartTime" class="form-control" placeholder="yyyy-MM-dd" />
+            <input id="StartTime" name="StartTime" class="form-control" placeholder="yyyy-MM-dd"  readonly value="@Model.StartTime"/>
             <span asp-validation-for="StartTime" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>

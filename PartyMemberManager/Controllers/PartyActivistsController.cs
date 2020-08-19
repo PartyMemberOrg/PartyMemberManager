@@ -37,9 +37,9 @@ namespace PartyMemberManager.Controllers
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
             if (CurrentUser.Roles == Role.学院党委)
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "YearTerm");
             else
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.OrderBy(d => d.Ordinal), "Id", "YearTerm");
             return View(await partyActives.Include(d => d.TrainClass).OrderBy(a => a.Ordinal).GetPagedDataAsync(page));
         }
         /// <summary>
@@ -48,7 +48,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, string term, string partyMemberType, string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, Guid? trainClassId, string partyMemberType, string keyword, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<PartyActivist> jsonResult = new JsonResultDatasModel<PartyActivist>
             {
@@ -62,6 +62,10 @@ namespace PartyMemberManager.Controllers
                 if (departmentId != null)
                 {
                     filter = filter.And(d => d.DepartmentId == departmentId);
+                }
+                if (trainClassId != null)
+                {
+                    filter = filter.And(d => d.TrainClassId == trainClassId);
                 }
                 if (keyword != null)
                 {

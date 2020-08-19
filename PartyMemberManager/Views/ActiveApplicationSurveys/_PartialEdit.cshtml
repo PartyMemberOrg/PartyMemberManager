@@ -1,4 +1,7 @@
 ﻿@model PartyMemberManager.Dal.Entities.ActiveApplicationSurvey
+@{
+    var yearNext = string.IsNullOrEmpty(Model.Year) ? null : ((int.Parse(Model.Year) + 1).ToString());
+}
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 <input type="hidden" asp-for="Id" />
 <div class="form-group">
@@ -7,8 +10,8 @@
             <label asp-for="Year" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass layui-input-inline">
-            <input asp-for="Year" class="form-control" style="width:80px;display:inline" id="year" placeholder="yyyy" readonly/>-
-            <input type="text" class="form-control" style="width:80px;display:inline" id="yearAdd" readonly/>
+            <input asp-for="Year" class="form-control" style="width:80px;display:inline" id="year" placeholder="yyyy" readonly value="@Model.Year" />-
+            <input type="text" class="form-control" style="width:80px;display:inline" id="yearAdd" readonly value="@yearNext" />
             <span asp-validation-for="Year" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>

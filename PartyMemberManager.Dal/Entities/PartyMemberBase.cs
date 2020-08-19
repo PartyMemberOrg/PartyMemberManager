@@ -31,15 +31,9 @@ namespace PartyMemberManager.Dal.Entities
         /// <summary>
         /// 培训班
         /// </summary>
-        [DisplayName("培训班学期")]
+        [DisplayName("学年/学期")]
         [NotMapped]
-        public string TrainClassTermDisplay { get => TrainClass == null ? "" : TrainClass.Term.ToString(); }
-        /// <summary>
-        /// 培训班
-        /// </summary>
-        [DisplayName("培训班年份")]
-        [NotMapped]
-        public string TrainClassYearDisplay { get => TrainClass == null ? "" : TrainClass.Year; }
+        public string YearTermDisplay { get => TrainClass == null ? "" : TrainClass.YearTerm.ToString(); }
         /// <summary>
         /// 姓名
         /// </summary>
@@ -142,6 +136,20 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("所在班级")]
         [StringLength(50, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Class { get; set; }
+
+        /// <summary>
+        /// 提交入党申请时间
+        /// </summary>
+        [DisplayName("提交入党申请时间")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public DateTime ApplicationTime { get; set; }
+
+        /// <summary>
+        /// 确定入党积极分子时间
+        /// </summary>
+        [DisplayName("确定入党积极分子时间")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public DateTime ActiveApplicationTime { get; set; }
 
     }
 }
