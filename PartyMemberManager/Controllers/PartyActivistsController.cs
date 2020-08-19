@@ -37,9 +37,9 @@ namespace PartyMemberManager.Controllers
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
             if (CurrentUser.Roles == Role.学院党委)
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "YearTerm");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "YearTerm");
             else
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.OrderBy(d => d.Ordinal), "Id", "YearTerm");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).OrderBy(d => d.Ordinal), "Id", "YearTerm");
             return View(await partyActives.Include(d => d.TrainClass).OrderBy(a => a.Ordinal).GetPagedDataAsync(page));
         }
         /// <summary>
@@ -77,7 +77,7 @@ namespace PartyMemberManager.Controllers
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {
-                    var data = await _context.Set<PartyActivist>().Include(d => d.Department).Include(d => d.Nation).Include(d => d.TrainClass).Where(filter)
+                    var data = await _context.Set<PartyActivist>().Include(d => d.Department).Include(d => d.Nation).Include(d => d.TrainClass).Include(t => t.TrainClass.YearTerm).Where(filter)
                         .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
@@ -88,7 +88,7 @@ namespace PartyMemberManager.Controllers
                 {
                     if (CurrentUser.DepartmentId == null)
                         throw new PartyMemberException("该用户不合法，请设置该用户所属部门");
-                    var data = await _context.Set<PartyActivist>().Where(filter).Include(d => d.Department).Include(d => d.Nation).Include(d => d.TrainClass).Where(d => d.DepartmentId == CurrentUser.DepartmentId)
+                    var data = await _context.Set<PartyActivist>().Where(filter).Include(d => d.Department).Include(d => d.Nation).Include(d => d.TrainClass).Include(t => t.TrainClass.YearTerm).Where(d => d.DepartmentId == CurrentUser.DepartmentId)
                         .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
@@ -437,7 +437,7 @@ namespace PartyMemberManager.Controllers
                                 Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                                 Guid nationId = nationData.Id;
                                 //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
-                                Department departmentData = _context.Departments.Where(d => d.Name.Contains(department)||department.Contains(d.Name)).FirstOrDefault();
+                                Department departmentData = _context.Departments.Where(d => d.Name.Contains(department) || department.Contains(d.Name)).FirstOrDefault();
                                 Guid departmentId = departmentData.Id;
                                 partyActivist.Name = name;
                                 partyActivist.Sex = Sex.Parse<Sex>(sex);
@@ -480,8 +480,10 @@ namespace PartyMemberManager.Controllers
                                 birthday = birthday.Replace(".", "-").Replace("/", "-");
                                 time = time.Replace(".", "-").Replace("/", "-");
                                 DateTime birthdayValue = DateTime.Now;
-                                if (birthday.Length < 6)
+                                if (!birthday.Contains("-") && birthday.Length == 6)
                                     birthday = birthday + "01";
+                                else if (birthday.Contains("-") && birthday.IndexOf('-') == birthday.LastIndexOf('-'))
+                                    birthday = birthday + "-01";
                                 if (!TryParseYearMonth(birthday, out birthdayValue))
                                 {
                                     throw new PartyMemberException($"第{rowIndex}行数据中的【{birthdayField}】年月格式不合法");
@@ -494,7 +496,7 @@ namespace PartyMemberManager.Controllers
                                 Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                                 Guid nationId = nationData.Id;
                                 //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
-                                Department departmentData = _context.Departments.Where(d => d.Name.Contains(college)||college.Contains(d.Name)).FirstOrDefault();
+                                Department departmentData = _context.Departments.Where(d => d.Name.Contains(college) || college.Contains(d.Name)).FirstOrDefault();
                                 Guid departmentId = departmentData.Id;
                                 partyActivist.Name = name;
                                 partyActivist.Sex = Sex.Parse<Sex>(sex);

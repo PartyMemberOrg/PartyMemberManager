@@ -33,7 +33,7 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("学年/学期")]
         [NotMapped]
-        public string YearTermDisplay { get => TrainClass == null ? "" : TrainClass.YearTerm.ToString(); }
+        public string YearTermDisplay { get => TrainClass == null|| TrainClass.YearTerm == null ? "" : TrainClass.YearTerm.ToString(); }
         /// <summary>
         /// 姓名
         /// </summary>
