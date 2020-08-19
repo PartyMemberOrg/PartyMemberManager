@@ -364,7 +364,7 @@ namespace PartyMemberManager.Controllers
                                 CreateTime = DateTime.Now,
                                 Ordinal = rowIndex,
                                 OperatorId = CurrentUser.Id,
-                                TrainClassId=trainClass.Id,
+                                TrainClassId = trainClass.Id,
                                 //Year=trainClass.Year,
                                 //Term=trainClass.Term,
                             };
@@ -393,16 +393,16 @@ namespace PartyMemberManager.Controllers
                                 //跳过姓名为空的记录
                                 if (string.IsNullOrEmpty(name)) continue;
                                 birthday = birthday.Replace(".", "").Replace("/", "").Replace("-", "");
-                                time= time.Replace(".", "").Replace("/", "").Replace("-", "");
+                                time = time.Replace(".", "").Replace("/", "").Replace("-", "");
                                 DateTime birthdayValue = DateTime.Now;
                                 if (birthday.Length < 6)
                                     birthday = birthday + "01";
-                                if (!DateTime.TryParseExact(birthday, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out birthdayValue))
+                                if (!TryParseYearMonth(birthday, out birthdayValue))
                                 {
                                     throw new PartyMemberException($"第{rowIndex}行数据中的【{birthdayField}】年月格式不合法");
                                 }
                                 DateTime timeValue = DateTime.Now;
-                                if(!DateTime.TryParseExact(time, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out timeValue))
+                                if (!TryParseDate(time, out timeValue))
                                 {
                                     throw new PartyMemberException($"第{rowIndex}行数据中的【{timeField}】日期格式不合法");
                                 }
@@ -448,17 +448,17 @@ namespace PartyMemberManager.Controllers
                                 string title = row[titleField].ToString();
                                 //跳过姓名为空的记录
                                 if (string.IsNullOrEmpty(name)) continue;
-                                birthday = birthday.Replace(".", "").Replace("/", "").Replace("-", "");
-                                time = time.Replace(".", "").Replace("/", "").Replace("-", "");
+                                birthday = birthday.Replace(".", "-").Replace("/", "-");
+                                time = time.Replace(".", "-").Replace("/", "-");
                                 DateTime birthdayValue = DateTime.Now;
                                 if (birthday.Length < 6)
                                     birthday = birthday + "01";
-                                if (!DateTime.TryParseExact(birthday, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out birthdayValue))
+                                if (!TryParseYearMonth(birthday, out birthdayValue))
                                 {
                                     throw new PartyMemberException($"第{rowIndex}行数据中的【{birthdayField}】年月格式不合法");
                                 }
                                 DateTime timeValue = DateTime.Now;
-                                if (!DateTime.TryParseExact(time, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out timeValue))
+                                if (!TryParseDate(time, out timeValue))
                                 {
                                     throw new PartyMemberException($"第{rowIndex}行数据中的【{timeField}】日期格式不合法");
                                 }
@@ -534,5 +534,6 @@ namespace PartyMemberManager.Controllers
         {
             return _context.PartyActivists.Any(e => e.Id == id);
         }
+
     }
 }
