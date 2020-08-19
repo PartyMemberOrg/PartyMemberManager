@@ -408,7 +408,8 @@ namespace PartyMemberManager.Controllers
                                 }
                                 Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                                 Guid nationId = nationData.Id;
-                                Department departmentData = _context.Departments.Where(d => d.Name == department).FirstOrDefault();
+                                //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
+                                Department departmentData = _context.Departments.Where(d => d.Name.Contains(department)||department.Contains(d.Name)).FirstOrDefault();
                                 Guid departmentId = departmentData.Id;
                                 partyActivist.Name = name;
                                 partyActivist.Sex = Sex.Parse<Sex>(sex);
@@ -464,7 +465,8 @@ namespace PartyMemberManager.Controllers
                                 }
                                 Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                                 Guid nationId = nationData.Id;
-                                Department departmentData = _context.Departments.Where(d => d.Name == college).FirstOrDefault();
+                                //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
+                                Department departmentData = _context.Departments.Where(d => d.Name.Contains(college)||college.Contains(d.Name)).FirstOrDefault();
                                 Guid departmentId = departmentData.Id;
                                 partyActivist.Name = name;
                                 partyActivist.Sex = Sex.Parse<Sex>(sex);
