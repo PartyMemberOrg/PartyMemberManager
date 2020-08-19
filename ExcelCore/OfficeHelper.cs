@@ -86,7 +86,35 @@ namespace ExcelCore
                         for (int j = row.FirstCellNum; j < cellCount; ++j)
                         {
                             if (row.GetCell(j) != null) //同理，没有数据的单元格都默认是null
-                                dataRow[j] = row.GetCell(j).ToString();
+                            {
+                                switch (row.GetCell(j).CellType)
+                                {
+                                    case CellType.Numeric:
+                                        switch(row.GetCell(j).CellStyle.DataFormat)
+                                        {
+                                            case 0:
+                                                double doubleValue = row.GetCell(j).NumericCellValue;
+                                                dataRow[j] = row.GetCell(j).ToString();
+                                                break;
+                                            case 14://日期格式
+                                            case 31:
+                                            case 57:
+                                            case 58:
+                                            case 20://时间格式
+                                            case 32:
+                                                DateTime timeValue = row.GetCell(j).DateCellValue;
+                                                dataRow[j] = timeValue.ToString("yyyy-MM-dd HH:mm:ss");
+                                                break;
+                                            default:
+                                                dataRow[j] = row.GetCell(j).ToString();
+                                                break;
+                                        }
+                                        break;
+                                    default:
+                                        dataRow[j] = row.GetCell(j).ToString();
+                                        break;
+                                }
+                            }
                         }
                         data.Rows.Add(dataRow);
                     }

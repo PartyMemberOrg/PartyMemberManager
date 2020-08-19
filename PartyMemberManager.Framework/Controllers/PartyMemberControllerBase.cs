@@ -151,5 +151,49 @@ namespace PartyMemberManager.Framework.Controllers
             return Json(jsonResult);
         }
 
+        /// <summary>
+        /// 转换日期
+        /// </summary>
+        /// <param name="dateString"></param>
+        /// <param name="dateValue"></param>
+        /// <returns></returns>
+        public bool TryParseDate(string dateString, out DateTime dateValue)
+        {
+            if (!DateTime.TryParseExact(dateString, "yyyyMM", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out dateValue))
+            {
+                if (!DateTime.TryParseExact(dateString, "yyyy-MM", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out dateValue))
+                {
+                    if (!DateTime.TryParseExact(dateString, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out dateValue))
+                    {
+                        if (!DateTime.TryParseExact(dateString, "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out dateValue))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 转换年月
+        /// </summary>
+        /// <param name="yearMonthString"></param>
+        /// <param name="yearMonthValue"></param>
+        /// <returns></returns>
+        public bool TryParseYearMonth(string yearMonthString, out DateTime yearMonthValue)
+        {
+            if (!DateTime.TryParseExact(yearMonthString, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out yearMonthValue))
+            {
+                if (!DateTime.TryParseExact(yearMonthString, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out yearMonthValue))
+                {
+                    if (!DateTime.TryParseExact(yearMonthString, "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out yearMonthValue))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
     }
 }

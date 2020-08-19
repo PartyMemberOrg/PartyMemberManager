@@ -434,9 +434,26 @@ namespace PartyMemberManager.Controllers
                                 string phone = row[phoneField].ToString();
                                 DateTime time = Convert.ToDateTime(row[timeField].ToString());
                                 string remark = row[remarkField].ToString();
+                                //跳过姓名为空的记录
+                                if (string.IsNullOrEmpty(name)) continue;
+                                birthday = birthday.Replace(".", "").Replace("/", "").Replace("-", "");
+                                time = time.Replace(".", "").Replace("/", "").Replace("-", "");
+                                DateTime birthdayValue = DateTime.Now;
+                                if (birthday.Length < 6)
+                                    birthday = birthday + "01";
+                                if (!TryParseYearMonth(birthday, out birthdayValue))
+                                {
+                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{birthdayField}】年月格式不合法");
+                                }
+                                DateTime timeValue = DateTime.Now;
+                                if (!TryParseDate(time, out timeValue))
+                                {
+                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{timeField}】日期格式不合法");
+                                }
                                 Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                                 Guid nationId = nationData.Id;
-                                Department departmentData = _context.Departments.Where(d => d.Name == department).FirstOrDefault();
+                                //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
+                                Department departmentData = _context.Departments.Where(d => d.Name.Contains(department)||department.Contains(d.Name)).FirstOrDefault();
                                 Guid departmentId = departmentData.Id;
                                 partyActivist.Name = name;
                                 partyActivist.Sex = Sex.Parse<Sex>(sex);
@@ -474,9 +491,26 @@ namespace PartyMemberManager.Controllers
                                 string college = row[collegeField].ToString();
                                 string @class = row[classField].ToString();
                                 string title = row[titleField].ToString();
+                                //跳过姓名为空的记录
+                                if (string.IsNullOrEmpty(name)) continue;
+                                birthday = birthday.Replace(".", "-").Replace("/", "-");
+                                time = time.Replace(".", "-").Replace("/", "-");
+                                DateTime birthdayValue = DateTime.Now;
+                                if (birthday.Length < 6)
+                                    birthday = birthday + "01";
+                                if (!TryParseYearMonth(birthday, out birthdayValue))
+                                {
+                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{birthdayField}】年月格式不合法");
+                                }
+                                DateTime timeValue = DateTime.Now;
+                                if (!TryParseDate(time, out timeValue))
+                                {
+                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{timeField}】日期格式不合法");
+                                }
                                 Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                                 Guid nationId = nationData.Id;
-                                Department departmentData = _context.Departments.Where(d => d.Name == college).FirstOrDefault();
+                                //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
+                                Department departmentData = _context.Departments.Where(d => d.Name.Contains(college)||college.Contains(d.Name)).FirstOrDefault();
                                 Guid departmentId = departmentData.Id;
                                 partyActivist.Name = name;
                                 partyActivist.Sex = Sex.Parse<Sex>(sex);
@@ -487,6 +521,8 @@ namespace PartyMemberManager.Controllers
                                 partyActivist.IdNumber = id;
                                 partyActivist.Phone = phone;
                                 partyActivist.ApplicationTime = time;
+                                //该字段不允许为空有问题
+                                partyActivist.ActiveApplicationTime = time;
                                 partyActivist.Class = @class;
                                 partyActivist.Duty = title;
                             }
@@ -546,5 +582,6 @@ namespace PartyMemberManager.Controllers
         {
             return _context.PartyActivists.Any(e => e.Id == id);
         }
+
     }
 }
