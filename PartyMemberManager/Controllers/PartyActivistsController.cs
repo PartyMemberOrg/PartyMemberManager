@@ -390,6 +390,22 @@ namespace PartyMemberManager.Controllers
                                 string phone = row[phoneField].ToString();
                                 string time = row[timeField].ToString();
                                 string remark = row[remarkField].ToString();
+                                //跳过姓名为空的记录
+                                if (string.IsNullOrEmpty(name)) continue;
+                                birthday = birthday.Replace(".", "").Replace("/", "").Replace("-", "");
+                                time= time.Replace(".", "").Replace("/", "").Replace("-", "");
+                                DateTime birthdayValue = DateTime.Now;
+                                if (birthday.Length < 6)
+                                    birthday = birthday + "01";
+                                if (!DateTime.TryParseExact(birthday, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out birthdayValue))
+                                {
+                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{birthdayField}】年月格式不合法");
+                                }
+                                DateTime timeValue = DateTime.Now;
+                                if(!DateTime.TryParseExact(time, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out timeValue))
+                                {
+                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{timeField}】日期格式不合法");
+                                }
                                 Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                                 Guid nationId = nationData.Id;
                                 Department departmentData = _context.Departments.Where(d => d.Name == department).FirstOrDefault();
@@ -430,6 +446,22 @@ namespace PartyMemberManager.Controllers
                                 string college = row[collegeField].ToString();
                                 string @class = row[classField].ToString();
                                 string title = row[titleField].ToString();
+                                //跳过姓名为空的记录
+                                if (string.IsNullOrEmpty(name)) continue;
+                                birthday = birthday.Replace(".", "").Replace("/", "").Replace("-", "");
+                                time = time.Replace(".", "").Replace("/", "").Replace("-", "");
+                                DateTime birthdayValue = DateTime.Now;
+                                if (birthday.Length < 6)
+                                    birthday = birthday + "01";
+                                if (!DateTime.TryParseExact(birthday, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out birthdayValue))
+                                {
+                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{birthdayField}】年月格式不合法");
+                                }
+                                DateTime timeValue = DateTime.Now;
+                                if (!DateTime.TryParseExact(time, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out timeValue))
+                                {
+                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{timeField}】日期格式不合法");
+                                }
                                 Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                                 Guid nationId = nationData.Id;
                                 Department departmentData = _context.Departments.Where(d => d.Name == college).FirstOrDefault();
