@@ -29,7 +29,7 @@ namespace PartyMemberManager.Controllers
         // GET: TrainClasses
         public async Task<IActionResult> Index(int page = 1)
         {
-            var pMContext = _context.TrainClasses.Include(t => t.TrainClassType).Include(t => t.YearTerm).Include(t=>t.Department);
+            var pMContext = _context.TrainClasses.Include(t => t.TrainClassType).Include(t => t.YearTerm).Include(t => t.Department);
             if (CurrentUser.Roles == Role.学院党委)
                 ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.Where(d => d.Code.StartsWith("4")).OrderByDescending(d => d.Ordinal), "Id", "Name");
             else
@@ -80,7 +80,9 @@ namespace PartyMemberManager.Controllers
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {
-                    var data = await _context.Set<TrainClass>().Include(d => d.TrainClassType).Include(d => d.YearTerm).Include(d => d.Department).Where(filter).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<TrainClass>().Include(d => d.TrainClassType).Include(d => d.YearTerm).Include(d => d.Department)
+                        .Where(d => d.YearTerm.Enabled == true)
+                        .Where(filter).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<TrainClass>().Count();
@@ -90,7 +92,9 @@ namespace PartyMemberManager.Controllers
                 {
                     if (CurrentUser.DepartmentId == null)
                         throw new PartyMemberException("该用户不合法，请设置该用户所属部门");
-                    var data = await _context.Set<TrainClass>().Where(filter).Include(d => d.TrainClassType).Include(d => d.YearTerm).Include(d => d.Department).Where(d => d.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<TrainClass>().Where(filter).Include(d => d.TrainClassType).Include(d => d.YearTerm).Include(d => d.Department)
+                        .Where(d => d.YearTerm.Enabled == true)
+                        .Where(d => d.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<TrainClass>().Count();
@@ -139,7 +143,7 @@ namespace PartyMemberManager.Controllers
             else
                 ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderBy(d => d.Code), "Id", "Name");
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
-            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
             return View(trainClass);
         }
 
@@ -162,13 +166,13 @@ namespace PartyMemberManager.Controllers
             else
                 ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderBy(d => d.Code), "Id", "Name", trainClass.TrainClassTypeId);
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name", trainClass.DepartmentId);
-            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term), "Id", "Name", trainClass.YearTermId);
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
             return View(trainClass);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("Year,Term,Name,TrainClassTypeId,StartTime,PsGradeProportion,CsGradeProportion,DepartmentId,YearTermId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] TrainClass trainClass)
+        public override async Task<IActionResult> Save([Bind("YearTermId,Name,TrainClassTypeId,StartTime,PsGradeProportion,CsGradeProportion,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] TrainClass trainClass)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {

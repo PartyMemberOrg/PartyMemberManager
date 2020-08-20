@@ -7,14 +7,6 @@
     <div class="layui-input-inline" style="width:80px">
         <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',550,460)" class="layui-btn layui-btn-primary">+添加</a>
     </div>
-    <div>
-        <label class="layui-form-label" style="padding:5px;width:100px">培训班类型:</label>
-        <div class="layui-input-inline" style="width:300px">
-            <select name="trainClassTypeId" asp-items="@ViewBag.TrainClassTypeId" class="layui-input" id="trainClassType">
-                <option value="">-请选择培训班类型-</option>
-            </select>
-        </div>
-    </div>
     @if (CurrentUser.Roles > Role.学院党委)
     {
         <div>
@@ -26,6 +18,14 @@
             </div>
         </div>
     }
+    <div>
+        <label class="layui-form-label" style="padding:5px;width:100px">培训班类型:</label>
+        <div class="layui-input-inline" style="width:300px">
+            <select name="trainClassTypeId" asp-items="@ViewBag.TrainClassTypeId" class="layui-input" id="trainClassType">
+                <option value="">-请选择培训班类型-</option>
+            </select>
+        </div>
+    </div>
     <div>
         <div class="layui-input-inline" style="width:300px">
             <input name="name" type="text" class="layui-input" placeholder="请输入培训班名称" id="keyword" />

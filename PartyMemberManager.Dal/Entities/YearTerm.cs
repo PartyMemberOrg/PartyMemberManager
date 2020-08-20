@@ -11,12 +11,12 @@ namespace PartyMemberManager.Dal.Entities
     /// <summary>
     /// 学年学期
     /// </summary>
-    public class YearTerm:EntityBase
+    public class YearTerm : EntityBase
     {
         /// <summary>
         /// 开始年份
         /// </summary>
-        [Range(1900,2999)]
+        [Range(1900, 2999)]
         [DisplayName("开始年份")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public int StartYear { get; set; }
@@ -46,5 +46,17 @@ namespace PartyMemberManager.Dal.Entities
         {
             return Name;
         }
+
+        /// <summary>
+        /// 是否启用
+        /// </summary>
+        [DisplayName("是否启用")]
+        public bool Enabled { get; set; }
+        /// <summary>
+        /// 是否启用
+        /// </summary>
+        [DisplayName("是否启用")]
+        [NotMapped]
+        public string EnabledDisplay { get => Enabled ? "是" : "否"; }
     }
 }

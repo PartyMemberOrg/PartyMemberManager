@@ -559,7 +559,7 @@ input[data-type='daterange'] {
 }
 
 .form-control {
-    width: 60%;
+    width: 80%;
     height: 30px;
     font-size: 12px;
     border: 1px solid var(--border-color);

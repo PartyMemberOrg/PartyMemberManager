@@ -3,57 +3,66 @@
 @{
     ViewData["Title"] = "Index";
 }
-    <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px">
-        <div class="layui-input-inline" style="width:60px">
-            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,900)" class="layui-btn layui-btn-primary">+添加</a>
-        </div>
-        <div>
-            <label class="layui-form-label" style="padding:5px">学年/学期:</label>
-            <div class="layui-input-inline" style="width:240px">
-                <select name="trainClassId" asp-items="@ViewBag.TrainClasses" class="layui-input" id="trainClassId">
-                    <option value="">-请选择学年/学期-</option>
-                </select>
-            </div>
-        </div>
-        @if (CurrentUser.Roles > Role.学院党委)
-        {
-            <div>
-                <label class="layui-form-label" style="padding:5px">部门:</label>
-                <div class="layui-input-inline" style="width:200px">
-                    <select name="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input" id="department">
-                        <option value="">-请选择部门-</option>
-                    </select>
-                </div>
-            </div>
-        }
-        <div>
-            <label class="layui-form-label" style="padding:5px">类型:</label>
-            <div class="layui-input-inline" style="width:120px">
-                <select name="partyMemberType" asp-items="@Html.GetEnumSelectList(typeof(PartyMemberType))" class="layui-input" id="partyMemberType">
-                    <option value="">-请选择类型-</option>
-                </select>
-            </div>
-        </div>
-        <div>
-            <div class="layui-input-inline" style="width:300px">
-                <input name="name" type="text" class="layui-input" placeholder="请输入学号/工号/姓名" id="keyword" />
-            </div>
-        </div>
-        <div>
-            <div class="layui-input-inline" style="width:80px">
-                <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
-                    <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
-                </a>
-            </div>
-        </div>
-        <div>
-            <div class="layui-input-inline" style="width:120px">
-                <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="importExcel()">
-                    <i class="layui-icon layui-icon-loading" style="font-size: 14px; color: #FFFFFF;"></i>导入Excel
-                </a>
-            </div>
+<div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px">
+    <div class="layui-input-inline" style="width:60px">
+        <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,1000)" class="layui-btn layui-btn-primary">+添加</a>
+    </div>
+    <input type="hidden" id="TrainClassTypeId" value="@ViewBag.TrainClassTypeId" />
+    <div>
+        <label class="layui-form-label" style="padding:5px">学年/学期:</label>
+        <div class="layui-input-inline" style="width:240px">
+            <select name="YearTermId" asp-items="@ViewBag.YearTermId" class="layui-input" id="YearTermId">
+                <option value="">-请选择学年/学期-</option>
+            </select>
         </div>
     </div>
+    @if (CurrentUser.Roles > Role.学院党委)
+    {
+        <div>
+            <label class="layui-form-label" style="padding:5px;width:60px">部门:</label>
+            <div class="layui-input-inline" style="width:200px">
+                <select name="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input" id="DepartmentId">
+                    <option value="">-请选择部门-</option>
+                </select>
+            </div>
+        </div>
+    }
+    <div>
+        <label class="layui-form-label" style="padding:5px;width:60px">培训班:</label>
+        <div class="layui-input-inline" style="width:240px">
+            <select name="TrainClassId" asp-items="@ViewBag.TrainClasses" class="layui-input" id="TrainClassId">
+                <option value="">-请选择培训班-</option>
+            </select>
+        </div>
+    </div>
+    <div>
+        <label class="layui-form-label" style="padding:5px;width:60px">类型:</label>
+        <div class="layui-input-inline" style="width:120px">
+            <select name="partyMemberType" asp-items="@Html.GetEnumSelectList(typeof(PartyMemberType))" class="layui-input" id="partyMemberType">
+                <option value="">-请选择类型-</option>
+            </select>
+        </div>
+    </div>
+    <div>
+        <div class="layui-input-inline" style="width:200px">
+            <input name="name" type="text" class="layui-input" placeholder="请输入学号/工号/姓名" id="keyword" />
+        </div>
+    </div>
+    <div>
+        <div class="layui-input-inline" style="width:80px">
+            <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
+                <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
+            </a>
+        </div>
+    </div>
+    <div>
+        <div class="layui-input-inline" style="width:120px">
+            <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="importExcel()">
+                <i class="layui-icon layui-icon-loading" style="font-size: 14px; color: #FFFFFF;"></i>导入Excel
+            </a>
+        </div>
+    </div>
+</div>
 <table class="layui-hide" id="datatable"></table>
 @Html.AntiForgeryToken()
 <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
@@ -64,7 +73,14 @@
         var tableObject = null;
         $(document).ready(function () {
             $("body").width($(window).width());
-                InitTable();
+            $("#YearTermId").change(function () {
+                filterTrainClass();
+            });
+            $("#DepartmentId").change(function () {
+                filterTrainClass();
+            });
+            filterTrainClass();
+            InitTable();
         });
 
         function Delete(id) {
@@ -180,7 +196,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 800, 900);
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 800, 1000);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);
@@ -195,7 +211,7 @@
         }
 
         function importExcel() {
-            showImport('@Url.Action("Import")', '@Url.Action("Import")', '编辑', 400, 400, function () { location.reload(); });
+            showImport('@Url.Action("Import")', '@Url.Action("Import")', '编辑', 600, 600, function () { location.reload(); });
         }
     </script>
     <script type="text/html" id="optTpl">
@@ -223,6 +239,36 @@
                 type: 'year',
             });
         });
+    </script>
+    <script>
+        function filterTrainClass() {
+            var url = '@Url.Action("GetTrainClassDatas")';
+            var yearTermId = $("#YearTermId").val();
+            var trainClassTypeId = $("#TrainClassTypeId").val();
+            var departmentId = $("#DepartmentId").val();
+            var where = { trainClassTypeId:trainClassTypeId,yearTermId: yearTermId, departmentId: departmentId };
+            $.ajax({
+                url: url,
+                data: where,
+                dataType: "json",
+                type: "POST",
+                error: function () { },
+                success: function (data) {
+                    if (data.code == 0) {
+                        var options = "<option value=''>-请选择培训班-</option>";
+                        for (var i = 0; i < data.datas.length; i++) {
+                            options+="<option value='" + data.datas[i].id + "'>" + data.datas[i].name+"</option>";
+                        }
+                        $("#TrainClassId").html(options);
+                    }
+                    else {
+                        showError(data.mssage);
+                    }
+                },
+                complete: function () { }
+            });
+
+        }
     </script>
 
 }

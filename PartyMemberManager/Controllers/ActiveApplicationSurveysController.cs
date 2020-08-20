@@ -29,7 +29,7 @@ namespace PartyMemberManager.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
-            ViewBag.ActiveApplicationSurveies = new SelectList(_context.ActiveApplicationSurveies.OrderBy(d => d.Ordinal), "Id", "YearTerm");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
             return View(await _context.ActiveApplicationSurveies.Include(d => d.Department).OrderBy(a => a.Ordinal).GetPagedDataAsync(page));
         }
 
@@ -39,7 +39,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId,Guid? yearTermId, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<ActiveApplicationSurvey> jsonResult = new JsonResultDatasModel<ActiveApplicationSurvey>
             {
@@ -54,9 +54,13 @@ namespace PartyMemberManager.Controllers
                 {
                     filter = filter.And(d => d.DepartmentId == departmentId);
                 }
+                if (yearTermId != null)
+                {
+                    filter = filter.And(d => d.YearTermId == yearTermId);
+                }
                 if (CurrentUser.Roles > Role.学院党委)
                 {
-                    var data = await _context.Set<ActiveApplicationSurvey>().Include(d => d.Department).Where(filter).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<ActiveApplicationSurvey>().Include(d => d.Department).Include(d=>d.YearTerm).Where(filter).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<ActiveApplicationSurvey>().Count();
@@ -66,7 +70,7 @@ namespace PartyMemberManager.Controllers
                 {
                     if (CurrentUser.DepartmentId == null)
                         throw new PartyMemberException("该用户不合法，请设置该用户所属部门");
-                    var data = await _context.Set<ActiveApplicationSurvey>().Where(filter).Include(d => d.Department).Where(d => d.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<ActiveApplicationSurvey>().Where(filter).Include(d => d.Department).Include(d=>d.YearTerm).Where(d => d.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<ActiveApplicationSurvey>().Count();
@@ -110,6 +114,7 @@ namespace PartyMemberManager.Controllers
         {
             ActiveApplicationSurvey activeApplicationSurvey = new ActiveApplicationSurvey();
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
             return View(activeApplicationSurvey);
         }
 
@@ -128,12 +133,13 @@ namespace PartyMemberManager.Controllers
                 return NotFoundData();
             }
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
             return View(activeApplicationSurvey);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("Year,SchoolArea,Term,Total,TrainTotal,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ActiveApplicationSurvey activeApplicationSurvey)
+        public override async Task<IActionResult> Save([Bind("SchoolArea,YearTermId,Total,TrainTotal,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ActiveApplicationSurvey activeApplicationSurvey)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -147,9 +153,7 @@ namespace PartyMemberManager.Controllers
                     ActiveApplicationSurvey activeApplicationSurveyInDb = await _context.ActiveApplicationSurveies.FindAsync(activeApplicationSurvey.Id);
                     if (activeApplicationSurveyInDb != null)
                     {
-                        activeApplicationSurveyInDb.Year = activeApplicationSurvey.Year;
-                        activeApplicationSurveyInDb.Term = activeApplicationSurvey.Term;
-                        activeApplicationSurveyInDb.YearTerm = activeApplicationSurvey.Year + "-" + (int.Parse(activeApplicationSurvey.Year) + 1) + "学年" + activeApplicationSurvey.Term;
+                        activeApplicationSurveyInDb.YearTermId = activeApplicationSurvey.YearTermId;
                         activeApplicationSurveyInDb.Total = activeApplicationSurvey.Total;
                         activeApplicationSurveyInDb.TrainTotal = activeApplicationSurvey.TrainTotal;
                         activeApplicationSurveyInDb.Proportion = (double)(activeApplicationSurvey.TrainTotal) / (double)activeApplicationSurvey.Total;
@@ -160,16 +164,12 @@ namespace PartyMemberManager.Controllers
                         activeApplicationSurveyInDb.IsDeleted = activeApplicationSurvey.IsDeleted;
                         if (CurrentUser.Roles == Role.学院党委)
                         {
-                            activeApplicationSurveyInDb.SchoolArea = _context.Departments.Find(CurrentUser.DepartmentId).SchoolArea;
                             activeApplicationSurveyInDb.DepartmentId = CurrentUser.DepartmentId.Value;
                         }
                         else
                         {
-                            if (activeApplicationSurvey.SchoolArea.ToString() == null)
-                                throw new PartyMemberException("请选择校区");
                             if (activeApplicationSurvey.DepartmentId == null)
                                 throw new PartyMemberException("请选择部门");
-                            activeApplicationSurveyInDb.SchoolArea = activeApplicationSurvey.SchoolArea;
                             activeApplicationSurveyInDb.DepartmentId = activeApplicationSurvey.DepartmentId;
                         }
                         _context.Update(activeApplicationSurveyInDb);
@@ -179,24 +179,18 @@ namespace PartyMemberManager.Controllers
                         activeApplicationSurvey.Proportion = (double)(activeApplicationSurvey.TrainTotal) / (double)activeApplicationSurvey.Total;
                         if (CurrentUser.Roles == Role.学院党委)
                         {
-                            activeApplicationSurvey.SchoolArea = _context.Departments.Find(CurrentUser.DepartmentId).SchoolArea;
                             activeApplicationSurvey.DepartmentId = CurrentUser.DepartmentId.Value;
                         }
                         else
                         {
-                            if (activeApplicationSurvey.SchoolArea.ToString() == null)
-                                throw new PartyMemberException("请选择校区");
                             if (activeApplicationSurvey.DepartmentId == null)
                                 throw new PartyMemberException("请选择部门");
-                            activeApplicationSurvey.SchoolArea = activeApplicationSurvey.SchoolArea;
                             activeApplicationSurvey.DepartmentId = activeApplicationSurvey.DepartmentId;
                         }
-                        //activeApplicationSurvey.Id = Guid.NewGuid();
                         activeApplicationSurvey.CreateTime = DateTime.Now;
                         activeApplicationSurvey.OperatorId = CurrentUser.Id;
                         activeApplicationSurvey.Ordinal = _context.ActiveApplicationSurveies.Count() + 1;
                         activeApplicationSurvey.IsDeleted = activeApplicationSurvey.IsDeleted;
-                        activeApplicationSurvey.YearTerm = activeApplicationSurvey.Year + "-" + (int.Parse(activeApplicationSurvey.Year) + 1) + "学年" + activeApplicationSurvey.Term;
                         _context.Add(activeApplicationSurvey);
                     }
                     await _context.SaveChangesAsync();

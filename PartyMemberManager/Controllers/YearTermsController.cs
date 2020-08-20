@@ -83,7 +83,7 @@ namespace PartyMemberManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("StartYear,Term,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] YearTerm yearTerm)
+        public override async Task<IActionResult> Save([Bind("StartYear,Term,Enabled,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] YearTerm yearTerm)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -99,6 +99,7 @@ namespace PartyMemberManager.Controllers
                     {
                         yearTermInDb.StartYear = yearTerm.StartYear;
                         yearTermInDb.Term = yearTerm.Term;
+                        yearTermInDb.Enabled = yearTerm.Enabled;
                         _context.Update(yearTermInDb);
                     }
                     else

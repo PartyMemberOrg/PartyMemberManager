@@ -15,7 +15,6 @@ namespace PartyMemberManager.Dal.Entities
         /// 培训班
         /// </summary>
         [DisplayName("培训班")]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public Guid? TrainClassId { get; set; }
         /// <summary>
         /// 培训班

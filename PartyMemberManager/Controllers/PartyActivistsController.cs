@@ -35,11 +35,18 @@ namespace PartyMemberManager.Controllers
         {
             var partyActives = _context.PartyActivists.Include(d => d.Department).Include(d => d.Nation);
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
-            ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
             if (CurrentUser.Roles == Role.学院党委)
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "YearTerm");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d=>d.TrainClassType)
+                    .Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value && d.YearTerm.Enabled == true)
+                    .Where(d => d.TrainClassType.Code == "41")
+                    .OrderBy(d => d.Ordinal), "Id", "Name");
             else
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).OrderBy(d => d.Ordinal), "Id", "YearTerm");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d => d.TrainClassType)
+                    .Where(d => d.YearTerm.Enabled == true)
+                    .Where(d => d.TrainClassType.Code == "41")
+                    .OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
+            ViewBag.TrainClassTypeId = _context.TrainClassTypes.Where(d => d.Code == "41").Select(d => d.Id).SingleOrDefault();
             return View(await partyActives.Include(d => d.TrainClass).OrderBy(a => a.Ordinal).GetPagedDataAsync(page));
         }
         /// <summary>
@@ -139,7 +146,7 @@ namespace PartyMemberManager.Controllers
                 ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
             else
                 ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
-            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.IsDeleted == false), "Id", "Name");
             return View(partyActivist);
         }
 
@@ -163,7 +170,7 @@ namespace PartyMemberManager.Controllers
                 ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
             else
                 ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
-            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.IsDeleted == false), "Id", "Name");
             return View(partyActivist);
         }
         /// <summary>
@@ -218,14 +225,6 @@ namespace PartyMemberManager.Controllers
             };
             try
             {
-                if (partyActivist.YearTermId ==Guid.Empty)
-                    throw new PartyMemberException("请选择学年/学期");
-                if (partyActivist.TrainClassId == null)
-                    throw new PartyMemberException("请选择培训班");
-                if (partyActivist.Sex.ToString() == "0")
-                    throw new PartyMemberException("请选择性别");
-                if (partyActivist.NationId == Guid.Empty)
-                    throw new PartyMemberException("请选择民族");
                 if (CurrentUser.Roles == Role.学院党委)
                     partyActivist.DepartmentId = CurrentUser.DepartmentId.Value;
                 else
@@ -233,8 +232,22 @@ namespace PartyMemberManager.Controllers
                     if (partyActivist.DepartmentId == Guid.Empty)
                         throw new PartyMemberException("请选择部门");
                 }
+                if (partyActivist.YearTermId == Guid.Empty)
+                    throw new PartyMemberException("请选择学年/学期");
+                if (partyActivist.TrainClassId == null)
+                    throw new PartyMemberException("请选择培训班");
+                if (partyActivist.Sex.ToString() == "0")
+                    throw new PartyMemberException("请选择性别");
+                if (partyActivist.NationId == Guid.Empty)
+                    throw new PartyMemberException("请选择民族");
                 if (partyActivist.PartyMemberType.ToString() == "0")
                     throw new PartyMemberException("请选择类型");
+                if (partyActivist.BirthDate == null)
+                    throw new PartyMemberException("出生日期不能为空");
+                if (partyActivist.ApplicationTime == null)
+                    throw new PartyMemberException("申请入党时间不能为空");
+                if (partyActivist.ActiveApplicationTime == null)
+                    throw new PartyMemberException("确定为入党积极分子时间不能为空");
                 if (ModelState.IsValid)
                 {
                     PartyActivist partyActivistInDb = await _context.PartyActivists.FindAsync(partyActivist.Id);

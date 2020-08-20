@@ -100,7 +100,7 @@
                 error: function () { },
                 success: function (data) {
                     if (data.code == 0) {
-                        var options = "<option value=''>-请培训班-</option>";
+                        var options = "<option value=''>-请选择培训班-</option>";
                         for (var i = 0; i < data.datas.length; i++) {
                             options+="<option value='" + data.datas[i].id + "'>" + data.datas[i].name+"</option>";
                         }

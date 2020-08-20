@@ -5,7 +5,7 @@
 }
 
 <p style="margin-bottom:14px;">
-    <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',335,200)" class="layui-btn layui-btn-primary">+添加</a>
+    <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',335,300)" class="layui-btn layui-btn-primary">+添加</a>
 </p>
 <table class="layui-hide" id="datatable"></table>
 @Html.AntiForgeryToken()
@@ -69,7 +69,8 @@
                     , cols: [[
                         //{ type: 'checkbox' }
                         //,
-            { field: 'name', title: '学期', align: 'center' },
+                        { field: 'name', title: '学期', align: 'center' },
+                        { field: 'enabledDisplay', title: '是否启用', align: 'center' },
                         { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
@@ -92,7 +93,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 335, 200);
+                showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 335, 300);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);

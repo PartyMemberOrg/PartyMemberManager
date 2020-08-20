@@ -77,6 +77,47 @@ namespace PartyMemberManager.Framework.Controllers
         }
 
         /// <summary>
+        /// 根据校区查询部门
+        /// </summary>
+        /// <param name="schoolArea"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetDepartmentDatas(string schoolArea)
+        {
+            JsonResultModel<Department> jsonResult = new JsonResultModel<Department>
+            {
+                Code = 0,
+                Message = "",
+                Datas = new List<Department>()
+            };
+
+            try
+            {
+                var filter = PredicateBuilder.True<Department>();
+                if (schoolArea != "0")
+                {
+                    filter = filter.And(d => d.SchoolArea.ToString() == schoolArea);
+                }
+                var data = await _context.Set<Department>()
+                    .Where(filter)
+                    .OrderByDescending(d => d.Ordinal).ToListAsync();
+                if (data == null)
+                    throw new PartyMemberException("未找到数据");
+                jsonResult.Datas = data;
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
+        /// <summary>
         /// 根据培训班类型、年份和部门查询培训班
         /// </summary>
         /// <param name="trainClassTypeId"></param>
@@ -111,7 +152,7 @@ namespace PartyMemberManager.Framework.Controllers
                 if (CurrentUser.Roles > Role.学院党委)
                 {
                     var data = await _context.Set<TrainClass>()
-                        .Where(filter)
+                        .Where(filter).Include(d => d.YearTerm).Where(d => d.YearTerm.Enabled == true)
                         .OrderByDescending(d => d.Ordinal).ToListAsync();
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
@@ -123,7 +164,7 @@ namespace PartyMemberManager.Framework.Controllers
                         throw new PartyMemberException("该用户不合法，请设置该用户所属部门");
                     departmentId = CurrentUser.DepartmentId.Value;
                     var data = await _context.Set<TrainClass>()
-                        .Where(filter)
+                        .Where(filter).Include(d => d.YearTerm).Where(d => d.YearTerm.Enabled == true)
                         .Where(t => t.DepartmentId == departmentId)
                         .OrderByDescending(d => d.Ordinal).ToListAsync();
                     if (data == null)
@@ -145,7 +186,6 @@ namespace PartyMemberManager.Framework.Controllers
             }
             return Json(jsonResult);
         }
-
         /// <summary>
         /// 转换日期
         /// </summary>

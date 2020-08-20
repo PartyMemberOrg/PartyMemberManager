@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace PartyMemberManager.Dal.Entities
@@ -11,40 +12,22 @@ namespace PartyMemberManager.Dal.Entities
     public class ActiveApplicationSurvey : EntityBase
     {
         /// <summary>
-        /// 年度
+        /// 学年学期
         /// </summary>
-        [DisplayName("年度")]
-        [StringLength(4, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [DisplayName("学年/学期")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public string Year { get; set; }
-
-        /// <summary>
-        /// 学期
-        /// </summary>
-        [DisplayName("学期")]
-        public Term Term { get; set; }
-
-        /// <summary>
-        /// 学期
-        /// </summary>
-        [DisplayName("学期")]
-        public string TermDisplay { get => Term.ToString(); }
+        public Guid YearTermId { get; set; }
         /// <summary>
         /// 年度学期
         /// </summary>
         [DisplayName("学年/学期")]
-        public string YearTerm { get; set; }
-
+        public YearTerm YearTerm { get; set; }
         /// <summary>
-        /// 校区
+        /// 学期
         /// </summary>
-        [DisplayName("校区")]
-        public SchoolArea SchoolArea { get; set; }
-        /// <summary>
-        /// 校区
-        /// </summary>
-        [DisplayName("校区")]
-        public string SchoolAreaDisplay { get => SchoolArea.ToString(); }
+        [DisplayName("学年/学期")]
+        [NotMapped]
+        public string YearTermDisplay { get => YearTerm == null ? "" : YearTerm.Name; }
         /// <summary>
         /// 所属部门
         /// </summary>
@@ -60,6 +43,11 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("所属部门")]
         public string DepartmentDisplay { get => Department == null ? "" : Department.Name; }
+        /// <summary>
+        /// 校区
+        /// </summary>
+        [DisplayName("校区")]
+        public string SchoolAreaDisplay { get =>Department==null?"":Department.SchoolArea.ToString(); }
 
         /// <summary>
         /// 学生总人数
