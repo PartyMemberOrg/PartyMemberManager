@@ -18,7 +18,9 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("确定发展对象时间")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public DateTime PotentialMemberTime { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date)]
+        public Nullable<DateTime> PotentialMemberTime { get; set; }
 
     }
 }

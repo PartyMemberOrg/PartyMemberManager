@@ -11,6 +11,19 @@
             <div class="form-group">
                 <div class="row">
                     <div class="@LabelDivDefaultClass">
+                        <label asp-for="YearTermId" asp-required="true" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <select asp-for="YearTermId" asp-items="@ViewBag.YearTermId" class="form-control">
+                            <option value="">-请选择学年/学期-</option>
+                        </select>
+                        <span asp-validation-for="YearTermId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
                         <label asp-for="TrainClassId" class="control-label"></label>
                     </div>
                     <div class="@InputDivDefaultClass">
@@ -42,8 +55,51 @@
         layui.use('laydate', function () {
             var laydate = layui.laydate;
             laydate.render({
-                elem: '#PotentialMemberTime',
+                elem: '#PotentialMemberTime'
+                , trigger: 'click'
+                
             });
         });
     </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#YearTermId").change(function () {
+                filterTrainClass();
+            });
+            $("#DepartmentId").change(function () {
+                filterTrainClass();
+            });
+            filterTrainClass();
+        });
+        /**过滤培训班 */
+        function filterTrainClass() {
+            var url = '@Url.Action("GetTrainClassDatas")';
+            var trainClassTypeId = $("#TrainClassTypeId").val();
+            var yearTermId = $("#YearTermId").val();
+            var departmentId = $("#DepartmentId").val();
+            var where = { trainClassTypeId: trainClassTypeId, yearTermId: yearTermId, departmentId: departmentId };
+            $.ajax({
+                url: url,
+                data: where,
+                dataType: "json",
+                type: "POST",
+                error: function () { },
+                success: function (data) {
+                    if (data.code == 0) {
+                        var options = "<option value=''>-请培训班-</option>";
+                        for (var i = 0; i < data.datas.length; i++) {
+                            options+="<option value='" + data.datas[i].id + "'>" + data.datas[i].name+"</option>";
+                        }
+                        $("#TrainClassId").html(options);
+                    }
+                    else {
+                        showError(data.mssage);
+                    }
+                },
+                complete: function () { }
+            });
+
+        }
+    </script>
+}
 }

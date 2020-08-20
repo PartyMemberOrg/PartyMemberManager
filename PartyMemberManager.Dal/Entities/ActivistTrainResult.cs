@@ -39,7 +39,7 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("学年/学期")]
         [NotMapped]
-        public string YearTermDisplay { get => PartyActivist.TrainClass == null ? "" : PartyActivist.TrainClass.YearTerm.Name; }
+        public string YearTermDisplay { get => PartyActivist.TrainClass.YearTerm == null ? "" : PartyActivist.TrainClass.YearTerm.Name; }
 
         /// <summary>
         /// 培训班名称

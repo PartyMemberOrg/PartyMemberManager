@@ -122,14 +122,14 @@
                         { field: 'jobNo', title: '学号/工号', align: 'center' },
                         { field: 'idNumber', title: '身份证号', align: 'center'},
                         { field: 'sexDisplay', title: '性别', align: 'center' },
-                        { field: 'birthDate', title: '出生年月', align: 'center' },
+                        { field: 'birthDate', title: '出生年月', align: 'center', templet: function (d) { return formatDate(d.birthDate, 'yyyy-MM'); }  },
                         { field: 'nationDisplay', title: '民族', align: 'center', templet: '#optNationNameTpl' },
                         { field: 'phone', title: '电话', align: 'center' },
                         { field: 'partyMemberTypeDisplay', title: '类别', align: 'center' },
                         { field: 'departmentDisplay', title: '所属部门', align: 'center', templet: '#optDepartmentNameTpl' },
                         { field: 'class', title: '班级', align: 'center' },
-                        { field: 'applicationTime', title: '提交入党申请时间', align: 'center' },
-                        { field: 'activeApplicationTime', title: '确定为入党积极分子时间', align: 'center' },
+                        { field: 'applicationTime', title: '提交入党申请时间', align: 'center', templet: function (d) { return formatDate(d.applicationTime, 'yyyy-MM-dd'); }   },
+                        { field: 'activeApplicationTime', title: '确定为入党积极分子时间', align: 'center', templet: function (d) { return formatDate(d.activeApplicationTime, 'yyyy-MM-dd'); }   },
                         { field: 'duty', title: '职务', align: 'center' },
                         { field: 'id', title: '操作', align: 'center', templet: '#optTpl' }
                     ]]

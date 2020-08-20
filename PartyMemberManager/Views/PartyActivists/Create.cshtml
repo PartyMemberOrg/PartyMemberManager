@@ -50,19 +50,58 @@
         layui.use('laydate', function () {
             var laydate = layui.laydate;
             laydate.render({
-                elem: '#Year',
-                type: 'year',
-            });
-            laydate.render({
                 elem: '#BirthDate',
-                type: 'month',
+                type: 'month'
+                , trigger: 'click'
             });
             laydate.render({
-                elem: '#ApplicationTime',
+                elem: '#ApplicationTime'
+                , trigger: 'click'
             });
             laydate.render({
-                elem: '#ActiveApplicationTime',
+                elem: '#ActiveApplicationTime'
+                , trigger: 'click'
             });
         });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#YearTermId").change(function () {
+                filterTrainClass();
+            });
+            $("#DepartmentId").change(function () {
+                filterTrainClass();
+            });
+            filterTrainClass();
+        });
+        /**过滤培训班 */
+        function filterTrainClass() {
+            var url = '@Url.Action("GetTrainClassDatas")';
+            var trainClassTypeId = $("#TrainClassTypeId").val();
+            var yearTermId = $("#YearTermId").val();
+            var departmentId = $("#DepartmentId").val();
+            var where = { trainClassTypeId: trainClassTypeId, yearTermId: yearTermId, departmentId: departmentId };
+            $.ajax({
+                url: url,
+                data: where,
+                dataType: "json",
+                type: "POST",
+                error: function () { },
+                success: function (data) {
+                    if (data.code == 0) {
+                        var options = "<option value=''>-请培训班-</option>";
+                        for (var i = 0; i < data.datas.length; i++) {
+                            options+="<option value='" + data.datas[i].id + "'>" + data.datas[i].name+"</option>";
+                        }
+                        $("#TrainClassId").html(options);
+                    }
+                    else {
+                        showError(data.mssage);
+                    }
+                },
+                complete: function () { }
+            });
+
+        }
     </script>
 }

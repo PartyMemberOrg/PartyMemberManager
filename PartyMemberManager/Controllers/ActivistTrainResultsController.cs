@@ -70,7 +70,7 @@ namespace PartyMemberManager.Controllers
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {
-                    var data = await _context.Set<ActivistTrainResult>().Include(d => d.PartyActivist).Include(d => d.PartyActivist.TrainClass).Where(filter).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<ActivistTrainResult>().Include(d => d.PartyActivist).Include(d => d.PartyActivist.TrainClass).Include(d=>d.PartyActivist.TrainClass.YearTerm).Where(filter).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<ActivistTrainResult>().Count();
@@ -80,7 +80,7 @@ namespace PartyMemberManager.Controllers
                 {
                     if (CurrentUser.DepartmentId == null)
                         throw new PartyMemberException("该用户不合法，请设置该用户所属部门");
-                    var data = await _context.Set<ActivistTrainResult>().Include(d => d.PartyActivist).Include(d => d.PartyActivist.TrainClass).Where(filter).Where(d => d.PartyActivist.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<ActivistTrainResult>().Include(d => d.PartyActivist).Include(d => d.PartyActivist.TrainClass).Include(d => d.PartyActivist.TrainClass.YearTerm).Where(filter).Where(d => d.PartyActivist.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<ActivistTrainResult>().Count();

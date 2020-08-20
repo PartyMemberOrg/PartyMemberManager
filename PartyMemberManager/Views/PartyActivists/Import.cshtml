@@ -6,7 +6,7 @@
                 <label asp-for="TrainClassTypeId" asp-required="false" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">
-                <select asp-for="TrainClassTypeId" asp-items="@ViewBag.TrainClassTypeId" class="layui-input">
+                <select asp-for="TrainClassTypeId" asp-items="@ViewBag.TrainClassTypeId" class="form-control">
                     <option value="">-请选择培训班类型-</option>
                 </select>
                 <span asp-validation-for="TrainClassTypeId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
@@ -19,8 +19,8 @@
                 <label asp-for="YearTermId" asp-required="false" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">
-                <select asp-for="YearTermId" asp-items="@ViewBag.YearTermId" class="layui-input">
-                    <option value="">-请选择学期-</option>
+                <select asp-for="YearTermId" asp-items="@ViewBag.YearTermId" class="form-control">
+                    <option value="">-请选择学年/学期-</option>
                 </select>
                 <span asp-validation-for="YearTermId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
             </div>
@@ -34,7 +34,7 @@
                     <label asp-for="DepartmentId" asp-required="false" class="control-label"></label>
                 </div>
                 <div class="@InputDivDefaultClass">
-                    <select asp-for="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input">
+                    <select asp-for="DepartmentId" asp-items="@ViewBag.Departments" class="form-control">
                         <option value="">-请选择部门-</option>
                     </select>
                     <span asp-validation-for="DepartmentId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
@@ -52,7 +52,7 @@
                 <label asp-for="TrainClassId" asp-required="true" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">
-                <select asp-for="TrainClassId" asp-items="@ViewBag.TrainClasses" class="layui-input">
+                <select asp-for="TrainClassId" asp-items="@ViewBag.TrainClasses" class="form-control">
                     <option value="">-请培训班-</option>
                 </select>
                 <span asp-validation-for="TrainClassId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
@@ -65,7 +65,7 @@
                 <label asp-for="File" asp-required="true" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">
-                <input asp-for="File" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="layui-input" />
+                <input asp-for="File" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="form-control" />
                 <span asp-validation-for="TrainClassId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
             </div>
         </div>

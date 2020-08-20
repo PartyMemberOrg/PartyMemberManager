@@ -15,6 +15,7 @@ namespace PartyMemberManager.Dal.Entities
         /// 培训班
         /// </summary>
         [DisplayName("培训班")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public Guid? TrainClassId { get; set; }
         /// <summary>
         /// 培训班
@@ -28,12 +29,20 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("培训班名称")]
         [NotMapped]
         public string TrainClassDisplay { get => TrainClass == null ? "" : TrainClass.Name; }
+
         /// <summary>
-        /// 培训班
+        /// 年/学期
+        /// </summary>
+        [DisplayName("学年/学期")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [NotMapped]
+        public Guid YearTermId { get; set; }
+        /// <summary>
+        /// 学年学期
         /// </summary>
         [DisplayName("学年/学期")]
         [NotMapped]
-        public string YearTermDisplay { get => TrainClass == null|| TrainClass.YearTerm == null ? "" : TrainClass.YearTerm.ToString(); }
+        public string YearTermDisplay { get => TrainClass == null || TrainClass.YearTerm == null ? "" : TrainClass.YearTerm.ToString(); }
         /// <summary>
         /// 姓名
         /// </summary>
@@ -63,6 +72,7 @@ namespace PartyMemberManager.Dal.Entities
         /// 性别
         /// </summary>
         [DisplayName("性别")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public Sex Sex { get; set; }
         /// <summary>
         /// 性别
@@ -75,6 +85,7 @@ namespace PartyMemberManager.Dal.Entities
         /// 类型学生或者教师
         /// </summary>
         [DisplayName("类型")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public PartyMemberType PartyMemberType { get; set; }
         /// <summary>
         /// 类型学生或者教师
@@ -88,12 +99,15 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("出生年月")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public DateTime BirthDate { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date)]
+        public Nullable<DateTime> BirthDate { get; set; }
 
         /// <summary>
         /// 民族
         /// </summary>
         [DisplayName("民族")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public Guid NationId { get; set; }
         /// <summary>
         /// 民族
@@ -119,6 +133,7 @@ namespace PartyMemberManager.Dal.Entities
         /// 所属部门
         /// </summary>
         [DisplayName("所属部门")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public Guid DepartmentId { get; set; }
         /// <summary>
         /// 所属部门
@@ -142,14 +157,18 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("提交入党申请时间")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public DateTime ApplicationTime { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date)]
+        public Nullable<DateTime> ApplicationTime { get; set; }
 
         /// <summary>
         /// 确定入党积极分子时间
         /// </summary>
         [DisplayName("确定入党积极分子时间")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public DateTime ActiveApplicationTime { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date)]
+        public Nullable<DateTime> ActiveApplicationTime { get; set; }
 
     }
 }

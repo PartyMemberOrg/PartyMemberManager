@@ -11,7 +11,7 @@
     @if (CurrentUser.Roles > Role.学院党委)
     {
         <div>
-            <label class="layui-form-label" style="padding:5px">部门:</label>
+            <label class="layui-form-label" style="padding:5px;width:60px">部门:</label>
             <div class="layui-input-inline" style="width:200px">
                 <select name="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input" id="department">
                     <option value="">-请选择部门-</option>
@@ -227,7 +227,7 @@
                         }
                 });
             });
-            showEdit('@Url.Action("Create", "PotentialMembers")' + '/' + datas, '@Url.Action("Save", "PotentialMembers")', '列为发展对象', 800, 800);
+            showEdit('@Url.Action("Create", "PotentialMembers")' + '/' + datas, '@Url.Action("Save", "PotentialMembers")', '列为发展对象',500,400);
         }
         /**显示隐藏滚动条 */
         function showHideScrollBars(count) {

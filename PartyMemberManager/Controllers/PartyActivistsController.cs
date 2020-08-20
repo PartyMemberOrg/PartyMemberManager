@@ -139,6 +139,7 @@ namespace PartyMemberManager.Controllers
                 ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
             else
                 ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term), "Id", "Name");
             return View(partyActivist);
         }
 
@@ -162,6 +163,7 @@ namespace PartyMemberManager.Controllers
                 ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
             else
                 ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term), "Id", "Name");
             return View(partyActivist);
         }
         /// <summary>
@@ -207,7 +209,7 @@ namespace PartyMemberManager.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("TrainClassId,ApplicationTime,ActiveApplicationTime,Duty,Name,JobNo,IdNumber,Sex,PartyMemberType,BirthDate,NationId,Phone,DepartmentId,Class,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PartyActivist partyActivist)
+        public override async Task<IActionResult> Save([Bind("YearTermId,TrainClassId,ApplicationTime,ActiveApplicationTime,Duty,Name,JobNo,IdNumber,Sex,PartyMemberType,BirthDate,NationId,Phone,DepartmentId,Class,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PartyActivist partyActivist)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -216,22 +218,26 @@ namespace PartyMemberManager.Controllers
             };
             try
             {
+                if (partyActivist.YearTermId ==Guid.Empty)
+                    throw new PartyMemberException("请选择学年/学期");
+                if (partyActivist.TrainClassId == null)
+                    throw new PartyMemberException("请选择培训班");
+                if (partyActivist.Sex.ToString() == "0")
+                    throw new PartyMemberException("请选择性别");
+                if (partyActivist.NationId == Guid.Empty)
+                    throw new PartyMemberException("请选择民族");
+                if (CurrentUser.Roles == Role.学院党委)
+                    partyActivist.DepartmentId = CurrentUser.DepartmentId.Value;
+                else
+                {
+                    if (partyActivist.DepartmentId == Guid.Empty)
+                        throw new PartyMemberException("请选择部门");
+                }
+                if (partyActivist.PartyMemberType.ToString() == "0")
+                    throw new PartyMemberException("请选择类型");
                 if (ModelState.IsValid)
                 {
                     PartyActivist partyActivistInDb = await _context.PartyActivists.FindAsync(partyActivist.Id);
-                    if (partyActivist.NationId == null)
-                        throw new PartyMemberException("请选择民族");
-                    if (partyActivist.Sex.ToString() == null)
-                        throw new PartyMemberException("请选择性别");
-                    if (partyActivist.TrainClassId == null)
-                        throw new PartyMemberException("请选择培训班");
-                    if (CurrentUser.Roles == Role.学院党委)
-                        partyActivist.DepartmentId = CurrentUser.DepartmentId.Value;
-                    else
-                    {
-                        if (partyActivist.DepartmentId == null)
-                            throw new PartyMemberException("请选择部门");
-                    }
                     if (partyActivistInDb != null)
                     {
                         partyActivistInDb.ApplicationTime = partyActivist.ApplicationTime;

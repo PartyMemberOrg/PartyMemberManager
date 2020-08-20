@@ -37,14 +37,8 @@
         layui.use('laydate', function () {
             var laydate = layui.laydate;
             laydate.render({
-                elem: '#year',
-                type: 'year',
-                done: function (value, date) {
-                    $("#yearAdd").val(value * 1 + 1);
-                }
-            });
-            laydate.render({
-                elem: '#StartTime',
+                elem: '#StartTime'
+                , trigger: 'click'
             });
         });
     </script>

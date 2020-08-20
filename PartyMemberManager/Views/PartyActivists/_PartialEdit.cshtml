@@ -1,7 +1,24 @@
 ﻿@model PartyMemberManager.Dal.Entities.PartyActivist
-
+@{
+    var birthDate = Model.BirthDate.HasValue ? string.Format("{0:yyyy-MM}", Model.BirthDate.Value.Date) : null;
+    var applicationTime = Model.ApplicationTime.HasValue ? string.Format("{0:yyyy-MM-dd}", Model.ApplicationTime.Value.Date) : null;
+    var activeApplicationTime = Model.ActiveApplicationTime.HasValue ? string.Format("{0:yyyy-MM-dd}", Model.ActiveApplicationTime.Value.Date) : null;
+}
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 <input type="hidden" asp-for="Id" />
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="YearTermId" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <select asp-for="YearTermId" asp-items="@ViewBag.YearTermId" class="form-control">
+                <option value="">-请选择学年/学期-</option>
+            </select>
+            @*<span asp-validation-for="YearTermId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
+        </div>
+    </div>
+</div>
 <div class="form-group">
     <div class="row">
         <div class="@LabelDivDefaultClass">
@@ -11,7 +28,7 @@
             <select asp-for="TrainClassId" class="form-control" asp-items="@ViewBag.TrainClasses">
                 <option>-请选择培训班-</option>
             </select>
-            <span asp-validation-for="TrainClassId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+            @*<span asp-validation-for="TrainClassId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
         </div>
     </div>
 </div>
@@ -57,20 +74,7 @@
             <select asp-for="Sex" asp-items="@Html.GetEnumSelectList(typeof(Sex))" class="form-control">
                 <option>-请选择性别-</option>
             </select>
-            <span asp-validation-for="Sex" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
-        </div>
-    </div>
-</div>
-<div class="form-group">
-    <div class="row">
-        <div class="@LabelDivDefaultClass">
-            <label asp-for="PartyMemberType" asp-required="true" class="control-label"></label>
-        </div>
-        <div class="@InputDivDefaultClass">
-            <select asp-for="PartyMemberType" asp-items="@Html.GetEnumSelectList(typeof(PartyMemberType))" class="form-control">
-                <option>-请选择类型-</option>
-            </select>
-            <span asp-validation-for="PartyMemberType" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+            @*<span asp-validation-for="Sex" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
         </div>
     </div>
 </div>
@@ -80,7 +84,7 @@
             <label asp-for="BirthDate" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <input id="BirthDate" name="BirthDate" class="form-control" placeholder="yyyy-MM"  readonly value="@Model.BirthDate"/>
+            <input id="BirthDate" name="BirthDate" class="form-control" placeholder="yyyy-MM" readonly value="@birthDate" />
             <span asp-validation-for="BirthDate" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
@@ -94,7 +98,7 @@
             <select asp-for="NationId" class="form-control" asp-items="@ViewBag.Nations">
                 <option>-请选择民族-</option>
             </select>
-            <span asp-validation-for="NationId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+            @*<span asp-validation-for="NationId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
         </div>
     </div>
 </div>
@@ -120,6 +124,7 @@
                 <select asp-for="DepartmentId" class="form-control" asp-items="@ViewBag.Departments">
                     <option>-请选择部门-</option>
                 </select>
+                @*<span asp-validation-for="DepartmentId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
             </div>
         </div>
     </div>
@@ -130,7 +135,7 @@
             <label asp-for="ApplicationTime" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <input id="ApplicationTime" name="ApplicationTime" class="form-control" placeholder="yyyy-MM-dd" readonly value="@Model.ApplicationTime" />
+            <input id="ApplicationTime" name="ApplicationTime" class="form-control" placeholder="yyyy-MM-dd" readonly value="@applicationTime" />
             <span asp-validation-for="ApplicationTime" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>
@@ -141,8 +146,21 @@
             <label asp-for="ActiveApplicationTime" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <input id="ActiveApplicationTime" name="ActiveApplicationTime" class="form-control" placeholder="yyyy-MM-dd" readonly  value="@Model.ActiveApplicationTime"/>
+            <input id="ActiveApplicationTime" name="ActiveApplicationTime" class="form-control" placeholder="yyyy-MM-dd" readonly value="@activeApplicationTime" />
             <span asp-validation-for="ActiveApplicationTime" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="@LabelDivDefaultClass">
+            <label asp-for="PartyMemberType" asp-required="true" class="control-label"></label>
+        </div>
+        <div class="@InputDivDefaultClass">
+            <select asp-for="PartyMemberType" asp-items="@Html.GetEnumSelectList(typeof(PartyMemberType))" class="form-control">
+                <option>-请选择类型-</option>
+            </select>
+            @*<span asp-validation-for="PartyMemberType" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
         </div>
     </div>
 </div>

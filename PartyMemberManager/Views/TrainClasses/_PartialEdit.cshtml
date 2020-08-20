@@ -1,6 +1,6 @@
 ﻿@model PartyMemberManager.Dal.Entities.TrainClass
 @{ 
-    //var yearNext=string.IsNullOrEmpty(Model.Year)? null : ((int.Parse(Model.Year) + 1).ToString());
+    var startTime = Model.StartTime.HasValue?string.Format("{0:yyyy-MM-dd}",Model.StartTime.Value.Date):null;
 }
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 <input type="hidden" asp-for="Id" />
@@ -58,7 +58,7 @@
             <label asp-for="StartTime" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <input id="StartTime" name="StartTime" class="form-control" placeholder="yyyy-MM-dd"  readonly value="@Model.StartTime"/>
+            <input id="StartTime" name="StartTime" type="text" class="form-control" placeholder="yyyy-MM-dd"  readonly value="@startTime"/>
             <span asp-validation-for="StartTime" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
         </div>
     </div>

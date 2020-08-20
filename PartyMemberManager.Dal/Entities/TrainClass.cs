@@ -79,7 +79,9 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("开始时间")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public DateTime StartTime { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date)]
+        public Nullable<DateTime> StartTime { get; set; }
 
         /// <summary>
         /// 平时成绩比例
