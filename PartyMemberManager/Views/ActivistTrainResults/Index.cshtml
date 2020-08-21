@@ -79,7 +79,7 @@
 <table class="layui-hide" id="datatable" lay-filter="datatable"></table>
 <div style="margin-top: 10px">
     <div class="layui-input-inline" style="width:110px">
-        <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="saveGrade()">
+        <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="saveGrade()" id="saveGrade">
             <i class="layui-icon layui-icon-set-fill" style="font-size: 14px; color: #FFFFFF;"></i>保存成绩
         </a>
     </div>
@@ -163,8 +163,8 @@
                         { field: 'trainClassDisplay', title: '培训班', align: 'center', templet: '#optTrainClassDisplayTpl'},
                         { field: 'partyActivistJobNoDisplay', title: '学号/工号', align: 'center', templet: '#optPartyActivistJobNoTpl'},
                         { field: 'partyActivistNameDisplay', title: '姓名', align: 'center', templet: '#optPartyActivistNameoTpl' },
-                        { field: 'psGrade', title: '平时成绩', align: 'center', edit: 'text', templet: function (d) { return '<input type="text" id="inputGrade" class="form-control"  style="width:100%;height:26px" value="' + d.psGrade + '">' } },
-                        { field: 'csGrade', title: '考试成绩', align: 'center', edit: 'text', templet: function (d) { return '<input type="text" id="inputGrade" class="form-control"  style="width:100%;height:26px" value="' + d.csGrade + '">' } },
+                        { field: 'psGrade', title: '平时成绩', align: 'center', edit: 'text', templet: function (d) { return '<input type="text"  class="form-control"  style="width:100%;height:26px" value="' + d.psGrade + '">' } },
+                        { field: 'csGrade', title: '考试成绩', align: 'center', edit: 'text', templet: function (d) { return '<input type="text"  class="form-control"  style="width:100%;height:26px" value="' + d.csGrade + '">' } },
                         //{ field: 'psGrade', title: '平时成绩', align: 'center', edit: 'text'},
                         //{ field: 'csGrade', title: '考试成绩', align: 'center', edit: 'text'},
                         { field: 'totalGrade', title: '总成绩', align: 'center' },
@@ -180,7 +180,7 @@
                 });
             });
         }
-                        /**过滤数据 */
+        /**过滤数据 */
         function tablefilter() {
             //此处Id不要#号
             var tableId = "dataGrid";
@@ -211,7 +211,7 @@
                 var datas = layui.table.cache[tableId];
                 for (i = 0; i < datas.length; i++)
                 {
-                    if (datas[i].psGrad>=0 && datas[i].psGrade<=100 && datas[i].csGrade>=0 && datas[i].csGrade<=100) {
+                    if (datas[i].psGrade>=0 && datas[i].psGrade<=100 && datas[i].csGrade>=0 && datas[i].csGrade<=100) {
                         var item = datas[i].id + "," + datas[i].psGrade + "," + datas[i].csGrade;
                         datasSubmit.push(item);
                     }
@@ -298,20 +298,6 @@
         {{d.id}}
     </script>
     <script>
-        /*验证表格输入*/
-        layui.use('table', function () {
-            var table = layui.table;
-            table.on('edit(datatable)', function (obj) {
-                var value = obj.value;
-                if (isNaN(value)) {
-                    layer.msg("输入了非数值！");
-                }
-                if (value < 0 || value > 100)
-                    layer.msg("成绩不在0-100之间！");
-            });
-        });
-    </script>
-    <script>
         function filterTrainClass() {
             var url = '@Url.Action("GetTrainClassDatas")';
             var yearTermId = $("#YearTermId").val();
@@ -340,6 +326,40 @@
             });
 
         }
+    </script>
+    <script>
+        layui.use('table', function () {
+            var table = layui.table;
+            var tableId = "dataGrid";
+            var errflag = false;
+            table.on('edit(datatable)', function (obj) {
+                var oldData = layui.table.cache[tableId];
+                var value = obj.value //得到修改后的值
+                    , data = obj.data //得到所在行所有键值
+                    , field = obj.field; //得到字段
+                //layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+                if (isNaN(value)) {
+                    layer.msg("输入非数字");
+                    errflag = true;
+                    return;
+                }
+                if (value > 100 || value < 0) {
+                    layer.msg("成绩需要在0-100之间");
+                    errflag = true;
+                    return;
+                }
+                for (var i = 0, row; i < oldData.length; i++) {
+                    row = oldData[i];
+                    if (row.id == data.id) {
+                        if (errflag)
+                            $.extend(obj, oldData[i]);
+                        else
+                            $.extend(oldData[i], obj);
+                        return;
+                    }
+                }
+            });
+        });
     </script>
 }
 
