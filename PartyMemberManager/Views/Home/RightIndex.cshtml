@@ -7,7 +7,7 @@
         width: 40%;
         height: 100%;
         float: left;
-        margin:10% 30px 0 50px;
+        margin: 10% 30px 0 50px;
     }
 
     h1.title {
@@ -27,9 +27,9 @@
         color: rgb(255,160,0);
         text-indent: 2em;
         line-height: 50px;
-        text-align:justify;
-        font-weight:bold;
-        margin-top:30px;
+        text-align: justify;
+        font-weight: bold;
+        margin-top: 30px;
     }
 
     .sctext {
@@ -53,8 +53,10 @@
 @section Scripts{
     <script type="text/javascript">
         $(document).ready(function () {
-            alert($(window).width());
-            $("body").width($(window).width());
+            $("body").width("100%");
+            $(window).resize(function () {
+                $("body").width("100%");
+            });
         });
     </script>
 }

@@ -15,8 +15,11 @@
     <script type="text/javascript">
         var tableObject = null;
            $(document).ready(function () {
-               $("body").width($(window).width());
-            InitTable();
+               $("body").width("100%");
+               $(window).resize(function () {
+                   $("body").width("100%");
+               });
+               InitTable();
         });
 
         function Delete(id) {

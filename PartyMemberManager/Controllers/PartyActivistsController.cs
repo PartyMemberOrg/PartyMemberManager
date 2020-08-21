@@ -225,6 +225,14 @@ namespace PartyMemberManager.Controllers
             };
             try
             {
+                if (partyActivist.Sex.ToString() == "0")
+                    throw new PartyMemberException("请选择性别");
+                if (partyActivist.NationId == Guid.Empty)
+                    throw new PartyMemberException("请选择民族");
+                if (partyActivist.PartyMemberType.ToString() == "0")
+                    throw new PartyMemberException("请选择类型");
+                if (partyActivist.BirthDate == null)
+                    throw new PartyMemberException("出生日期不能为空");
                 if (CurrentUser.Roles == Role.学院党委)
                     partyActivist.DepartmentId = CurrentUser.DepartmentId.Value;
                 else
@@ -236,14 +244,6 @@ namespace PartyMemberManager.Controllers
                     throw new PartyMemberException("请选择学年/学期");
                 if (partyActivist.TrainClassId == null)
                     throw new PartyMemberException("请选择培训班");
-                if (partyActivist.Sex.ToString() == "0")
-                    throw new PartyMemberException("请选择性别");
-                if (partyActivist.NationId == Guid.Empty)
-                    throw new PartyMemberException("请选择民族");
-                if (partyActivist.PartyMemberType.ToString() == "0")
-                    throw new PartyMemberException("请选择类型");
-                if (partyActivist.BirthDate == null)
-                    throw new PartyMemberException("出生日期不能为空");
                 if (partyActivist.ApplicationTime == null)
                     throw new PartyMemberException("申请入党时间不能为空");
                 if (partyActivist.ActiveApplicationTime == null)
