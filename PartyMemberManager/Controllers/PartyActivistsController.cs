@@ -419,6 +419,7 @@ namespace PartyMemberManager.Controllers
                                 Ordinal = rowIndex,
                                 OperatorId = CurrentUser.Id,
                                 TrainClassId = trainClass.Id,
+                                YearTermId= trainClass.YearTermId
                                 //Year=trainClass.Year,
                                 //Term=trainClass.Term,
                             };
