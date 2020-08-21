@@ -10,7 +10,9 @@ namespace PartyMemberManager.Controllers
     {
         public IActionResult ExcelTemplates(string fileName)
         {
-            return File(System.IO.Path.Combine(AppContext.BaseDirectory, "ExcelTemplates", fileName), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            string file = System.IO.Path.Combine(AppContext.BaseDirectory, "ExcelTemplates", fileName);
+            System.IO.FileStream fileStream = new System.IO.FileStream(file, System.IO.FileMode.Open);
+            return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",fileName);
         }
     }
 }

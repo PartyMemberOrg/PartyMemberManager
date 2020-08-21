@@ -1,8 +1,6 @@
 ﻿@model PartyActivistImportViewModel
 
-<a href="@Url.Action("ExcelTemplates","Download",new { fileName="学生入党积极分子培训报名表模板.xlsx"})">下载学生入单积极分子导入模板</a>
-<a href="@Url.Action("ExcelTemplates","Download",new { fileName="教职工入党积极分子培训报名表模板.xlsx"})">下载教师入党积极分子导入模板</a>
-<form action="@Url.Action("Import")" method="post" enctype="multipart/form-data" >
+<form action="@Url.Action("Import")" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <div class="row">
             <div class="@LabelDivDefaultClass">
@@ -74,8 +72,17 @@
         </div>
     </div>
 </form>
-    @section Scripts{
-        <script type="text/javascript">
+
+<div style="margin-left:20px;margin-top:10px;">
+    <div>下载模板：</div>
+    <div style="margin-left:20px;">
+        <a href="@Url.Action("ExcelTemplates","Download",new { fileName="学生入党积极分子培训报名表模板.xlsx"})" style="display:block">学生入党积极分子导入模板</a>
+        <a href="@Url.Action("ExcelTemplates","Download",new { fileName="教职工入党积极分子培训报名表模板.xlsx"})" style="display:block">教师入党积极分子导入模板</a>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
         $(document).ready(function () {
             $("#TrainClassTypeId").change(function () {
                 filterTrainClass();
@@ -117,5 +124,5 @@
             });
 
         }
-        </script>
-    }
+    </script>
+}
