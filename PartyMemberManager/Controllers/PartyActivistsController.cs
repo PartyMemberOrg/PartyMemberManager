@@ -447,11 +447,13 @@ namespace PartyMemberManager.Controllers
                                 string remark = row[remarkField].ToString();
                                 //跳过姓名为空的记录
                                 if (string.IsNullOrEmpty(name)) continue;
-                                birthday = birthday.Replace(".", "").Replace("/", "").Replace("-", "");
-                                time = time.Replace(".", "").Replace("/", "").Replace("-", "");
+                                birthday = birthday.Replace(".", "-").Replace("/", "-");
+                                time = time.Replace(".", "-").Replace("/", "-");
                                 DateTime birthdayValue = DateTime.Now;
-                                if (birthday.Length < 6)
+                                if (!birthday.Contains("-") && birthday.Length == 6)
                                     birthday = birthday + "01";
+                                else if (birthday.Contains("-") && birthday.IndexOf('-') == birthday.LastIndexOf('-'))
+                                    birthday = birthday + "-01";
                                 if (!TryParseYearMonth(birthday, out birthdayValue))
                                 {
                                     throw new PartyMemberException($"第{rowIndex}行数据中的【{birthdayField}】年月格式不合法");
@@ -475,6 +477,8 @@ namespace PartyMemberManager.Controllers
                                 partyActivist.IdNumber = id;
                                 partyActivist.Phone = phone;
                                 partyActivist.ApplicationTime = timeValue;
+                                //该字段不允许为空有问题
+                                partyActivist.ActiveApplicationTime = timeValue;
                             }
                             else
                             {
