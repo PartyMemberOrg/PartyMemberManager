@@ -45,7 +45,7 @@ namespace PartyMemberManager.Controllers
             return View(await pMContext.ToListAsync());
         }
 
-        public async Task<IActionResult> GetDatasWithFilter(Guid? yearTermId,Guid? departmentId, string isPass, string isPrint, Guid? trainClassId, string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? yearTermId, Guid? departmentId, string isPass, string isPrint, Guid? trainClassId, string keyword, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<ActivistTrainResult> jsonResult = new JsonResultDatasModel<ActivistTrainResult>
             {
@@ -82,7 +82,7 @@ namespace PartyMemberManager.Controllers
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {
-                    var data = await _context.Set<ActivistTrainResult>().Include(d => d.PartyActivist).Include(d => d.PartyActivist.TrainClass).Include(d=>d.PartyActivist.YearTerm)
+                    var data = await _context.Set<ActivistTrainResult>().Include(d => d.PartyActivist).Include(d => d.PartyActivist.TrainClass).Include(d => d.PartyActivist.YearTerm)
                         .Where(filter).Where(d => d.PartyActivist.YearTerm.Enabled == true)
                         .OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
@@ -238,7 +238,7 @@ namespace PartyMemberManager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveGradeData(string[] datas)
+        public async Task<IActionResult> SaveGradeData(Guid id, int psGrade, int csGrade)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -247,28 +247,20 @@ namespace PartyMemberManager.Controllers
             };
             try
             {
-                foreach (var item in datas)
+                ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.Include(d => d.PartyActivist.TrainClass).Where(d => d.Id == id).FirstOrDefaultAsync();
+                if (activistTrainResult != null)
                 {
-                    string[] itemSub = item.Split(",");
-                    if (itemSub.Length == 3)
-                    {
-                        Guid id = Guid.Parse(itemSub[0]);
-                        ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.Include(d => d.PartyActivist.TrainClass).Where(d=>d.Id==id).FirstOrDefaultAsync();
-                        if (activistTrainResult != null)
-                        {
-                            activistTrainResult.PsGrade = int.Parse(itemSub[1]);
-                            activistTrainResult.CsGrade = int.Parse(itemSub[2]);
-                            activistTrainResult.TotalGrade =Math.Round(activistTrainResult.PartyActivist.TrainClass.PsGradeProportion * activistTrainResult.PsGrade / 100 + activistTrainResult.PartyActivist.TrainClass.CsGradeProportion * activistTrainResult.CsGrade / 100,2);
-                            if (activistTrainResult.TotalGrade >= 60)
-                                activistTrainResult.IsPass = true;
-                            else
-                                activistTrainResult.IsPass = false;
-                            _context.Update(activistTrainResult);
-                        }
-                    }
+                    activistTrainResult.PsGrade = psGrade;
+                    activistTrainResult.CsGrade = csGrade;
+                    activistTrainResult.TotalGrade = Math.Round(activistTrainResult.PartyActivist.TrainClass.PsGradeProportion * activistTrainResult.PsGrade / 100 + activistTrainResult.PartyActivist.TrainClass.CsGradeProportion * activistTrainResult.CsGrade / 100, 2);
+                    if (activistTrainResult.TotalGrade >= 60)
+                        activistTrainResult.IsPass = true;
+                    else
+                        activistTrainResult.IsPass = false;
+                    _context.Update(activistTrainResult);
 
+                    await _context.SaveChangesAsync();
                 }
-                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
             {

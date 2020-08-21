@@ -150,7 +150,6 @@
         function InitTable() {
             layui.use('table', function () {
                 var table = layui.table;
-
                 tableObject = table.render({
                     elem: '#datatable'
                     , url: '@Url.Action("GetDatasWithFilter")'
@@ -303,11 +302,11 @@
         layui.use('table', function () {
             var table = layui.table;
             table.on('edit(datatable)', function (obj) {
-                var data = obj.data;
-                if (isNaN(data.psGrade) || isNaN(data.csGrade)) {
+                var value = obj.value;
+                if (isNaN(value)) {
                     layer.msg("输入了非数值！");
                 }
-                if (data.psGrade < 0 || data.psGrade > 100 || data.csGrade < 0 || data.csGrade > 100)
+                if (value < 0 || value > 100)
                     layer.msg("成绩不在0-100之间！");
             });
         });
