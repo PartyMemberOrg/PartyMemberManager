@@ -30,18 +30,24 @@ namespace PartyMemberManager.Dal.Entities
         public string TrainClassDisplay { get => TrainClass == null ? "" : TrainClass.Name; }
 
         /// <summary>
-        /// 年/学期
+        /// 学年/学期
         /// </summary>
         [DisplayName("学年/学期")]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [NotMapped]
-        public Guid YearTermId { get; set; }
+
+        public Guid? YearTermId { get; set; }
+
+        /// <summary>
+        /// 学年/学期
+        /// </summary>
+        [DisplayName("学年/学期")]
+
+        public YearTerm YearTerm { get; set; }
         /// <summary>
         /// 学年学期
         /// </summary>
         [DisplayName("学年/学期")]
         [NotMapped]
-        public string YearTermDisplay { get => TrainClass == null || TrainClass.YearTerm == null ? "" : TrainClass.YearTerm.ToString(); }
+        public string YearTermDisplay { get => YearTerm == null ? "" : YearTerm.Name; }
         /// <summary>
         /// 姓名
         /// </summary>

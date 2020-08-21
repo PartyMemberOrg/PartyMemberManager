@@ -55,7 +55,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, Guid? trainClassId, string partyMemberType, string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? yearTermId, Guid? departmentId, Guid? trainClassId, string partyMemberType, string keyword, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<PartyActivist> jsonResult = new JsonResultDatasModel<PartyActivist>
             {
@@ -66,6 +66,10 @@ namespace PartyMemberManager.Controllers
             try
             {
                 var filter = PredicateBuilder.True<PartyActivist>();
+                if (yearTermId != null)
+                {
+                    filter = filter.And(d => d.YearTermId == yearTermId);
+                }
                 if (departmentId != null)
                 {
                     filter = filter.And(d => d.DepartmentId == departmentId);
@@ -84,7 +88,8 @@ namespace PartyMemberManager.Controllers
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {
-                    var data = await _context.Set<PartyActivist>().Include(d => d.Department).Include(d => d.Nation).Include(d => d.TrainClass).Include(t => t.TrainClass.YearTerm).Where(filter)
+                    var data = await _context.Set<PartyActivist>().Include(d => d.Department).Include(d => d.Nation).Include(d => d.TrainClass).Include(t => t.YearTerm)
+                        .Where(filter).Where(d=>d.YearTerm.Enabled==true)
                         .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
@@ -95,7 +100,9 @@ namespace PartyMemberManager.Controllers
                 {
                     if (CurrentUser.DepartmentId == null)
                         throw new PartyMemberException("该用户不合法，请设置该用户所属部门");
-                    var data = await _context.Set<PartyActivist>().Where(filter).Include(d => d.Department).Include(d => d.Nation).Include(d => d.TrainClass).Include(t => t.TrainClass.YearTerm).Where(d => d.DepartmentId == CurrentUser.DepartmentId)
+                    var data = await _context.Set<PartyActivist>().Where(filter).Include(d => d.Department).Include(d => d.Nation).Include(d => d.TrainClass).Include(t => t.TrainClass).Include(d=>d.YearTerm)
+                        .Where(filter).Where(d => d.YearTerm.Enabled == true)
+                        .Where(d => d.DepartmentId == CurrentUser.DepartmentId)
                         .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
