@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using PartyMemberManager.Dal;
 using PartyMemberManager.Dal.Entities;
 using PartyMemberManager.Core.Enums;
+using NPOI.OpenXmlFormats.Spreadsheet;
 
 namespace PartyMemberManager.Controllers
 {
@@ -238,7 +239,7 @@ namespace PartyMemberManager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveGradeData(Guid id, int psGrade, int csGrade)
+        public async Task<IActionResult> SaveGradeData(string[] datas)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -247,19 +248,27 @@ namespace PartyMemberManager.Controllers
             };
             try
             {
-                ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.Include(d => d.PartyActivist.TrainClass).Where(d => d.Id == id).FirstOrDefaultAsync();
-                if (activistTrainResult != null)
+                foreach (var item in datas)
                 {
-                    activistTrainResult.PsGrade = psGrade;
-                    activistTrainResult.CsGrade = csGrade;
-                    activistTrainResult.TotalGrade = Math.Round(activistTrainResult.PartyActivist.TrainClass.PsGradeProportion * activistTrainResult.PsGrade / 100 + activistTrainResult.PartyActivist.TrainClass.CsGradeProportion * activistTrainResult.CsGrade / 100, 2);
-                    if (activistTrainResult.TotalGrade >= 60)
-                        activistTrainResult.IsPass = true;
-                    else
-                        activistTrainResult.IsPass = false;
-                    _context.Update(activistTrainResult);
+                    var subItem = item.Split(",");
+                    if (subItem.Length == 3)
+                    {
+                        Guid id = Guid.Parse(subItem[0]);
+                        ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.Include(d => d.PartyActivist.TrainClass).Where(d => d.Id == id).FirstOrDefaultAsync();
+                        if (activistTrainResult != null)
+                        {
+                            activistTrainResult.PsGrade = int.Parse(subItem[1]);
+                            activistTrainResult.CsGrade = int.Parse(subItem[2]);
+                            activistTrainResult.TotalGrade = Math.Round(activistTrainResult.PartyActivist.TrainClass.PsGradeProportion * activistTrainResult.PsGrade / 100 + activistTrainResult.PartyActivist.TrainClass.CsGradeProportion * activistTrainResult.CsGrade / 100, 2);
+                            if (activistTrainResult.TotalGrade >= 60)
+                                activistTrainResult.IsPass = true;
+                            else
+                                activistTrainResult.IsPass = false;
+                            _context.Update(activistTrainResult);
 
-                    await _context.SaveChangesAsync();
+                            await _context.SaveChangesAsync();
+                        }
+                    }
                 }
             }
             catch (DbUpdateConcurrencyException ex)
