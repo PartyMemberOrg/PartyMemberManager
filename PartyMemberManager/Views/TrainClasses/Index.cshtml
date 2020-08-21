@@ -3,13 +3,15 @@
 @{
     ViewData["Title"] = "Index";
 }
-<div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px">
-    <div class="layui-input-inline" style="width:80px">
-        <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',550,460)" class="layui-btn layui-btn-primary">+添加</a>
+<div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
+    <div style="display:inline-block">
+        <div class="layui-input-inline" style="width:80px">
+            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',550,460)" class="layui-btn layui-btn-primary">+添加</a>
+        </div>
     </div>
     @if (CurrentUser.Roles > Role.学院党委)
     {
-        <div>
+        <div style="display:inline-block">
             <label class="layui-form-label" style="padding:5px">部门:</label>
             <div class="layui-input-inline" style="width:300px">
                 <select name="departmentId" asp-items="@ViewBag.Departments" class="layui-input" id="department">
@@ -18,7 +20,7 @@
             </div>
         </div>
     }
-    <div>
+    <div style="display:inline-block">
         <label class="layui-form-label" style="padding:5px;width:100px">培训班类型:</label>
         <div class="layui-input-inline" style="width:300px">
             <select name="trainClassTypeId" asp-items="@ViewBag.TrainClassTypeId" class="layui-input" id="trainClassType">
@@ -26,12 +28,12 @@
             </select>
         </div>
     </div>
-    <div>
+    <div style="display:inline-block">
         <div class="layui-input-inline" style="width:300px">
             <input name="name" type="text" class="layui-input" placeholder="请输入培训班名称" id="keyword" />
         </div>
     </div>
-    <div>
+    <div style="display:inline-block">
         <div class="layui-input-inline" style="width:80px">
             <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
                 <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询

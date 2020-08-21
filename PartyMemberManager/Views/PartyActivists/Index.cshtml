@@ -3,14 +3,14 @@
 @{
     ViewData["Title"] = "Index";
 }
-<div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px">
-    <div>
+<div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
+    <div style="display:inline-block">
         <div class="layui-input-inline" style="width:60px">
             <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,650)" class="layui-btn layui-btn-primary">+添加</a>
         </div>
     </div>
     <input type="hidden" id="TrainClassTypeId" value="@ViewBag.TrainClassTypeId" />
-    <div>
+    <div style="display:inline-block">
         <label class="layui-form-label" style="padding:5px">学年/学期:</label>
         <div class="layui-input-inline" style="width:240px">
             <select name="YearTermId" asp-items="@ViewBag.YearTermId" class="layui-input" id="YearTermId">
@@ -20,7 +20,7 @@
     </div>
     @if (CurrentUser.Roles > Role.学院党委)
     {
-        <div>
+        <div style="display:inline-block">
             <label class="layui-form-label" style="padding:5px;width:60px">部门:</label>
             <div class="layui-input-inline" style="width:200px">
                 <select name="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input" id="DepartmentId">
@@ -29,7 +29,7 @@
             </div>
         </div>
     }
-    <div>
+    <div style="display:inline-block">
         <label class="layui-form-label" style="padding:5px;width:60px">培训班:</label>
         <div class="layui-input-inline" style="width:240px">
             <select name="TrainClassId" asp-items="@ViewBag.TrainClasses" class="layui-input" id="TrainClassId">
@@ -37,7 +37,7 @@
             </select>
         </div>
     </div>
-    <div>
+    <div style="display:inline-block">
         <label class="layui-form-label" style="padding:5px;width:60px">类型:</label>
         <div class="layui-input-inline" style="width:120px">
             <select name="partyMemberType" asp-items="@Html.GetEnumSelectList(typeof(PartyMemberType))" class="layui-input" id="partyMemberType">
@@ -45,19 +45,19 @@
             </select>
         </div>
     </div>
-    <div>
+    <div style="display:inline-block">
         <div class="layui-input-inline" style="width:200px">
             <input name="name" type="text" class="layui-input" placeholder="请输入学号/工号/姓名" id="keyword" />
         </div>
     </div>
-    <div>
+    <div style="display:inline-block">
         <div class="layui-input-inline" style="width:80px">
             <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
                 <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
             </a>
         </div>
     </div>
-    <div>
+    <div style="display:inline-block">
         <div class="layui-input-inline" style="width:120px">
             <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="importExcel()">
                 <i class="layui-icon layui-icon-loading" style="font-size: 14px; color: #FFFFFF;"></i>导入Excel
