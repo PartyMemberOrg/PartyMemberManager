@@ -205,7 +205,7 @@
         /*保存成绩*/
         function saveGrade() {
             var tableId = "dataGrid";
-            var datasSubmit = new Array();
+            var datas = new Array();
             var errName;
             layui.use('table', function () {
                 var datas = layui.table.cache[tableId];
@@ -213,7 +213,7 @@
                 {
                     if (datas[i].psGrade>=0 && datas[i].psGrade<=100 && datas[i].csGrade>=0 && datas[i].csGrade<=100) {
                         var item = datas[i].id + "," + datas[i].psGrade + "," + datas[i].csGrade;
-                        datasSubmit.push(item);
+                        datas.push(item);
                     }
                 }
             });
@@ -221,7 +221,7 @@
                 type:'post',
                 url: '@Url.Action("SaveGradeData")',
                 traditional: true,
-                data: { datas: datasSubmit },
+                data: { datas: datas },
                 dataType:'json',
                 success: function (data) {
                     layer.msg(data.message);
