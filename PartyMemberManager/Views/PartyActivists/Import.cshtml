@@ -1,4 +1,7 @@
 ﻿@model PartyActivistImportViewModel
+
+<a href="@Url.Action("ExcelTemplates","Download",new { fileName="学生入党积极分子培训报名表模板.xlsx"})">下载学生入单积极分子导入模板</a>
+<a href="@Url.Action("ExcelTemplates","Download",new { fileName="教职工入党积极分子培训报名表模板.xlsx"})">下载教师入党积极分子导入模板</a>
 <form action="@Url.Action("Import")" method="post" enctype="multipart/form-data" >
     <div class="form-group">
         <div class="row">
