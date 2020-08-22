@@ -18,6 +18,8 @@ using PartyMemberManager.Core.Enums;
 using NPOI.OpenXmlFormats.Spreadsheet;
 using PartyMemberManager.Models.PrintViewModel;
 using Microsoft.AspNetCore.Authorization;
+using FastReport;
+using FastReport.Web;
 
 namespace PartyMemberManager.Controllers
 {
@@ -299,6 +301,12 @@ namespace PartyMemberManager.Controllers
         /// <returns></returns>
         public async Task<IActionResult> GetPrintData(Guid id)
         {
+            PartyActivistPrintViewModel model = await GetReportData(id);
+            return Json(model);
+        }
+
+        private async Task<PartyActivistPrintViewModel> GetReportData(Guid id)
+        {
             ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.FindAsync(id);
             PartyActivist partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);
             YearTerm yearTerm = await _context.YearTerms.FindAsync(partyActivist.YearTermId);
@@ -319,8 +327,21 @@ namespace PartyMemberManager.Controllers
                 Month = dateTime.Month.ToString(),
                 Day = dateTime.Day.ToString()
             };
-            return Json(model);
+            return model;
         }
+
+        public async Task<IActionResult> Print(Guid id)
+        {
+            PartyActivistPrintViewModel model = await GetReportData(id);
+            List<PartyActivistPrintViewModel> partyActivistPrintViewModels = new List<PartyActivistPrintViewModel> ();
+            partyActivistPrintViewModels.Add(model);
+            WebReport webReport = new WebReport();
+            webReport.Report.RegisterData(partyActivistPrintViewModels, "datas");
+            webReport.Report.Load("Reports/ActivistTrain.frx");
+            webReport.Report.Prepare();
+            return View(webReport);
+        }
+
         private bool ActivistTrainResultExists(Guid id)
         {
             return _context.ActivistTrainResults.Any(e => e.Id == id);
