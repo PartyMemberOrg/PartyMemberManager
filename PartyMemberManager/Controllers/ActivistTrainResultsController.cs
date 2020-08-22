@@ -333,11 +333,12 @@ namespace PartyMemberManager.Controllers
         public async Task<IActionResult> Print(Guid id)
         {
             PartyActivistPrintViewModel model = await GetReportData(id);
-            List<PartyActivistPrintViewModel> partyActivistPrintViewModels = new List<PartyActivistPrintViewModel> ();
+            List<PartyActivistPrintViewModel> partyActivistPrintViewModels = new List<PartyActivistPrintViewModel>();
             partyActivistPrintViewModels.Add(model);
+            string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
             WebReport webReport = new WebReport();
             webReport.Report.RegisterData(partyActivistPrintViewModels, "datas");
-            webReport.Report.Load("Reports/ActivistTrain.frx");
+            webReport.Report.Load(reportFile);
             webReport.Report.Prepare();
             return View(webReport);
         }

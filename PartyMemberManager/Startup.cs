@@ -82,6 +82,7 @@ namespace PartyMemberManager
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+            app.UseFastReport();
         }
     }
 }
