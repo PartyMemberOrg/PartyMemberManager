@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 using System.Data;
 using ExcelCore;
 using PartyMemberManager.Models;
+using PartyMemberManager.Models.PrintViewModel;
 
 namespace PartyMemberManager.Controllers
 {
@@ -433,6 +434,7 @@ namespace PartyMemberManager.Controllers
                                 Ordinal = rowIndex,
                                 OperatorId = CurrentUser.Id,
                                 TrainClassId = trainClass.Id,
+                                YearTermId= trainClass.YearTermId
                                 //Year=trainClass.Year,
                                 //Term=trainClass.Term,
                             };
@@ -460,11 +462,13 @@ namespace PartyMemberManager.Controllers
                                 string remark = row[remarkField].ToString();
                                 //跳过姓名为空的记录
                                 if (string.IsNullOrEmpty(name)) continue;
-                                birthday = birthday.Replace(".", "").Replace("/", "").Replace("-", "");
-                                time = time.Replace(".", "").Replace("/", "").Replace("-", "");
+                                birthday = birthday.Replace(".", "-").Replace("/", "-");
+                                time = time.Replace(".", "-").Replace("/", "-");
                                 DateTime birthdayValue = DateTime.Now;
-                                if (birthday.Length < 6)
+                                if (!birthday.Contains("-") && birthday.Length == 6)
                                     birthday = birthday + "01";
+                                else if (birthday.Contains("-") && birthday.IndexOf('-') == birthday.LastIndexOf('-'))
+                                    birthday = birthday + "-01";
                                 if (!TryParseYearMonth(birthday, out birthdayValue))
                                 {
                                     throw new PartyMemberException($"第{rowIndex}行数据中的【{birthdayField}】年月格式不合法");
@@ -488,6 +492,8 @@ namespace PartyMemberManager.Controllers
                                 partyActivist.IdNumber = id;
                                 partyActivist.Phone = phone;
                                 partyActivist.ApplicationTime = timeValue;
+                                //该字段不允许为空有问题
+                                partyActivist.ActiveApplicationTime = timeValue;
                             }
                             else
                             {
@@ -552,7 +558,18 @@ namespace PartyMemberManager.Controllers
                                 partyActivist.Class = @class;
                                 partyActivist.Duty = title;
                             }
+                            ActivistTrainResult activistTrainResult = new ActivistTrainResult
+                            {
+                                Id=Guid.NewGuid(),
+                                PartyActivistId = partyActivist.Id,
+                                CreateTime = DateTime.Now,
+                                OperatorId = CurrentUser.Id,
+                                IsDeleted = false,
+                                Ordinal = _context.ActivistTrainResults.Count() + 1
+                            };
+
                             _context.PartyActivists.Add(partyActivist);
+                            _context.ActivistTrainResults.Add(activistTrainResult);
                             await _context.SaveChangesAsync();
                         }
                         #endregion
@@ -608,6 +625,5 @@ namespace PartyMemberManager.Controllers
         {
             return _context.PartyActivists.Any(e => e.Id == id);
         }
-
     }
 }

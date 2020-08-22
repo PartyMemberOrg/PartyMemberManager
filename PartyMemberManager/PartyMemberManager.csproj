@@ -71,7 +71,10 @@
     <None Update="ExcelTemplates\学生入党积极分子培训报名表模板.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="ExcelTemplates\教职工入党积极分子培训报名表模板.xls">
+    <None Update="ExcelTemplates\教职工入党积极分子培训报名表模板.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\ActivistTrain.frx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
