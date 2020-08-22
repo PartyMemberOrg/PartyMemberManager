@@ -281,6 +281,7 @@ namespace PartyMemberManager.Controllers
                         partyActivistInDb.Name = partyActivist.Name;
                         partyActivistInDb.JobNo = partyActivist.JobNo;
                         partyActivistInDb.IdNumber = partyActivist.IdNumber;
+                        partyActivistInDb.NationId = partyActivist.NationId;
                         partyActivistInDb.PartyMemberType = partyActivist.PartyMemberType;
                         partyActivistInDb.BirthDate = partyActivist.BirthDate;
                         partyActivistInDb.Phone = partyActivist.Phone;

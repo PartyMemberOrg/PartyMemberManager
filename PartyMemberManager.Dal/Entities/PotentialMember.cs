@@ -32,7 +32,7 @@ namespace PartyMemberManager.Dal.Entities
         /// 入党积极分子
         /// </summary>
         [DisplayName("入党积极分子")]
-        public Guid PartyActivistId { get; set; }
+        public Guid? PartyActivistId { get; set; }
         /// <summary>
         /// 入党积极分子
         /// </summary>

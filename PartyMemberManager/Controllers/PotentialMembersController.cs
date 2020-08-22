@@ -30,12 +30,18 @@ namespace PartyMemberManager.Controllers
         {
             var pMContext = _context.PotentialMembers.Include(p => p.Department).Include(p => p.Nation).Include(p => p.TrainClass);
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
-            ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
             if (CurrentUser.Roles == Role.学院党委)
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "42").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d => d.TrainClassType)
+                    .Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value && d.YearTerm.Enabled == true)
+                    .Where(d => d.TrainClassType.Code == "42")
+                    .OrderBy(d => d.Ordinal), "Id", "Name");
             else
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "42").OrderBy(d => d.Ordinal), "Id", "Name");
-            return View(await pMContext.ToListAsync());
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d => d.TrainClassType)
+                    .Where(d => d.YearTerm.Enabled == true)
+                    .Where(d => d.TrainClassType.Code == "42")
+                    .OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
+            ViewBag.TrainClassTypeId = _context.TrainClassTypes.Where(d => d.Code == "42").Select(d => d.Id).SingleOrDefault(); return View(await pMContext.ToListAsync());
         }
 
         // GET: PotentialMembers/Details/5
@@ -62,12 +68,9 @@ namespace PartyMemberManager.Controllers
         // GET: PotentialMembers/Create
         public IActionResult Create(string idList)
         {
-            if (idList == null)
-            {
-                return NotFoundData();
-            }
             PotentialMember potentialMember = new PotentialMember();
-            ViewBag.IdList = idList.TrimEnd(',');
+            if (!string.IsNullOrEmpty(idList))
+                ViewBag.IdList = idList.TrimEnd(',');
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             if (CurrentUser.Roles == Role.学院党委)
                 ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d => d.TrainClassType)
@@ -92,7 +95,6 @@ namespace PartyMemberManager.Controllers
             {
                 return NotFoundData();
             }
-
             var potentialMember = await _context.PotentialMembers.SingleOrDefaultAsync(m => m.Id == id);
             if (potentialMember == null)
             {
@@ -124,11 +126,9 @@ namespace PartyMemberManager.Controllers
             };
             try
             {
-                if (string.IsNullOrEmpty(potentialMember.IdList))
-                    throw new PartyMemberException("请选择成绩合格的入党积极分子作为发展对象");
-                if (potentialMember.YearTermId == Guid.Empty)
+                if (potentialMember.YearTermId == null)
                     throw new PartyMemberException("请选择学年/学期");
-                if (potentialMember.TrainClassId == Guid.Empty)
+                if (potentialMember.TrainClassId == null)
                     throw new PartyMemberException("请选择培训班");
                 if (potentialMember.PotentialMemberTime == null)
                     throw new PartyMemberException("请选择发展时间");
@@ -145,14 +145,18 @@ namespace PartyMemberManager.Controllers
                 }
                 else
                 {
+                    if (string.IsNullOrEmpty(potentialMember.IdList))
+                        throw new PartyMemberException("请选择成绩合格的入党积极分子作为发展对象");
                     string[] partyAcitvistsId = potentialMember.IdList.Split(",");
                     foreach (var item in partyAcitvistsId)
                     {
-                        Guid partyActivistId = Guid.Parse(item);
-                        var potentialMemberOld = _context.PotentialMembers.Where(d => d.PartyActivistId == partyActivistId).FirstOrDefault();
-                        if (potentialMemberOld.PartyActivistId != partyActivistId)
+                        Guid activistTrainResultId = Guid.Parse(item);
+                        var activistTrainResult = await _context.ActivistTrainResults.FindAsync(activistTrainResultId);
+                        var potentialMemberOld = _context.PotentialMembers.Where(d => d.PartyActivistId == activistTrainResult.PartyActivistId).FirstOrDefault();
+                        
+                        if (potentialMemberOld==null)
                         {
-                            var partyActivist = _context.PartyActivists.Where(d => d.Id == partyActivistId).FirstOrDefault();
+                            var partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);
                             PotentialMember potentialMemberNew = new PotentialMember
                             {
                                 ApplicationTime = partyActivist.ApplicationTime,
@@ -160,22 +164,33 @@ namespace PartyMemberManager.Controllers
                                 Name = partyActivist.Name,
                                 JobNo = partyActivist.JobNo,
                                 IdNumber = partyActivist.IdNumber,
+                                NationId=partyActivist.NationId,
                                 PartyMemberType = partyActivist.PartyMemberType,
                                 BirthDate = partyActivist.BirthDate,
                                 Phone = partyActivist.Phone,
                                 Department = partyActivist.Department,
                                 Class = partyActivist.Class,
-                                Id = partyActivist.Id,
                                 CreateTime = DateTime.Now,
                                 OperatorId = CurrentUser.Id,
                                 Ordinal = _context.PotentialMembers.Count() + 1,
                                 IsDeleted = partyActivist.IsDeleted,
                                 DepartmentId = partyActivist.DepartmentId,
+                                PartyActivistId= partyActivist.Id,
                                 ///后期选择的信息
                                 TrainClassId = potentialMember.TrainClassId,
+                                YearTermId = potentialMember.YearTermId,
                                 PotentialMemberTime = potentialMember.PotentialMemberTime
                             };
+                            PotentialTrainResult potentialTrainResult = new PotentialTrainResult
+                            {
+                                PotentialMemberId = potentialMemberNew.Id,
+                                CreateTime = DateTime.Now,
+                                OperatorId = CurrentUser.Id,
+                                IsDeleted = false,
+                                Ordinal = _context.PotentialMembers.Count() + 1
+                            };
                             _context.Add(potentialMemberNew);
+                            _context.Add(potentialTrainResult);
                         }
                     }
                 }

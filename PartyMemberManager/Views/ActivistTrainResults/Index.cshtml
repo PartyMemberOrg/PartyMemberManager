@@ -250,7 +250,10 @@
                         }
                     }
             });
-            showEdit('@Url.Action("Create", "PotentialMembers")' + '?idList=' + datas, '@Url.Action("Save", "PotentialMembers")', '列为发展对象',500,400);
+            if (datas == "")
+                layer.msg("请选择成绩合格的入党积极分子");
+            else
+                showEdit('@Url.Action("Create", "PotentialMembers")' + '?idList=' + datas, '@Url.Action("Save", "PotentialMembers")', '列为发展对象', 500, 400);
         }
         /**显示隐藏滚动条 */
         function showHideScrollBars(count) {
@@ -271,9 +274,9 @@
             contextMenu.addMenuItem("列为发展对象", function () {
                 showEdit('@Url.Action("Edit","PotentialMembers")'+'/' + id, '@Url.Action("Save", "PotentialMembers")', '编辑', 800, 800);
             })
-            contextMenu.addMenuItem("删除", function () {
-                Delete(id);
-            })
+            //contextMenu.addMenuItem("删除", function () {
+            //    Delete(id);
+            //})
             contextMenu.addMenuItem("上移", function () {
                 ItemUp(id);
             })

@@ -236,15 +236,6 @@
     <script type="text/html" id="optYearTermTpl">
         {{d.yearTermDisplay}}
     </script>
-    <script type="text/javascript">
-        layui.use('laydate', function () {
-            var laydate = layui.laydate;
-            laydate.render({
-                elem: '#kwyear',
-                type: 'year',
-            });
-        });
-    </script>
     <script>
         function filterTrainClass() {
             var url = '@Url.Action("GetTrainClassDatas")';
