@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 using System.Data;
 using ExcelCore;
 using PartyMemberManager.Models;
+using PartyMemberManager.Models.PrintViewModel;
 
 namespace PartyMemberManager.Controllers
 {
@@ -543,7 +544,18 @@ namespace PartyMemberManager.Controllers
                                 partyActivist.Class = @class;
                                 partyActivist.Duty = title;
                             }
+                            ActivistTrainResult activistTrainResult = new ActivistTrainResult
+                            {
+                                Id=Guid.NewGuid(),
+                                PartyActivistId = partyActivist.Id,
+                                CreateTime = DateTime.Now,
+                                OperatorId = CurrentUser.Id,
+                                IsDeleted = false,
+                                Ordinal = _context.ActivistTrainResults.Count() + 1
+                            };
+
                             _context.PartyActivists.Add(partyActivist);
+                            _context.ActivistTrainResults.Add(activistTrainResult);
                             await _context.SaveChangesAsync();
                         }
                         #endregion
@@ -599,6 +611,5 @@ namespace PartyMemberManager.Controllers
         {
             return _context.PartyActivists.Any(e => e.Id == id);
         }
-
     }
 }

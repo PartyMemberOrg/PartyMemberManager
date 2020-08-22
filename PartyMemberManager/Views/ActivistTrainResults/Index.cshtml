@@ -260,7 +260,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("打印", function () {
-                showEdit('@Url.Action("Print")'+'/' + id, '@Url.Action("Save")', '打印', 800, 800);
+                showEdit('@Url.Action("GetPrintData")' +'?id=' + id, '@Url.Action("Save")', '打印', 800, 800);
             })
             contextMenu.addMenuItem("列为发展对象", function () {
                 showEdit('@Url.Action("Edit","PotentialMembers")'+'/' + id, '@Url.Action("Save", "PotentialMembers")', '编辑', 800, 800);
