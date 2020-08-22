@@ -21,16 +21,30 @@ namespace PartyMemberManager.Dal.Entities
         public PotentialMember PotentialMember { get; set; }
 
         /// <summary>
-        /// 发展对象
+        /// 姓名
         /// </summary>
-        [DisplayName("发展对象")]
+        [DisplayName("姓名")]
         [NotMapped]
-        public string PotentialMemberNameDisplay { get => PotentialMember == null ? "" : PotentialMember.Name; }
+        public string NameDisplay { get => PotentialMember == null ? "" : PotentialMember.Name; }
         /// <summary>
-        /// 积极分子
+        /// 工号/学号
         /// </summary>
-        [DisplayName("发展对象")]
+        [DisplayName("工号/学号")]
         [NotMapped]
-        public string PotentialMemberJobNoDisplay { get => PotentialMember == null ? "" : PotentialMember.JobNo; }
+        public string JobNoDisplay { get => PotentialMember == null ? "" : PotentialMember.JobNo; }
+
+        /// <summary>
+        /// 学年/学期
+        /// </summary>
+        [DisplayName("学年/学期")]
+        [NotMapped]
+        public string YearTermDisplay { get => PotentialMember.TrainClass.YearTerm == null ? "" : PotentialMember.TrainClass.YearTerm.Name; }
+
+        /// <summary>
+        /// 培训班名称
+        /// </summary>
+        [DisplayName("培训班名称")]
+        [NotMapped]
+        public string TrainClassDisplay { get => PotentialMember.TrainClass == null ? "" : PotentialMember.TrainClass.Name; }
     }
 }

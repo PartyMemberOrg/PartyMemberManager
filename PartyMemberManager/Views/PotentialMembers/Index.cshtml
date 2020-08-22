@@ -5,11 +5,6 @@
 }
 
 <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
-    <div style="display:inline-block">
-        <div class="layui-input-inline" style="width:60px">
-            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,650)" class="layui-btn layui-btn-primary">+添加</a>
-        </div>
-    </div>
     <input type="hidden" id="TrainClassTypeId" value="@ViewBag.TrainClassTypeId" />
     <div style="display:inline-block">
         <label class="layui-form-label" style="padding:5px">学年/学期:</label>
@@ -72,6 +67,13 @@
             $(window).resize(function () {
                 $("body").width("100%");
             });
+            $("#YearTermId").change(function () {
+                filterTrainClass();
+            });
+            $("#DepartmentId").change(function () {
+                filterTrainClass();
+            });
+            filterTrainClass();
             InitTable();
         });
 
@@ -106,7 +108,7 @@
             layui.use('table', function () {
                 var table = layui.table;
                 table.reload('dataGrid', {
-                    url: '@Url.Action("GetDatas")'
+                    url: '@Url.Action("GetDatasWithFilter")'
                 });
             });
         }
@@ -116,7 +118,7 @@
 
                 tableObject = table.render({
                     elem: '#datatable'
-                    , url: '@Url.Action("GetDatas")'
+                    , url: '@Url.Action("GetDatasWithFilter")'
                     , page: true //开启分页
                     , limits: [10, 20, 50]
                     , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
@@ -124,8 +126,7 @@
                     , cols: [[
                         //{ type: 'checkbox' }
                         //,
-                        { field: 'year', title: '年份', align: 'center', templet: '#optYearTpl' },
-                        { field: 'termDisplay', title: '学期', align: 'center', templet: '#optTermTpl' },
+                        { field: 'yearTerm', title: '学年/学期', align: 'center', templet: '#optYearTermTpl' },
                         { field: 'trainClassDisplay', title: '培训班', align: 'center', templet: '#optTrainClassNameTpl' },
                         { field: 'name', title: '姓名', align: 'center' },
                         { field: 'jobNo', title: '工号/学号', align: 'center' },
@@ -134,9 +135,9 @@
                         { field: 'partyMemberTypeDisplay', title: '类别', align: 'center' },
                         { field: 'departmentDisplay', title: '所属部门', align: 'center', templet: '#optDepartmentNameTpl' },
                         { field: 'class', title: '班级', align: 'center' },
-                        { field: 'applicationTime', title: '提交入党申请时间', align: 'center' },
-                        { field: 'activeApplicationTime', title: '确定为入党积极分子时间', align: 'center' },
-                        { field: 'potentialMemberTime', title: '列为发展对象时间', align: 'center' },
+                        { field: 'applicationTime', title: '提交入党申请时间', align: 'center', templet: function (d) { return formatDate(d.applicationTime, 'yyyy-MM-dd'); } },
+                        { field: 'activeApplicationTime', title: '确定为入党积极分子时间', align: 'center', templet: function (d) { return formatDate(d.activeApplicationTime, 'yyyy-MM-dd'); } },
+                        { field: 'potentialMemberTime', title: '列为发展对象时间', align: 'center', templet: function (d) { return formatDate(d.potentialMemberTime, 'yyyy-MM-dd'); }  },
                         { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
@@ -157,8 +158,7 @@
                         yearTermId: $("#YearTermId").val(),
                         departmentId: $("#DepartmentId").val(),
                         trainClassId: $("#TrainClassId").val(),
-                        isPass: $("#isPass").val(),
-                        isPrint: $("#isPrint").val(),
+                        partyMemberType: $("#partyMemberType").val(),
                         keyword: $("#keyword").val()
                     }
                     , done: function (res, curr, count) {
@@ -166,32 +166,6 @@
                     }
                 });
             });
-        }
-        /*保存成绩*/
-        function saveGrade() {
-            var tableId = "dataGrid";
-            var dataList = new Array();
-            var errName;
-            layui.use('table', function () {
-                var datas = layui.table.cache[tableId];
-                for (i = 0; i < datas.length; i++)
-                {
-                    var item = datas[i].id + "," + datas[i].psGrade + "," + datas[i].csGrade;
-                    dataList.push(item);
-                }
-            });
-            $.ajax({
-                type:'post',
-                url: '@Url.Action("SaveGradeData")',
-                traditional: true,
-                data: { datas: dataList },
-                dataType:'json',
-                success: function (data) {
-                    layer.msg(data.message);
-                    InitTable();
-                }
-            });
-
         }
 
         /**显示隐藏滚动条 */
@@ -208,7 +182,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 500, 400);
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 600, 650);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);
@@ -227,14 +201,17 @@
             <img src="~/images/gridmenu1x.png" />
         </a>
     </script>
-    <script type="text/html" id="optTrainClassYearTpl">
-        {{d.yearDisplay}}
+    <script type="text/html" id="optDepartmentNameTpl">
+        {{d.departmentDisplay}}
     </script>
-    <script type="text/html" id="optTrainClassTermTpl">
-        {{d.termDisplay}}
+    <script type="text/html" id="optNationNameTpl">
+        {{d.nationDisplay}}
     </script>
-    <script type="text/html" id="optTrainClassDisplayTpl">
+    <script type="text/html" id="optTrainClassNameTpl">
         {{d.trainClassDisplay}}
+    </script>
+    <script type="text/html" id="optYearTermTpl">
+        {{d.yearTermDisplay}}
     </script>
     <script>
         function filterTrainClass() {

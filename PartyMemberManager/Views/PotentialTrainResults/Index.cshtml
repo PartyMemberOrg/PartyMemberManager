@@ -4,30 +4,39 @@
     ViewData["Title"] = "Index";
 }
 
-<div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px">
+<div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
     @*<div class="layui-input-inline" style="width:60px">
             <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,800)" class="layui-btn layui-btn-primary">+添加</a>
         </div>*@
+    <input type="hidden" id="TrainClassTypeId" value="@ViewBag.TrainClassTypeId" />
+    <div style="display:inline-block">
+        <label class="layui-form-label" style="padding:5px">学年/学期:</label>
+        <div class="layui-input-inline" style="width:240px">
+            <select name="YearTermId" asp-items="@ViewBag.YearTermId" class="layui-input" id="YearTermId">
+                <option value="">-请选择学年/学期-</option>
+            </select>
+        </div>
+    </div>
     @if (CurrentUser.Roles > Role.学院党委)
     {
-        <div>
-            <label class="layui-form-label" style="padding:5px">部门:</label>
+        <div style="display:inline-block">
+            <label class="layui-form-label" style="padding:5px;width:60px">部门:</label>
             <div class="layui-input-inline" style="width:200px">
-                <select name="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input" id="department">
+                <select name="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input" id="DepartmentId">
                     <option value="">-请选择部门-</option>
                 </select>
             </div>
         </div>
     }
-    <div>
-        <label class="layui-form-label" style="padding:5px">培训班:</label>
-        <div class="layui-input-inline" style="width:300px">
-            <select name="trainClassId" asp-items="@ViewBag.TrainClasses" class="layui-input" id="trainClass">
+    <div style="display:inline-block">
+        <label class="layui-form-label" style="padding:5px;width:60px">培训班:</label>
+        <div class="layui-input-inline" style="width:240px">
+            <select name="TrainClassId" asp-items="@ViewBag.TrainClasses" class="layui-input" id="TrainClassId">
                 <option value="">-请选择培训班-</option>
             </select>
         </div>
     </div>
-    <div>
+    <div style="display:inline-block">
         <label class="layui-form-label" style="padding:5px">是否合格:</label>
         <div class="layui-input-inline" style="width:80px;">
             <select name="isPass" class="layui-input" id="isPass">
@@ -37,7 +46,7 @@
             </select>
         </div>
     </div>
-    <div>
+    <div style="display:inline-block">
         <label class="layui-form-label" style="padding:5px;width:100px">是否打印证书:</label>
         <div class="layui-input-inline" style="width:80px;">
             <select name="isPrint" class="layui-input" id="isPrint">
@@ -47,27 +56,34 @@
             </select>
         </div>
     </div>
-    <div>
-        <div class="layui-input-inline" style="width:300px">
+    <div style="display:inline-block">
+        <div class="layui-input-inline" style="width:200px">
             <input name="keyword" type="text" class="layui-input" placeholder="请输入学号/工号/姓名" id="keyword" />
         </div>
     </div>
-    <div>
+    <div style="display:inline-block">
         <div class="layui-input-inline" style="width:80px">
             <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
                 <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
             </a>
         </div>
     </div>
-    <div>
-        <div class="layui-input-inline" style="width:120px">
-            <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="importExcel()">
-                <i class="layui-icon layui-icon-loading" style="font-size: 14px; color: #FFFFFF;"></i>导入Excel
+    <div style="display:inline-block">
+        <div class="layui-input-inline" style="width:110px">
+            <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="importExcel()">
+                <i class="layui-icon layui-icon-loading" style="font-size: 14px; color: #FFFFFF;"></i>导入成绩
             </a>
         </div>
     </div>
 </div>
-<table class="layui-hide" id="datatable"></table>
+<table class="layui-hide" id="datatable" lay-filter="datatable"></table>
+<div style="margin-top: 10px">
+    <div class="layui-input-inline" style="width:110px">
+        <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="saveGrade()" id="saveGrade" data-type="saveGrade">
+            <i class="layui-icon layui-icon-set-fill" style="font-size: 14px; color: #FFFFFF;"></i>保存成绩
+        </a>
+    </div>
+</div>
 @Html.AntiForgeryToken()
 <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
 @section Scripts{
@@ -80,6 +96,13 @@
             $(window).resize(function () {
                 $("body").width("100%");
             });
+            $("#YearTermId").change(function () {
+                filterTrainClass();
+            });
+            $("#DepartmentId").change(function () {
+                filterTrainClass();
+            });
+            filterTrainClass();
             InitTable();
         });
 
@@ -132,16 +155,16 @@
                     , cols: [[
                         //{ type: 'checkbox' }
                        // ,
-                        { field: 'trainClassYearDisplay', title: '年份', align: 'center', templet: '#optTrainClassYearTpl'},
-                        { field: 'trainClassTermDisplay', title: '学期', align: 'center', templet: '#optTrainClassTermTpl'},
-                        { field: 'trainClassDisplay', title: '培训班', align: 'center', templet: '#optTrainClassDisplayTpl'},
-                        { field: 'partyActivistJobNoDisplay', title: '学号/工号', align: 'center', templet: '#optPartyActivistJobNoTpl'},
-                        { field: 'partyActivistNameDisplay', title: '姓名', align: 'center', templet: '#optPartyActivistNameoTpl'},
-                        { field: 'psGrade', title: '平时成绩', align: 'center',edit: 'text' },
-                        { field: 'csGrade', title: '考试成绩', align: 'center',edit: 'text' },
+                        { type: 'checkbox', fixed: 'left' },
+                        { field: 'yearTermDisplay', title: '学年/学期', align: 'center', templet: '#optYearTermTpl' },
+                        { field: 'trainClassDisplay', title: '培训班', align: 'center', templet: '#optTrainClassDisplayTpl' },
+                        { field: 'partyActivistJobNoDisplay', title: '学号/工号', align: 'center', templet: '#optPartyActivistJobNoTpl' },
+                        { field: 'partyActivistNameDisplay', title: '姓名', align: 'center', templet: '#optPartyActivistNameoTpl' },
+                        { field: 'psGrade', title: '平时成绩', align: 'center', edit: 'text', templet: function (d) { return '<input type="number" oninput="" max="100" min="0" class="form-control"  style="width:100%;height:26px" value="' + d.psGrade + '">' } },
+                        { field: 'csGrade', title: '考试成绩', align: 'center', edit: 'text', templet: function (d) { return '<input type="number" oninput="" max="100" min="0" class="form-control" style="width:100%;height:26px" value="' + d.csGrade + '">' } },
                         { field: 'totalGrade', title: '总成绩', align: 'center' },
-                        { field: 'isPass', title: '是否合格', align: 'center', templet: function (d) { return d.isDeleted ? "是" : "否" } },
-                        { field: 'isPrint', title: '是否已打印', align: 'center', templet: function (d) { return d.isDeleted ? "是" : "否" } },
+                        { field: 'isPass', title: '是否合格', align: 'center', templet: function (d) { return d.isPass ? "是" : "否" } },
+                        { field: 'isPrint', title: '是否已打印', align: 'center', templet: function (d) { return d.isPrint ? "是" : "否" } },
                         { field: 'printTime', title: '打印时间', align: 'center'},
                         { field: 'id', title: '操作',  align: 'center', templet: '#optTpl' }
                     ]]
@@ -172,6 +195,55 @@
                 });
             });
         }
+                /**过滤数据 */
+        function tablefilter() {
+            //此处Id不要#号
+            var tableId = "dataGrid";
+            layui.use('table', function () {
+                var table = layui.table;
+                table.reload(tableId, {
+                    url: '@Url.Action("GetDatasWithFilter")'
+                    , where: {
+                        yearTermId: $("#YearTermId").val(),
+                        departmentId: $("#DepartmentId").val(),
+                        trainClassId: $("#TrainClassId").val(),
+                        isPass: $("#isPass").val(),
+                        isPrint: $("#isPrint").val(),
+                        keyword: $("#keyword").val()
+                    }
+                    , done: function (res, curr, count) {
+                        fillPatientList(res,curr,count);showHideScrollBars(res.data.length);
+                    }
+                });
+            });
+        }
+        /*保存成绩*/
+        function saveGrade() {
+            var tableId = "dataGrid";
+            var dataList = new Array();
+            var errName;
+            layui.use('table', function () {
+                var datas = layui.table.cache[tableId];
+                for (i = 0; i < datas.length; i++)
+                {
+                    var item = datas[i].id + "," + datas[i].psGrade + "," + datas[i].csGrade;
+                    dataList.push(item);
+                }
+            });
+            $.ajax({
+                type:'post',
+                url: '@Url.Action("SaveGradeData")',
+                traditional: true,
+                data: { datas: dataList },
+                dataType:'json',
+                success: function (data) {
+                    layer.msg(data.message);
+                    InitTable();
+                }
+            });
+
+        }
+
         /**显示隐藏滚动条 */
         function showHideScrollBars(count) {
             if (count > 11) {
@@ -188,10 +260,10 @@
             contextMenu.addMenuItem("打印", function () {
                 showEdit('@Url.Action("Print")'+'/' + id, '@Url.Action("Save")', '打印', 800, 800);
             })
-            contextMenu.addMenuItem("编辑", function () {
+            @*contextMenu.addMenuItem("编辑", function () {
                 showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 800, 800);
             })
-            @*contextMenu.addMenuItem("删除", function () {
+            contextMenu.addMenuItem("删除", function () {
                 Delete(id);
             })*@
             contextMenu.addMenuItem("上移", function () {
@@ -208,11 +280,8 @@
             <img src="~/images/gridmenu1x.png" />
         </a>
     </script>
-    <script type="text/html" id="optTrainClassYearTpl">
-        {{d.yearDisplay}}
-    </script>
-    <script type="text/html" id="optTrainClassTermTpl">
-        {{d.termDisplay}}
+    <script type="text/html" id="optYearTermTpl">
+        {{d.yearTermDisplay}}
     </script>
     <script type="text/html" id="optTrainClassDisplayTpl">
         {{d.trainClassDisplay}}
@@ -222,6 +291,39 @@
     </script>
     <script type="text/html" id="optPartyActivistNameoTpl">
         {{d.nameDisplay}}
+    </script>
+    <script type="text/html" id="optIdoTpl">
+        {{d.id}}
+    </script>
+    <script>
+        function filterTrainClass() {
+            var url = '@Url.Action("GetTrainClassDatas")';
+            var yearTermId = $("#YearTermId").val();
+            var trainClassTypeId = $("#TrainClassTypeId").val();
+            var departmentId = $("#DepartmentId").val();
+            var where = { trainClassTypeId:trainClassTypeId,yearTermId: yearTermId, departmentId: departmentId };
+            $.ajax({
+                url: url,
+                data: where,
+                dataType: "json",
+                type: "POST",
+                error: function () { },
+                success: function (data) {
+                    if (data.code == 0) {
+                        var options = "<option value=''>-请选择培训班-</option>";
+                        for (var i = 0; i < data.datas.length; i++) {
+                            options+="<option value='" + data.datas[i].id + "'>" + data.datas[i].name+"</option>";
+                        }
+                        $("#TrainClassId").html(options);
+                    }
+                    else {
+                        showError(data.mssage);
+                    }
+                },
+                complete: function () { }
+            });
+
+        }
     </script>
 }
 

@@ -271,12 +271,12 @@
             contextMenu.addMenuItem("打印", function () {
                 showContent('@Url.Action("Print")' + '?id=' + id, '打印', 800, 800);
             })
-            contextMenu.addMenuItem("列为发展对象", function () {
-                showEdit('@Url.Action("Edit","PotentialMembers")'+'/' + id, '@Url.Action("Save", "PotentialMembers")', '编辑', 800, 800);
+            @*contextMenu.addMenuItem("列为发展对象", function () {
+                showEdit('@Url.Action("Edit","PotentialMembers")'+'/' + id, '@Url.Action("Save", "PotentialMembers")', '编辑', 500, 400);
             })
-            //contextMenu.addMenuItem("删除", function () {
-            //    Delete(id);
-            //})
+            contextMenu.addMenuItem("删除", function () {
+                Delete(id);
+            })*@
             contextMenu.addMenuItem("上移", function () {
                 ItemUp(id);
             })
