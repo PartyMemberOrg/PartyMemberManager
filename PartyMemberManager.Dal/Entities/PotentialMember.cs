@@ -22,5 +22,22 @@ namespace PartyMemberManager.Dal.Entities
         [DataType(DataType.Date)]
         public Nullable<DateTime> PotentialMemberTime { get; set; }
 
+        /// <summary>
+        /// 确定发展对象列表
+        /// </summary>
+        [NotMapped]
+        public string IdList { get; set; }
+
+        /// <summary>
+        /// 入党积极分子
+        /// </summary>
+        [DisplayName("入党积极分子")]
+        public Guid PartyActivistId { get; set; }
+        /// <summary>
+        /// 入党积极分子
+        /// </summary>
+        [DisplayName("入党积极分子")]
+        public PartyActivist PartyActivist { get; set; }
+
     }
 }

@@ -32,9 +32,9 @@ namespace PartyMemberManager.Controllers
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
             if (CurrentUser.Roles == Role.学院党委)
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "42").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
             else
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "42").OrderBy(d => d.Ordinal), "Id", "Name");
             return View(await pMContext.ToListAsync());
         }
 
@@ -60,13 +60,27 @@ namespace PartyMemberManager.Controllers
         }
 
         // GET: PotentialMembers/Create
-        public IActionResult Create(string datas)
+        public IActionResult Create(string idList)
         {
+            if (idList == null)
+            {
+                return NotFoundData();
+            }
             PotentialMember potentialMember = new PotentialMember();
+            ViewBag.IdList = idList.TrimEnd(',');
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             if (CurrentUser.Roles == Role.学院党委)
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "42").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "YearTerm");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d => d.TrainClassType)
+                    .Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value && d.YearTerm.Enabled == true)
+                    .Where(d => d.TrainClassType.Code == "42")
+                    .OrderBy(d => d.Ordinal), "Id", "Name");
             else
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "42").OrderBy(d => d.Ordinal), "Id", "YearTerm");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d => d.TrainClassType)
+                    .Where(d => d.YearTerm.Enabled == true)
+                    .Where(d => d.TrainClassType.Code == "42")
+                    .OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
+            ViewBag.TrainClassTypeId = _context.TrainClassTypes.Where(d => d.Code == "42").Select(d => d.Id).SingleOrDefault();
             return View(potentialMember);
         }
 
@@ -85,17 +99,23 @@ namespace PartyMemberManager.Controllers
                 return NotFoundData();
             }
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
-            ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
             if (CurrentUser.Roles == Role.学院党委)
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d => d.TrainClassType)
+                    .Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value && d.YearTerm.Enabled == true)
+                    .Where(d => d.TrainClassType.Code == "42")
+                    .OrderBy(d => d.Ordinal), "Id", "Name");
             else
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d => d.TrainClassType)
+                    .Where(d => d.YearTerm.Enabled == true)
+                    .Where(d => d.TrainClassType.Code == "42")
+                    .OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
+            ViewBag.TrainClassTypeId = _context.TrainClassTypes.Where(d => d.Code == "42").Select(d => d.Id).SingleOrDefault();
             return View(potentialMember);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Save([Bind("PotentialMemberTime,TrainClassId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PotentialMember potentialMember,string datas)
+        public override async Task<IActionResult> Save(PotentialMember potentialMember)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -104,54 +124,62 @@ namespace PartyMemberManager.Controllers
             };
             try
             {
-                if (ModelState.IsValid)
+                if (string.IsNullOrEmpty(potentialMember.IdList))
+                    throw new PartyMemberException("请选择成绩合格的入党积极分子作为发展对象");
+                if (potentialMember.YearTermId == Guid.Empty)
+                    throw new PartyMemberException("请选择学年/学期");
+                if (potentialMember.TrainClassId == Guid.Empty)
+                    throw new PartyMemberException("请选择培训班");
+                if (potentialMember.PotentialMemberTime == null)
+                    throw new PartyMemberException("请选择发展时间");
+                PotentialMember potentialMemberInDb = await _context.PotentialMembers.FindAsync(potentialMember.Id);
+                if (potentialMemberInDb != null)
                 {
-                    PotentialMember potentialMemberInDb = await _context.PotentialMembers.FindAsync(potentialMember.Id);
-                    if (potentialMemberInDb != null)
-                    {
-                        potentialMemberInDb.PotentialMemberTime = potentialMember.PotentialMemberTime;
-                        potentialMemberInDb.TrainClassId = potentialMember.TrainClassId;
-                        potentialMemberInDb.TrainClass = potentialMember.TrainClass;
-                        potentialMemberInDb.Name = potentialMember.Name;
-                        potentialMemberInDb.JobNo = potentialMember.JobNo;
-                        potentialMemberInDb.IdNumber = potentialMember.IdNumber;
-                        potentialMemberInDb.Sex = potentialMember.Sex;
-                        potentialMemberInDb.PartyMemberType = potentialMember.PartyMemberType;
-                        potentialMemberInDb.BirthDate = potentialMember.BirthDate;
-                        potentialMemberInDb.NationId = potentialMember.NationId;
-                        potentialMemberInDb.Nation = potentialMember.Nation;
-                        potentialMemberInDb.Phone = potentialMember.Phone;
-                        potentialMemberInDb.DepartmentId = potentialMember.DepartmentId;
-                        potentialMemberInDb.Department = potentialMember.Department;
-                        potentialMemberInDb.Class = potentialMember.Class;
-                        potentialMemberInDb.Id = potentialMember.Id;
-                        potentialMemberInDb.CreateTime = potentialMember.CreateTime;
-                        potentialMemberInDb.OperatorId = potentialMember.OperatorId;
-                        potentialMemberInDb.Ordinal = potentialMember.Ordinal;
-                        potentialMemberInDb.IsDeleted = potentialMember.IsDeleted;
-                        _context.Update(potentialMemberInDb);
-                    }
-                    else
-                    {
-                        //potentialMember.Id = Guid.NewGuid();
-                        _context.Add(potentialMember);
-                    }
-                    await _context.SaveChangesAsync();
+                    potentialMemberInDb.PotentialMemberTime = potentialMember.PotentialMemberTime;
+                    potentialMemberInDb.TrainClassId = potentialMember.TrainClassId;
+                    potentialMemberInDb.CreateTime = DateTime.Now;
+                    potentialMemberInDb.OperatorId = CurrentUser.Id;
+                    potentialMemberInDb.Ordinal = _context.PotentialMembers.Count() + 1;
+                    potentialMemberInDb.IsDeleted = potentialMember.IsDeleted;
+                    _context.Update(potentialMemberInDb);
                 }
                 else
                 {
-                    foreach (string key in ModelState.Keys)
+                    string[] partyAcitvistsId = potentialMember.IdList.Split(",");
+                    foreach (var item in partyAcitvistsId)
                     {
-                        if (ModelState[key].Errors.Count > 0)
-                            jsonResult.Errors.Add(new ModelError
+                        Guid partyActivistId = Guid.Parse(item);
+                        var potentialMemberOld = _context.PotentialMembers.Where(d => d.PartyActivistId == partyActivistId).FirstOrDefault();
+                        if (potentialMemberOld.PartyActivistId != partyActivistId)
+                        {
+                            var partyActivist = _context.PartyActivists.Where(d => d.Id == partyActivistId).FirstOrDefault();
+                            PotentialMember potentialMemberNew = new PotentialMember
                             {
-                                Key = key,
-                                Message = ModelState[key].Errors[0].ErrorMessage
-                            });
+                                ApplicationTime = partyActivist.ApplicationTime,
+                                ActiveApplicationTime = partyActivist.ActiveApplicationTime,
+                                Name = partyActivist.Name,
+                                JobNo = partyActivist.JobNo,
+                                IdNumber = partyActivist.IdNumber,
+                                PartyMemberType = partyActivist.PartyMemberType,
+                                BirthDate = partyActivist.BirthDate,
+                                Phone = partyActivist.Phone,
+                                Department = partyActivist.Department,
+                                Class = partyActivist.Class,
+                                Id = partyActivist.Id,
+                                CreateTime = DateTime.Now,
+                                OperatorId = CurrentUser.Id,
+                                Ordinal = _context.PotentialMembers.Count() + 1,
+                                IsDeleted = partyActivist.IsDeleted,
+                                DepartmentId = partyActivist.DepartmentId,
+                                ///后期选择的信息
+                                TrainClassId = potentialMember.TrainClassId,
+                                PotentialMemberTime = potentialMember.PotentialMemberTime
+                            };
+                            _context.Add(potentialMemberNew);
+                        }
                     }
-                    jsonResult.Code = -1;
-                    jsonResult.Message = "数据错误";
                 }
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
             {

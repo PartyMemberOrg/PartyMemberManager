@@ -14,18 +14,18 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("平时成绩")]
         [Range(0,100.00,  ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public double PsGrade { get; set; }
+        public decimal? PsGrade { get; set; }
         /// <summary>
         /// 考试成绩
         /// </summary>
         [DisplayName("考试成绩")]
         [Range(0, 100.00, ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public double CsGrade { get; set; }
+        public decimal? CsGrade { get; set; }
         /// <summary>
         /// 总评成绩
         /// </summary>
         [DisplayName("总成绩")]
-        public double TotalGrade { get; set; }
+        public decimal? TotalGrade { get; set; }
         /// <summary>
         /// 是否合格
         /// </summary>

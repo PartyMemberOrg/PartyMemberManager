@@ -79,12 +79,12 @@
 <table class="layui-hide" id="datatable" lay-filter="datatable"></table>
 <div style="margin-top: 10px">
     <div class="layui-input-inline" style="width:110px">
-        <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="saveGrade()" id="saveGrade">
+        <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="saveGrade()" id="saveGrade" data-type="saveGrade">
             <i class="layui-icon layui-icon-set-fill" style="font-size: 14px; color: #FFFFFF;"></i>保存成绩
         </a>
     </div>
     <div class="layui-input-inline" style="width:80px">
-        <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="addToPotential()">
+        <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="addToPotential()" data-type="addPotential">
             <i class="layui-icon layui-icon-release" style="font-size: 14px; color: #FFFFFF;"></i>列为发展对象
         </a>
     </div>
@@ -109,7 +109,6 @@
             });
             filterTrainClass();
             InitTable();
-
         });
 
         function Delete(id) {
@@ -150,6 +149,7 @@
         function InitTable() {
             layui.use('table', function () {
                 var table = layui.table;
+                var errflag = false;
                 tableObject = table.render({
                     elem: '#datatable'
                     , url: '@Url.Action("GetDatasWithFilter")'
@@ -163,8 +163,8 @@
                         { field: 'trainClassDisplay', title: '培训班', align: 'center', templet: '#optTrainClassDisplayTpl'},
                         { field: 'partyActivistJobNoDisplay', title: '学号/工号', align: 'center', templet: '#optPartyActivistJobNoTpl'},
                         { field: 'partyActivistNameDisplay', title: '姓名', align: 'center', templet: '#optPartyActivistNameoTpl' },
-                        { field: 'psGrade', title: '平时成绩', align: 'center', edit: 'text', templet: function (d) { return '<input type="text"  class="form-control"  style="width:100%;height:26px" value="' + d.psGrade + '">' } },
-                        { field: 'csGrade', title: '考试成绩', align: 'center', edit: 'text', templet: function (d) { return '<input type="text"  class="form-control"  style="width:100%;height:26px" value="' + d.csGrade + '">' } },
+                        { field: 'psGrade', title: '平时成绩', align: 'center', edit: 'text', templet: function (d) { return '<input type="number" oninput="" max="100" min="0" class="form-control"  style="width:100%;height:26px" value="' + d.psGrade + '">' } },
+                        { field: 'csGrade', title: '考试成绩', align: 'center', edit: 'text', templet: function (d) { return '<input type="number" oninput="" max="100" min="0" class="form-control" style="width:100%;height:26px" value="' + d.csGrade + '">' } },
                         //{ field: 'psGrade', title: '平时成绩', align: 'center', edit: 'text'},
                         //{ field: 'csGrade', title: '考试成绩', align: 'center', edit: 'text'},
                         { field: 'totalGrade', title: '总成绩', align: 'center' },
@@ -178,6 +178,16 @@
 
                     }
                 });
+                //table.on('edit(datatable)', function (obj) {
+                //    var value = obj.value //得到修改后的值
+                //        , data = obj.data //得到所在行所有键值
+                //        , field = obj.field; //得到字段
+                //    var oldData = $(this).prev().text();
+                //    if (isNaN(value))
+                //        layer.msg('输入非数值');
+                //    else
+                //        layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+                //});
             });
         }
         /**过滤数据 */
@@ -205,23 +215,21 @@
         /*保存成绩*/
         function saveGrade() {
             var tableId = "dataGrid";
-            var datas = new Array();
+            var dataList = new Array();
             var errName;
             layui.use('table', function () {
                 var datas = layui.table.cache[tableId];
                 for (i = 0; i < datas.length; i++)
                 {
-                    if (datas[i].psGrade>=0 && datas[i].psGrade<=100 && datas[i].csGrade>=0 && datas[i].csGrade<=100) {
-                        var item = datas[i].id + "," + datas[i].psGrade + "," + datas[i].csGrade;
-                        datas.push(item);
-                    }
+                    var item = datas[i].id + "," + datas[i].psGrade + "," + datas[i].csGrade;
+                    dataList.push(item);
                 }
             });
             $.ajax({
                 type:'post',
                 url: '@Url.Action("SaveGradeData")',
                 traditional: true,
-                data: { datas: datas },
+                data: { datas: dataList },
                 dataType:'json',
                 success: function (data) {
                     layer.msg(data.message);
@@ -232,19 +240,17 @@
         }
 
         function addToPotential() {
-            var datas = null;
+            var datas="";
             layui.use('table', function () {
                 var table = layui.table;
-                table.on('checkbox(datatable)', function (obj) {
-                    var checkStatus = table.checkStatus('datatable');
-                    if (checkStatus != null)
-                        for (i = 0; i < checkStatus.length; i++) {
-                            if (checkStatus[i].isPass == true)
-                                datas+=(checkStatus[i].id)+",";
+                var checkData = table.checkStatus('dataGrid').data;
+                    for (i = 0; i < checkData.length; i++) {
+                        if (checkData[i].isPass == true) {
+                            datas+=checkData[i].id+",";
                         }
-                });
+                    }
             });
-            showEdit('@Url.Action("Create", "PotentialMembers")' + '/' + datas, '@Url.Action("Save", "PotentialMembers")', '列为发展对象',500,400);
+            showEdit('@Url.Action("Create", "PotentialMembers")' + '?idList=' + datas, '@Url.Action("Save", "PotentialMembers")', '列为发展对象',500,400);
         }
         /**显示隐藏滚动条 */
         function showHideScrollBars(count) {
@@ -326,40 +332,6 @@
             });
 
         }
-    </script>
-    <script>
-        layui.use('table', function () {
-            var table = layui.table;
-            var tableId = "dataGrid";
-            var errflag = false;
-            table.on('edit(datatable)', function (obj) {
-                var oldData = layui.table.cache[tableId];
-                var value = obj.value //得到修改后的值
-                    , data = obj.data //得到所在行所有键值
-                    , field = obj.field; //得到字段
-                //layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
-                if (isNaN(value)) {
-                    layer.msg("输入非数字");
-                    errflag = true;
-                    return;
-                }
-                if (value > 100 || value < 0) {
-                    layer.msg("成绩需要在0-100之间");
-                    errflag = true;
-                    return;
-                }
-                for (var i = 0, row; i < oldData.length; i++) {
-                    row = oldData[i];
-                    if (row.id == data.id) {
-                        if (errflag)
-                            $.extend(obj, oldData[i]);
-                        else
-                            $.extend(oldData[i], obj);
-                        return;
-                    }
-                }
-            });
-        });
     </script>
 }
 

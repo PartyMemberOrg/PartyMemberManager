@@ -7,6 +7,8 @@
 <div class="row form-padding-top">
     <div class="col-md-12">
         <form asp-action="Create">
+            <input type="hidden" value="@ViewBag.IdList" name="IdList" />
+            <input type="hidden" id="TrainClassTypeId" value="@ViewBag.TrainClassTypeId" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <div class="row">

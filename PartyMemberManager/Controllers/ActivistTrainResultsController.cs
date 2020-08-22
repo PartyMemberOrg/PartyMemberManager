@@ -255,11 +255,13 @@ namespace PartyMemberManager.Controllers
                     {
                         Guid id = Guid.Parse(subItem[0]);
                         ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.Include(d => d.PartyActivist.TrainClass).Where(d => d.Id == id).FirstOrDefaultAsync();
+                        var psProp=activistTrainResult.PartyActivist.TrainClass.PsGradeProportion;
+                        var csProp = activistTrainResult.PartyActivist.TrainClass.CsGradeProportion;
                         if (activistTrainResult != null)
                         {
-                            activistTrainResult.PsGrade = int.Parse(subItem[1]);
-                            activistTrainResult.CsGrade = int.Parse(subItem[2]);
-                            activistTrainResult.TotalGrade = Math.Round(activistTrainResult.PartyActivist.TrainClass.PsGradeProportion * activistTrainResult.PsGrade / 100 + activistTrainResult.PartyActivist.TrainClass.CsGradeProportion * activistTrainResult.CsGrade / 100, 2);
+                            activistTrainResult.PsGrade = decimal.Parse(subItem[1]);
+                            activistTrainResult.CsGrade = decimal.Parse(subItem[2]);
+                            activistTrainResult.TotalGrade = Math.Round(psProp * activistTrainResult.PsGrade.Value / 100 + csProp * activistTrainResult.CsGrade.Value / 100, 2);
                             if (activistTrainResult.TotalGrade >= 60)
                                 activistTrainResult.IsPass = true;
                             else

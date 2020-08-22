@@ -36,7 +36,7 @@ namespace PartyMemberManager.Controllers
             var partyActives = _context.PartyActivists.Include(d => d.Department).Include(d => d.Nation);
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             if (CurrentUser.Roles == Role.学院党委)
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d=>d.TrainClassType)
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d => d.TrainClassType)
                     .Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value && d.YearTerm.Enabled == true)
                     .Where(d => d.TrainClassType.Code == "41")
                     .OrderBy(d => d.Ordinal), "Id", "Name");
@@ -89,7 +89,7 @@ namespace PartyMemberManager.Controllers
                 if (CurrentUser.Roles > Role.学院党委)
                 {
                     var data = await _context.Set<PartyActivist>().Include(d => d.Department).Include(d => d.Nation).Include(d => d.TrainClass).Include(t => t.YearTerm)
-                        .Where(filter).Where(d=>d.YearTerm.Enabled==true)
+                        .Where(filter).Where(d => d.YearTerm.Enabled == true)
                         .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
@@ -100,7 +100,7 @@ namespace PartyMemberManager.Controllers
                 {
                     if (CurrentUser.DepartmentId == null)
                         throw new PartyMemberException("该用户不合法，请设置该用户所属部门");
-                    var data = await _context.Set<PartyActivist>().Where(filter).Include(d => d.Department).Include(d => d.Nation).Include(d => d.TrainClass).Include(t => t.TrainClass).Include(d=>d.YearTerm)
+                    var data = await _context.Set<PartyActivist>().Where(filter).Include(d => d.Department).Include(d => d.Nation).Include(d => d.TrainClass).Include(t => t.TrainClass).Include(d => d.YearTerm)
                         .Where(filter).Where(d => d.YearTerm.Enabled == true)
                         .Where(d => d.DepartmentId == CurrentUser.DepartmentId)
                         .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
@@ -147,13 +147,20 @@ namespace PartyMemberManager.Controllers
         public IActionResult Create()
         {
             PartyActivist partyActivist = new PartyActivist();
-            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             if (CurrentUser.Roles == Role.学院党委)
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d => d.TrainClassType)
+                    .Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value && d.YearTerm.Enabled == true)
+                    .Where(d => d.TrainClassType.Code == "41")
+                    .OrderBy(d => d.Ordinal), "Id", "Name");
             else
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
-            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.IsDeleted == false), "Id", "Name");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d => d.TrainClassType)
+                    .Where(d => d.YearTerm.Enabled == true)
+                    .Where(d => d.TrainClassType.Code == "41")
+                    .OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
+            ViewBag.TrainClassTypeId = _context.TrainClassTypes.Where(d => d.Code == "41").Select(d => d.Id).SingleOrDefault();
             return View(partyActivist);
         }
 
@@ -171,13 +178,20 @@ namespace PartyMemberManager.Controllers
             {
                 return NotFoundData();
             }
-            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             ViewBag.Nations = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             if (CurrentUser.Roles == Role.学院党委)
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d => d.TrainClassType)
+                    .Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value && d.YearTerm.Enabled == true)
+                    .Where(d => d.TrainClassType.Code == "41")
+                    .OrderBy(d => d.Ordinal), "Id", "Name");
             else
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
-            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.IsDeleted == false), "Id", "Name");
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d => d.TrainClassType)
+                    .Where(d => d.YearTerm.Enabled == true)
+                    .Where(d => d.TrainClassType.Code == "41")
+                    .OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
+            ViewBag.TrainClassTypeId = _context.TrainClassTypes.Where(d => d.Code == "41").Select(d => d.Id).SingleOrDefault();
             return View(partyActivist);
         }
         /// <summary>
