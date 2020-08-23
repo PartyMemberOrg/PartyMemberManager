@@ -27,7 +27,7 @@ namespace PartyMemberManager.Controllers
         // GET: SchoolCadreTrains
         public async Task<IActionResult> Index(int page = 1)
         {
-            var pMContext = _context.SchoolCadreTrains.Include(s => s.Department).Include(s => s.TrainClass).Include(s => s.YearTerm);
+            var pMContext = _context.SchoolCadreTrains.Include(s => s.Department).Include(s => s.YearTerm);
             return View(await pMContext.ToListAsync());
         }
 
@@ -41,7 +41,6 @@ namespace PartyMemberManager.Controllers
 
             var schoolCadreTrain = await _context.SchoolCadreTrains
                     .Include(s => s.Department)
-                    .Include(s => s.TrainClass)
                     .Include(s => s.YearTerm)
             .SingleOrDefaultAsync(m => m.Id == id);
             if (schoolCadreTrain == null)
@@ -76,15 +75,14 @@ namespace PartyMemberManager.Controllers
             {
                 return NotFoundData();
             }
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Code", schoolCadreTrain.DepartmentId);
-            ViewData["TrainClassId"] = new SelectList(_context.TrainClasses, "Id", "Name", schoolCadreTrain.TrainClassId);
-            ViewData["YearTermId"] = new SelectList(_context.YearTerms, "Id", "Id", schoolCadreTrain.YearTermId);
+            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", schoolCadreTrain.DepartmentId);
+            ViewData["YearTermId"] = new SelectList(_context.YearTerms.Where(d => d.Enabled == true), "Id", "Name", schoolCadreTrain.YearTermId);
             return View(schoolCadreTrain);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("TrainClassId,YearTermId,Organizer,TrainOrganizational,TrainTime,TrainDuration,Name,Phone,IDNumber,Sex,DepartmentId,Post,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] SchoolCadreTrain schoolCadreTrain)
+        public override async Task<IActionResult> Save([Bind("YearTermId,Organizer,TrainOrganizational,TrainTime,TrainDuration,Name,Phone,IDNumber,Sex,DepartmentId,Post,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] SchoolCadreTrain schoolCadreTrain)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -98,10 +96,7 @@ namespace PartyMemberManager.Controllers
                     SchoolCadreTrain schoolCadreTrainInDb = await _context.SchoolCadreTrains.FindAsync(schoolCadreTrain.Id);
                     if (schoolCadreTrainInDb != null)
                     {
-                        schoolCadreTrainInDb.TrainClassId = schoolCadreTrain.TrainClassId;
-                        schoolCadreTrainInDb.TrainClass = schoolCadreTrain.TrainClass;
                         schoolCadreTrainInDb.YearTermId = schoolCadreTrain.YearTermId;
-                        schoolCadreTrainInDb.YearTerm = schoolCadreTrain.YearTerm;
                         schoolCadreTrainInDb.Organizer = schoolCadreTrain.Organizer;
                         schoolCadreTrainInDb.TrainOrganizational = schoolCadreTrain.TrainOrganizational;
                         schoolCadreTrainInDb.TrainTime = schoolCadreTrain.TrainTime;
@@ -114,15 +109,18 @@ namespace PartyMemberManager.Controllers
                         schoolCadreTrainInDb.Department = schoolCadreTrain.Department;
                         schoolCadreTrainInDb.Post = schoolCadreTrain.Post;
                         schoolCadreTrainInDb.Id = schoolCadreTrain.Id;
-                        schoolCadreTrainInDb.CreateTime = schoolCadreTrain.CreateTime;
-                        schoolCadreTrainInDb.OperatorId = schoolCadreTrain.OperatorId;
-                        schoolCadreTrainInDb.Ordinal = schoolCadreTrain.Ordinal;
+                        schoolCadreTrainInDb.CreateTime =DateTime.Now;
+                        schoolCadreTrainInDb.OperatorId = CurrentUser.Id;
+                        schoolCadreTrainInDb.Ordinal = _context.SchoolCadreTrains.Count()+1;
                         schoolCadreTrainInDb.IsDeleted = schoolCadreTrain.IsDeleted;
                         _context.Update(schoolCadreTrainInDb);
                     }
                     else
                     {
                         //schoolCadreTrain.Id = Guid.NewGuid();
+                        schoolCadreTrain.CreateTime = DateTime.Now;
+                        schoolCadreTrain.OperatorId = CurrentUser.Id;
+                        schoolCadreTrain.Ordinal = _context.SchoolCadreTrains.Count() + 1;
                         _context.Add(schoolCadreTrain);
                     }
                     await _context.SaveChangesAsync();

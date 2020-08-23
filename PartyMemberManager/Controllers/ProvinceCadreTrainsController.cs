@@ -27,7 +27,7 @@ namespace PartyMemberManager.Controllers
         // GET: ProvinceCadreTrains
         public async Task<IActionResult> Index(int page = 1)
         {
-            var pMContext = _context.ProvinceCadreTrains.Include(p => p.Department).Include(p => p.TrainClass).Include(p => p.YearTerm);
+            var pMContext = _context.ProvinceCadreTrains.Include(p => p.Department).Include(p => p.YearTerm);
             return View(await pMContext.ToListAsync());
         }
 
@@ -41,7 +41,6 @@ namespace PartyMemberManager.Controllers
 
             var provinceCadreTrain = await _context.ProvinceCadreTrains
                     .Include(p => p.Department)
-                    .Include(p => p.TrainClass)
                     .Include(p => p.YearTerm)
             .SingleOrDefaultAsync(m => m.Id == id);
             if (provinceCadreTrain == null)
@@ -56,9 +55,8 @@ namespace PartyMemberManager.Controllers
         public IActionResult Create()
         {
             ProvinceCadreTrain provinceCadreTrain = new ProvinceCadreTrain();
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Code");
-            ViewData["TrainClassId"] = new SelectList(_context.TrainClasses, "Id", "Name");
-            ViewData["YearTermId"] = new SelectList(_context.YearTerms, "Id", "Id");
+            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name");
+            ViewData["YearTermId"] = new SelectList(_context.YearTerms.Where(d=>d.Enabled==true), "Id", "Name");
             return View(provinceCadreTrain);
         }
 
@@ -76,15 +74,14 @@ namespace PartyMemberManager.Controllers
             {
                 return NotFoundData();
             }
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Code", provinceCadreTrain.DepartmentId);
-            ViewData["TrainClassId"] = new SelectList(_context.TrainClasses, "Id", "Name", provinceCadreTrain.TrainClassId);
-            ViewData["YearTermId"] = new SelectList(_context.YearTerms, "Id", "Id", provinceCadreTrain.YearTermId);
+            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", provinceCadreTrain.DepartmentId);
+            ViewData["YearTermId"] = new SelectList(_context.YearTerms.Where(d => d.Enabled == true), "Id", "Name", provinceCadreTrain.YearTermId);
             return View(provinceCadreTrain);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("TrainClassId,YearTermId,Organizer,TrainOrganizational,TrainTime,TrainDuration,Name,Phone,IDNumber,Sex,DepartmentId,Post,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ProvinceCadreTrain provinceCadreTrain)
+        public override async Task<IActionResult> Save([Bind("YearTermId,Organizer,TrainOrganizational,TrainTime,TrainDuration,Name,Phone,IDNumber,Sex,DepartmentId,Post,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ProvinceCadreTrain provinceCadreTrain)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -98,10 +95,7 @@ namespace PartyMemberManager.Controllers
                     ProvinceCadreTrain provinceCadreTrainInDb = await _context.ProvinceCadreTrains.FindAsync(provinceCadreTrain.Id);
                     if (provinceCadreTrainInDb != null)
                     {
-                        provinceCadreTrainInDb.TrainClassId = provinceCadreTrain.TrainClassId;
-                        provinceCadreTrainInDb.TrainClass = provinceCadreTrain.TrainClass;
                         provinceCadreTrainInDb.YearTermId = provinceCadreTrain.YearTermId;
-                        provinceCadreTrainInDb.YearTerm = provinceCadreTrain.YearTerm;
                         provinceCadreTrainInDb.Organizer = provinceCadreTrain.Organizer;
                         provinceCadreTrainInDb.TrainOrganizational = provinceCadreTrain.TrainOrganizational;
                         provinceCadreTrainInDb.TrainTime = provinceCadreTrain.TrainTime;
@@ -111,18 +105,20 @@ namespace PartyMemberManager.Controllers
                         provinceCadreTrainInDb.IDNumber = provinceCadreTrain.IDNumber;
                         provinceCadreTrainInDb.Sex = provinceCadreTrain.Sex;
                         provinceCadreTrainInDb.DepartmentId = provinceCadreTrain.DepartmentId;
-                        provinceCadreTrainInDb.Department = provinceCadreTrain.Department;
                         provinceCadreTrainInDb.Post = provinceCadreTrain.Post;
                         provinceCadreTrainInDb.Id = provinceCadreTrain.Id;
-                        provinceCadreTrainInDb.CreateTime = provinceCadreTrain.CreateTime;
-                        provinceCadreTrainInDb.OperatorId = provinceCadreTrain.OperatorId;
-                        provinceCadreTrainInDb.Ordinal = provinceCadreTrain.Ordinal;
+                        provinceCadreTrainInDb.CreateTime = DateTime.Now;
+                        provinceCadreTrainInDb.OperatorId = CurrentUser.Id;
+                        provinceCadreTrainInDb.Ordinal = _context.ProvinceCadreTrains.Count()+1;
                         provinceCadreTrainInDb.IsDeleted = provinceCadreTrain.IsDeleted;
                         _context.Update(provinceCadreTrainInDb);
                     }
                     else
                     {
                         //provinceCadreTrain.Id = Guid.NewGuid();
+                        provinceCadreTrain.CreateTime = DateTime.Now;
+                        provinceCadreTrain.OperatorId = CurrentUser.Id;
+                        provinceCadreTrain.Ordinal = _context.ProvinceCadreTrains.Count() + 1;
                         _context.Add(provinceCadreTrain);
                     }
                     await _context.SaveChangesAsync();

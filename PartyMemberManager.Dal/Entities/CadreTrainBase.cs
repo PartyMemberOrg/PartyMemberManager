@@ -11,24 +11,6 @@ namespace PartyMemberManager.Dal.Entities
     public class CadreTrainBase:EntityBase
     {
         /// <summary>
-        /// 培训班
-        /// </summary>
-        [DisplayName("培训班")]
-        public Guid? TrainClassId { get; set; }
-        /// <summary>
-        /// 培训班
-        /// </summary>
-        [DisplayName("培训班")]
-        public TrainClass TrainClass { get; set; }
-
-        /// <summary>
-        /// 培训班
-        /// </summary>
-        [DisplayName("培训班名称")]
-        [NotMapped]
-        public string TrainClassDisplay { get => TrainClass == null ? "" : TrainClass.Name; }
-
-        /// <summary>
         /// 学年/学期
         /// </summary>
         [DisplayName("学年/学期")]
