@@ -34,7 +34,7 @@ namespace PartyMemberManager.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             var pMContext = _context.ActivistTrainResults.Include(a => a.PartyActivist).Include(d => d.PartyActivist.TrainClass);
-            ViewBag.DepartmentId= new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.DepartmentId = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             if (CurrentUser.Roles == Role.学院党委)
                 ViewBag.TrainClassId = new SelectList(_context.TrainClasses.Include(t => t.YearTerm).Include(d => d.TrainClassType)
                     .Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value && d.YearTerm.Enabled == true)
@@ -259,13 +259,22 @@ namespace PartyMemberManager.Controllers
                     {
                         Guid id = Guid.Parse(subItem[0]);
                         ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.Include(d => d.PartyActivist.TrainClass).Where(d => d.Id == id).FirstOrDefaultAsync();
-                        var psProp=activistTrainResult.PartyActivist.TrainClass.PsGradeProportion;
+                        PartyActivist partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);
+                        var psProp = activistTrainResult.PartyActivist.TrainClass.PsGradeProportion;
                         var csProp = activistTrainResult.PartyActivist.TrainClass.CsGradeProportion;
                         if (activistTrainResult != null)
                         {
-                            activistTrainResult.PsGrade = decimal.Parse(subItem[1]);
-                            activistTrainResult.CsGrade = decimal.Parse(subItem[2]);
-                            activistTrainResult.TotalGrade = Math.Round(psProp * activistTrainResult.PsGrade.Value / 100 + csProp * activistTrainResult.CsGrade.Value / 100, 2);
+                            decimal psGrade = 0;
+                            decimal csGrade = 0;
+                            if (decimal.TryParse(subItem[1], out psGrade))
+                                activistTrainResult.PsGrade = psGrade;
+                            if (decimal.TryParse(subItem[2], out csGrade))
+                                activistTrainResult.CsGrade = csGrade;
+                            if (psGrade > 100 || psGrade < 0)
+                                throw new PartyMemberException($"【{partyActivist.JobNo}-{partyActivist.Name}】的平时成绩非法");
+                            if (csGrade > 100 || csGrade < 0)
+                                throw new PartyMemberException($"【{partyActivist.JobNo}-{partyActivist.Name}】的考试成绩非法");
+                            activistTrainResult.TotalGrade = Math.Round(psProp * psGrade / 100 + csProp * csGrade / 100, 2);
                             if (activistTrainResult.TotalGrade >= 60)
                                 activistTrainResult.IsPass = true;
                             else
