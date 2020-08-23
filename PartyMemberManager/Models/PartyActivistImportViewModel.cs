@@ -22,11 +22,11 @@ namespace PartyMemberManager.Models
         [DisplayName("学期")]
         public Guid? YearTermId { get; set; }
 
-        /// <summary>
-        /// 培训班类型
-        /// </summary>
-        [DisplayName("培训班类型")]
-        public Guid? TrainClassTypeId { get; set; }
+        ///// <summary>
+        ///// 培训班类型
+        ///// </summary>
+        //[DisplayName("培训班类型")]
+        //public Guid? TrainClassTypeId { get; set; }
 
         /// <summary>
         /// 部门

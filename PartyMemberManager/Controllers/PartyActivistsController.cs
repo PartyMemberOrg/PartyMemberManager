@@ -369,10 +369,15 @@ namespace PartyMemberManager.Controllers
                 ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
             else
                 ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
-            if (CurrentUser.Roles == Role.学院党委)
-                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.Where(d => d.Code.StartsWith("4")).OrderByDescending(d => d.Code), "Id", "Name");
+            //if (CurrentUser.Roles == Role.学院党委)
+            //    ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.Where(d => d.Code.StartsWith("4")).OrderByDescending(d => d.Code), "Id", "Name");
+            //else
+            //    ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderBy(d => d.Code), "Id", "Name");
+            TrainClassType trainClassType = _context.TrainClassTypes.Where(t => t.Code == "41").FirstOrDefault();
+            if (trainClassType != null)
+                ViewBag.TrainClassTypeId = trainClassType.Id;
             else
-                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderBy(d => d.Code), "Id", "Name");
+                ViewBag.TrainClassTypeId = Guid.Empty;
             ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term), "Id", "Name");
             return View(model);
         }
@@ -399,7 +404,7 @@ namespace PartyMemberManager.Controllers
                         await file.CopyToAsync(fileStream);
                         await fileStream.FlushAsync();
                         fileStream.Close();
-                        #region 导入一般事项
+                        #region 导入入党积极分子
                         DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
                         int rowIndex = 0;
                         string fieldsTeacher = "姓名,性别,出生年月,民族,所在部门,工号,身份证号,联系电话,提交入党申请时间,备注";
@@ -435,7 +440,7 @@ namespace PartyMemberManager.Controllers
                                 Ordinal = rowIndex,
                                 OperatorId = CurrentUser.Id,
                                 TrainClassId = trainClass.Id,
-                                YearTermId= trainClass.YearTermId
+                                YearTermId = trainClass.YearTermId
                                 //Year=trainClass.Year,
                                 //Term=trainClass.Term,
                             };
@@ -495,6 +500,7 @@ namespace PartyMemberManager.Controllers
                                 partyActivist.ApplicationTime = timeValue;
                                 //该字段不允许为空有问题
                                 partyActivist.ActiveApplicationTime = timeValue;
+                                partyActivist.PartyMemberType = PartyMemberType.教师;
                             }
                             else
                             {
@@ -558,10 +564,11 @@ namespace PartyMemberManager.Controllers
                                 partyActivist.ActiveApplicationTime = timeValue;
                                 partyActivist.Class = @class;
                                 partyActivist.Duty = title;
+                                partyActivist.PartyMemberType = PartyMemberType.学生;
                             }
                             ActivistTrainResult activistTrainResult = new ActivistTrainResult
                             {
-                                Id=Guid.NewGuid(),
+                                Id = Guid.NewGuid(),
                                 PartyActivistId = partyActivist.Id,
                                 CreateTime = DateTime.Now,
                                 OperatorId = CurrentUser.Id,

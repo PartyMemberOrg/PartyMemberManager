@@ -290,6 +290,9 @@
             })
             contextMenu.showMenu(event);
         }
+        function importExcel() {
+            showImport('@Url.Action("Import")', '@Url.Action("Import")', '导入发展对象培训成绩', 600, 450, function () { location.reload(); });
+        }
     </script>
     <script type="text/html" id="optTpl">
         <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
