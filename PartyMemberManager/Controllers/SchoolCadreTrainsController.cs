@@ -37,7 +37,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, Guid? yearTermId, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, Guid? yearTermId,string keyword,int page = 1, int limit = 10)
         {
             JsonResultDatasModel<SchoolCadreTrain> jsonResult = new JsonResultDatasModel<SchoolCadreTrain>
             {
@@ -55,6 +55,10 @@ namespace PartyMemberManager.Controllers
                 if (yearTermId != null)
                 {
                     filter = filter.And(d => d.YearTermId == yearTermId);
+                }
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    filter = filter.And(d => d.Organizer.Contains(keyword) || d.TrainOrganizational.Contains(keyword) || d.Name.Contains(keyword));
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {
@@ -148,6 +152,12 @@ namespace PartyMemberManager.Controllers
             };
             try
             {
+                if (schoolCadreTrain.YearTermId == null)
+                    throw new PartyMemberException("请选择学年/学期");
+                if (schoolCadreTrain.DepartmentId == Guid.Empty)
+                    throw new PartyMemberException("请选择部门");
+                if (schoolCadreTrain.Sex.ToString() == "0")
+                    throw new PartyMemberException("请选择性别");
                 if (ModelState.IsValid)
                 {
                     SchoolCadreTrain schoolCadreTrainInDb = await _context.SchoolCadreTrains.FindAsync(schoolCadreTrain.Id);

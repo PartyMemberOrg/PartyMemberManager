@@ -4,11 +4,44 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>列表</h1>
-
-<p style="margin-bottom:14px;">
-    <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
-</p>
+    <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
+        <div style="display:inline-block">
+            <div class="layui-input-inline" style="width:80px">
+                <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',500,400)" class="layui-btn layui-btn-primary">+添加</a>
+            </div>
+        </div>
+        @if (CurrentUser.Roles > Role.学院党委)
+        {
+            <div style="display:inline-block">
+                <label class="layui-form-label" style="padding:5px;width:60px">部门:</label>
+                <div class="layui-input-inline" style="width:300px">
+                    <select name="departmentId" asp-items="@ViewBag.Departments" class="layui-input" id="departmentId">
+                        <option value="">-请选择部门-</option>
+                    </select>
+                </div>
+            </div>
+        }
+        <div style="display:inline-block">
+            <label class="layui-form-label" style="padding:5px">学年/学期:</label>
+            <div class="layui-input-inline" style="width:240px">
+                <select name="yearTermId" asp-items="@ViewBag.YearTermId" class="layui-input" id="yearTermId">
+                    <option value="">-请选择学年/学期-</option>
+                </select>
+            </div>
+        </div>
+        <div style="display:inline-block">
+            <div class="layui-input-inline" style="width:200px">
+                <input name="name" type="text" class="layui-input" placeholder="请输入关键字" id="keyword" />
+            </div>
+        </div>
+        <div style="display:inline-block">
+            <div class="layui-input-inline" style="width:80px">
+                <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
+                    <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
+                </a>
+            </div>
+        </div>
+    </div>
 <table class="layui-hide" id="datatable"></table>
 @Html.AntiForgeryToken()
 <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
@@ -86,6 +119,25 @@
                     ]]
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);
+                    }
+                });
+            });
+        }
+                        /**过滤数据 */
+        function tablefilter() {
+            //此处Id不要#号
+            var tableId = "dataGrid";
+            layui.use('table', function () {
+                var table = layui.table;
+                table.reload(tableId, {
+                    url: '@Url.Action("GetDatasWithFilter")'
+                    , where: {
+                        yearTermId: $("#YearTermId").val(),
+                        departmentId: $("#DepartmentId").val(),
+                        keyword: $("#keyword").val()
+                    }
+                    , done: function (res, curr, count) {
+                        fillPatientList(res,curr,count);showHideScrollBars(res.data.length);
                     }
                 });
             });
