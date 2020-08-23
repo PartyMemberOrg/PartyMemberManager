@@ -26,7 +26,7 @@
             <div class="form-group">
                 <div class="row">
                     <div class="@LabelDivDefaultClass">
-                        <label asp-for="TrainClassId" class="control-label"></label>
+                        <label asp-for="TrainClassId" asp-required="true" class="control-label"></label>
                     </div>
                     <div class="@InputDivDefaultClass">
                         <select asp-for="TrainClassId" class="form-control" asp-items="ViewBag.TrainClasses">
@@ -38,7 +38,7 @@
             <div class="form-group">
                 <div class="row">
                     <div class="@LabelDivDefaultClass">
-                        <label asp-for="PotentialMemberTime" class="control-label"></label>
+                        <label asp-for="PotentialMemberTime" asp-required="true" class="control-label"></label>
                     </div>
                     <div class="@InputDivDefaultClass">
                         <input id="PotentialMemberTime" name="PotentialMemberTime" class="form-control" placeholder="yyyy-MM-dd" readonly />
