@@ -219,29 +219,45 @@
         }
         /*保存成绩*/
         function saveGrade() {
-            var tableId = "dataGrid";
-            var dataList = new Array();
-            var errName;
-            layui.use('table', function () {
-                var datas = layui.table.cache[tableId];
-                for (i = 0; i < datas.length; i++)
-                {
-                    var item = datas[i].id + "," + datas[i].psGrade + "," + datas[i].csGrade;
-                    dataList.push(item);
-                }
-            });
-            $.ajax({
-                type:'post',
-                url: '@Url.Action("SaveGradeData")',
-                traditional: true,
-                data: { datas: dataList },
-                dataType:'json',
-                success: function (data) {
-                    layer.msg(data.message);
-                    InitTable();
-                }
-            });
-
+            try {
+                var tableId = "dataGrid";
+                var dataList = new Array();
+                var errName;
+                layui.use('table', function () {
+                    var datas = layui.table.cache[tableId];
+                    for (i = 0; i < datas.length; i++) {
+                        var item = datas[i].id + "," + datas[i].psGrade + "," + datas[i].csGrade;
+                        var no = datas[i].jobNoDisplay;
+                        var name = datas[i].nameDisplay;
+                        var noName = "【" + no + "-" + name + "】";
+                        if (datas[i].psGrade != null) {
+                            var psGrade = parseFloat(datas[i].psGrade);
+                            if (psGrade < 0 || psGrade > 100)
+                                throw new Error(noName + "平时成绩不合法");
+                        }
+                        if (datas[i].csGrade != null) {
+                            var csGrade = parseFloat(datas[i].csGrade);
+                            if (csGrade < 0 || csGrade > 100)
+                                throw new Error(noName + "考试成绩不合法");
+                        }
+                        dataList.push(item);
+                    }
+                });
+                $.ajax({
+                    type: 'post',
+                    url: '@Url.Action("SaveGradeData")',
+                    traditional: true,
+                    data: { datas: dataList },
+                    dataType: 'json',
+                    success: function (data) {
+                        layer.msg(data.message);
+                        InitTable();
+                    }
+                });
+            }
+            catch (error) {
+                showError(error.message);
+            }
         }
 
         /**显示隐藏滚动条 */
