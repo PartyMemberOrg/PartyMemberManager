@@ -29,6 +29,8 @@ namespace PartyMemberManager.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             var pMContext = _context.ProvinceCadreTrains.Include(p => p.Department).Include(p => p.YearTerm);
+            ViewBag.DepartmentId = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.Where(d => d.Enabled == true), "Id", "Name");
             return View(await pMContext.ToListAsync());
         }
         /// <summary>

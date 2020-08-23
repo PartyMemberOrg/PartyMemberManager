@@ -7,7 +7,7 @@
     <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
         <div style="display:inline-block">
             <div class="layui-input-inline" style="width:80px">
-                <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',500,400)" class="layui-btn layui-btn-primary">+添加</a>
+                <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,650)" class="layui-btn layui-btn-primary">+添加</a>
             </div>
         </div>
         @if (CurrentUser.Roles > Role.学院党委)
@@ -15,7 +15,7 @@
             <div style="display:inline-block">
                 <label class="layui-form-label" style="padding:5px;width:60px">部门:</label>
                 <div class="layui-input-inline" style="width:300px">
-                    <select name="departmentId" asp-items="@ViewBag.Departments" class="layui-input" id="departmentId">
+                    <select name="departmentId" asp-items="@ViewBag.DepartmentId" class="layui-input" id="departmentId">
                         <option value="">-请选择部门-</option>
                     </select>
                 </div>
@@ -135,8 +135,8 @@
                 table.reload(tableId, {
                     url: '@Url.Action("GetDatasWithFilter")'
                     , where: {
-                        yearTermId: $("#YearTermId").val(),
-                        departmentId: $("#DepartmentId").val(),
+                        yearTermId: $("#yearTermId").val(),
+                        departmentId: $("#departmentId").val(),
                         keyword: $("#keyword").val()
                     }
                     , done: function (res, curr, count) {
@@ -159,7 +159,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 500, 400);
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 600, 650);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);
