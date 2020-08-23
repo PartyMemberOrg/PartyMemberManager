@@ -77,7 +77,7 @@
                         <label asp-for="NationId" asp-required="true" class="control-label"></label>
                     </div>
                     <div class="@InputDivDefaultClass">
-                        <select asp-for="NationId" class="form-control" asp-items="@ViewBag.Nations">
+                        <select asp-for="NationId" class="form-control" asp-items="@ViewBag.NationId">
                             <option>-请选择民族-</option>
                         </select>
                         @*<span asp-validation-for="NationId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
@@ -140,7 +140,7 @@
                             <label asp-for="DepartmentId" asp-required="true" class="control-label"></label>
                         </div>
                         <div class="@InputDivDefaultClass">
-                            <select asp-for="DepartmentId" class="form-control" asp-items="@ViewBag.Departments">
+                            <select asp-for="DepartmentId" class="form-control" asp-items="@ViewBag.DepartmentId">
                                 <option>-请选择部门-</option>
                             </select>
                             @*<span asp-validation-for="DepartmentId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
@@ -168,7 +168,7 @@
                         <label asp-for="TrainClassId" asp-required="true" class="control-label"></label>
                     </div>
                     <div class="@InputDivDefaultClass">
-                        <select asp-for="TrainClassId" class="form-control" asp-items="@ViewBag.TrainClasses">
+                        <select asp-for="TrainClassId" class="form-control" asp-items="@ViewBag.TrainClassId">
                             <option>-请选择培训班-</option>
                         </select>
                         @*<span asp-validation-for="TrainClassId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@

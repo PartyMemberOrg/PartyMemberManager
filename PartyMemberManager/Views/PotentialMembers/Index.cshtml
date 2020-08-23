@@ -19,7 +19,7 @@
         <div style="display:inline-block">
             <label class="layui-form-label" style="padding:5px;width:60px">部门:</label>
             <div class="layui-input-inline" style="width:200px">
-                <select name="DepartmentId" asp-items="@ViewBag.Departments" class="layui-input" id="DepartmentId">
+                <select name="DepartmentId" asp-items="@ViewBag.DepartmentId" class="layui-input" id="DepartmentId">
                     <option value="">-请选择部门-</option>
                 </select>
             </div>
@@ -28,7 +28,7 @@
     <div style="display:inline-block">
         <label class="layui-form-label" style="padding:5px;width:60px">培训班:</label>
         <div class="layui-input-inline" style="width:240px">
-            <select name="TrainClassId" asp-items="@ViewBag.TrainClasses" class="layui-input" id="TrainClassId">
+            <select name="TrainClassId" asp-items="@ViewBag.TrainClassId" class="layui-input" id="TrainClassId">
                 <option value="">-请选择培训班-</option>
             </select>
         </div>

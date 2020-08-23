@@ -20,7 +20,7 @@
                 <label asp-for="DepartmentId" asp-required="true" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">
-                <select asp-for="DepartmentId" asp-items="@ViewBag.Departments" class="form-control">
+                <select asp-for="DepartmentId" asp-items="@ViewBag.DepartmentId" class="form-control">
                     <option value="">-请选择部门-</option>
                 </select>
                 <span asp-validation-for="DepartmentId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>

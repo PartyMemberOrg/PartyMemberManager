@@ -28,7 +28,7 @@ namespace PartyMemberManager.Controllers
         // GET: ActiveApplicationSurveys
         public async Task<IActionResult> Index(int page = 1)
         {
-            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.DepartmentId = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
             return View(await _context.ActiveApplicationSurveies.Include(d => d.Department).OrderBy(a => a.Ordinal).GetPagedDataAsync(page));
         }
@@ -113,7 +113,7 @@ namespace PartyMemberManager.Controllers
         public IActionResult Create()
         {
             ActiveApplicationSurvey activeApplicationSurvey = new ActiveApplicationSurvey();
-            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.DepartmentId = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
             return View(activeApplicationSurvey);
         }
@@ -132,7 +132,7 @@ namespace PartyMemberManager.Controllers
             {
                 return NotFoundData();
             }
-            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.DepartmentId = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
             return View(activeApplicationSurvey);
         }

@@ -108,7 +108,7 @@
                         //{ type: 'checkbox' }
                         //,
                         { field: 'yearTerm', title: '学年/学期', align: 'center', templet: '#optYearTermTpl' },
-                        { field: 'organizer', title: '组织结构', align: 'center' },
+                        { field: 'organizer', title: '组织机构', align: 'center' },
                         { field: 'trainOrganizational', title: '培训机构', align: 'center' },
                         { field: 'trainTime', title: '培训时间', align: 'center' },
                         { field: 'trainDuration', title: '培训时长', align: 'center' },
@@ -135,8 +135,8 @@
                 table.reload(tableId, {
                     url: '@Url.Action("GetDatasWithFilter")'
                     , where: {
-                        yearTermId: $("#YearTermId").val(),
-                        departmentId: $("#DepartmentId").val(),
+                        yearTermId: $("#yearTermId").val(),
+                        departmentId: $("#departmentId").val(),
                         keyword: $("#keyword").val()
                     }
                     , done: function (res, curr, count) {
