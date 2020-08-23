@@ -8,23 +8,45 @@ using System.Text;
 
 namespace PartyMemberManager.Dal.Entities
 {
-    public class CadreTrain:EntityBase
+    public class CadreTrainBase:EntityBase
     {
-        /// <summary>
-        /// 年度
-        /// </summary>
-        [DisplayName("年度")]
-        [StringLength(4, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public string Year { get; set; }
-
         /// <summary>
         /// 培训班
         /// </summary>
         [DisplayName("培训班")]
-        [StringLength(50, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public string TrainClass { get; set; }
+        public Guid? TrainClassId { get; set; }
+        /// <summary>
+        /// 培训班
+        /// </summary>
+        [DisplayName("培训班")]
+        public TrainClass TrainClass { get; set; }
+
+        /// <summary>
+        /// 培训班
+        /// </summary>
+        [DisplayName("培训班名称")]
+        [NotMapped]
+        public string TrainClassDisplay { get => TrainClass == null ? "" : TrainClass.Name; }
+
+        /// <summary>
+        /// 学年/学期
+        /// </summary>
+        [DisplayName("学年/学期")]
+
+        public Guid? YearTermId { get; set; }
+
+        /// <summary>
+        /// 学年/学期
+        /// </summary>
+        [DisplayName("学年/学期")]
+
+        public YearTerm YearTerm { get; set; }
+        /// <summary>
+        /// 学年学期
+        /// </summary>
+        [DisplayName("学年/学期")]
+        [NotMapped]
+        public string YearTermDisplay { get => YearTerm == null ? "" : YearTerm.Name; }
 
         /// <summary>
         /// 组织单位
@@ -57,17 +79,17 @@ namespace PartyMemberManager.Dal.Entities
 
         public string TrainDuration { get; set; }
 
-        /// <summary>
-        /// 培训类型
-        /// </summary>
-        [DisplayName("培训类型")]
-        public CadreTrainType CadreTrainType { get; set; }
-        /// <summary>
-        /// 培训类型
-        /// </summary>
-        [DisplayName("培训类型")]
-        [NotMapped]
-        public string CadreTrainTypeDisplay { get => CadreTrainType.ToString(); }
+        ///// <summary>
+        ///// 培训类型
+        ///// </summary>
+        //[DisplayName("培训类型")]
+        //public CadreTrainType CadreTrainType { get; set; }
+        ///// <summary>
+        ///// 培训类型
+        ///// </summary>
+        //[DisplayName("培训类型")]
+        //[NotMapped]
+        //public string CadreTrainTypeDisplay { get => CadreTrainType.ToString(); }
         /// <summary>
         /// 姓名
         /// </summary>

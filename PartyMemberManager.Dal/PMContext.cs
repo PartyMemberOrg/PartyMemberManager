@@ -25,7 +25,6 @@ namespace PartyMemberManager.Dal
         public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<TrainClassType> TrainClassTypes { get; set; }
         public virtual DbSet<Nation> Nations { get; set; }
-        public virtual DbSet<CadreTrain> CadreTrains { get; set; }
         public virtual DbSet<ActiveApplicationSurvey> ActiveApplicationSurveies { get; set; }
         public virtual DbSet<YearTerm> YearTerms { get; set; }
         public virtual DbSet<TrainClass> TrainClasses { get; set; }
@@ -33,6 +32,9 @@ namespace PartyMemberManager.Dal
         public virtual DbSet<ActivistTrainResult> ActivistTrainResults { get; set; }
         public virtual DbSet<PotentialMember> PotentialMembers { get; set; }
         public virtual DbSet<PotentialTrainResult> PotentialTrainResults { get; set; }
+
+        public virtual DbSet<ProvinceCadreTrain> ProvinceCadreTrains { get; set; }
+        public virtual DbSet<SchoolCadreTrain> SchoolCadreTrains { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
