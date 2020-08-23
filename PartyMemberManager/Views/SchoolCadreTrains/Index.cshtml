@@ -1,27 +1,27 @@
 ﻿@model IEnumerable<PartyMemberManager.Dal.Entities.SchoolCadreTrain>
 
-        @{
-        ViewData["Title"] = "Index";
-        }
-        
-        <h1>列表</h1>
-        
-        <p style="margin-bottom:14px;">
-                <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
-        </p>
-        <table class="layui-hide" id="datatable"></table>
-        @Html.AntiForgeryToken()
-        <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
-        @section Scripts{
-        <script src="~/lib/contentmenu/js/index.js"></script>
-        <script src="~/lib/Sortable/Sortable.js"></script>
-            <script type="text/javascript">
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>列表</h1>
+
+<p style="margin-bottom:14px;">
+    <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
+</p>
+<table class="layui-hide" id="datatable"></table>
+@Html.AntiForgeryToken()
+<link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
+@section Scripts{
+    <script src="~/lib/contentmenu/js/index.js"></script>
+    <script src="~/lib/Sortable/Sortable.js"></script>
+    <script type="text/javascript">
         var tableObject = null;
         $(document).ready(function () {
             $("body").width(770);
             InitTable();
         });
-        
+
         function Delete(id) {
             var url="@Url.Action("Delete")";
             DeleteData(url, id, function () {
@@ -53,17 +53,17 @@
             layui.use('table', function () {
                 var table = layui.table;
                 table.reload('dataGrid', {
-                    url: '@Url.Action("GetDatas")'
+                    url: '@Url.Action("GetDatasWithFilter")'
                 });
             });
         }
         function InitTable() {
             layui.use('table', function () {
                 var table = layui.table;
-        
+
                 tableObject = table.render({
                     elem: '#datatable'
-                    , url: '@Url.Action("GetDatas")'
+                    , url: '@Url.Action("GetDatasWithFilter")'
                     , page: true //开启分页
                     , limits: [10, 20, 50]
                     , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
@@ -71,23 +71,17 @@
                     , cols: [[
                         //{ type: 'checkbox' }
                         //,
-            { field: 'trainClassId', title: 'TrainClassId', align: 'center' },
-            { field: 'yearTermId', title: 'YearTermId', align: 'center' },
-            { field: 'organizer', title: 'Organizer', align: 'center' },
-            { field: 'trainOrganizational', title: 'TrainOrganizational', align: 'center' },
-            { field: 'trainTime', title: 'TrainTime', align: 'center' },
-            { field: 'trainDuration', title: 'TrainDuration', align: 'center' },
-            { field: 'name', title: 'Name', align: 'center' },
-            { field: 'phone', title: 'Phone', align: 'center' },
-            { field: 'iDNumber', title: 'IDNumber', align: 'center' },
-            { field: 'sex', title: 'Sex', align: 'center' },
-            { field: 'departmentId', title: 'DepartmentId', align: 'center' },
-            { field: 'post', title: 'Post', align: 'center' },
-            { field: 'id', title: 'Id', align: 'center' },
-            { field: 'createTime', title: 'CreateTime', align: 'center' },
-            { field: 'operatorId', title: 'OperatorId', align: 'center' },
-            { field: 'ordinal', title: 'Ordinal', align: 'center' },
-            { field: 'isDeleted', title: 'IsDeleted', align: 'center' },
+                        { field: 'yearTerm', title: '学年/学期', align: 'center', templet: '#optYearTermTpl' },
+                        { field: 'organizer', title: '组织结构', align: 'center' },
+                        { field: 'trainOrganizational', title: '培训机构', align: 'center' },
+                        { field: 'trainTime', title: '培训时间', align: 'center' },
+                        { field: 'trainDuration', title: '培训时长', align: 'center' },
+                        { field: 'name', title: '姓名', align: 'center' },
+                        { field: 'idNumber', title: '身份证号', align: 'center' },
+                        { field: 'sexDisplay', title: '性别', align: 'center' },
+                        { field: 'departmentDisplay', title: '所属部门', align: 'center', templet: '#optDepartmentNameTpl' },
+                        { field: 'phone', title: '电话', align: 'center' },
+                        { field: 'post', title: '职务', align: 'center' },
                         { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
@@ -123,11 +117,17 @@
             })
             contextMenu.showMenu(event);
         }
-        </script>
-        <script type="text/html" id="optTpl">
-            <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
-                <img src="~/images/gridmenu1x.png" />
-            </a>
-        </script>
-        }
+    </script>
+    <script type="text/html" id="optTpl">
+        <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
+            <img src="~/images/gridmenu1x.png" />
+        </a>
+    </script>
+    <script type="text/html" id="optYearTermTpl">
+        {{d.yearTermDisplay}}
+    </script>
+    <script type="text/html" id="optDepartmentNameTpl">
+        {{d.departmentDisplay}}
+    </script>
+}
 

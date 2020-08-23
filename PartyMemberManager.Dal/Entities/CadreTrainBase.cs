@@ -50,7 +50,8 @@ namespace PartyMemberManager.Dal.Entities
         /// 培训时间
         /// </summary>
         [DisplayName("培训时间")]
-        public DateTime TrainTime{ get; set; }
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public DateTime? TrainTime{ get; set; }
 
         /// <summary>
         /// 培训时长
@@ -61,17 +62,6 @@ namespace PartyMemberManager.Dal.Entities
 
         public string TrainDuration { get; set; }
 
-        ///// <summary>
-        ///// 培训类型
-        ///// </summary>
-        //[DisplayName("培训类型")]
-        //public CadreTrainType CadreTrainType { get; set; }
-        ///// <summary>
-        ///// 培训类型
-        ///// </summary>
-        //[DisplayName("培训类型")]
-        //[NotMapped]
-        //public string CadreTrainTypeDisplay { get => CadreTrainType.ToString(); }
         /// <summary>
         /// 姓名
         /// </summary>
@@ -84,6 +74,7 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("手机")]
         [StringLength(50, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Phone { get; set; }
 
 
@@ -93,7 +84,7 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("身份证号")]
         [StringLength(20, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        public string IDNumber { get; set; }
+        public string IdNumber { get; set; }
 
         /// <summary>
         /// 性别

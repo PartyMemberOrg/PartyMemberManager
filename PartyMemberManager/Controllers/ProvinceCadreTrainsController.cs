@@ -14,6 +14,7 @@ using PartyMemberManager.Framework.Models.JsonModels;
 using Microsoft.AspNetCore.Http;
 using PartyMemberManager.Dal;
 using PartyMemberManager.Dal.Entities;
+using PartyMemberManager.Core.Enums;
 
 namespace PartyMemberManager.Controllers
 {
@@ -29,6 +30,64 @@ namespace PartyMemberManager.Controllers
         {
             var pMContext = _context.ProvinceCadreTrains.Include(p => p.Department).Include(p => p.YearTerm);
             return View(await pMContext.ToListAsync());
+        }
+        /// <summary>
+        /// 获取数据（通过ajax调用)
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, Guid? yearTermId, int page = 1, int limit = 10)
+        {
+            JsonResultDatasModel<ProvinceCadreTrain> jsonResult = new JsonResultDatasModel<ProvinceCadreTrain>
+            {
+                Code = 0,
+                Msg = ""
+            };
+
+            try
+            {
+                var filter = PredicateBuilder.True<ProvinceCadreTrain>();
+                if (departmentId != null)
+                {
+                    filter = filter.And(d => d.DepartmentId == departmentId);
+                }
+                if (yearTermId != null)
+                {
+                    filter = filter.And(d => d.YearTermId == yearTermId);
+                }
+                if (CurrentUser.Roles > Role.学院党委)
+                {
+                    var data = await _context.Set<ProvinceCadreTrain>().Include(d => d.Department).Include(d => d.YearTerm).Where(filter).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    if (data == null)
+                        throw new PartyMemberException("未找到数据");
+                    jsonResult.Count = _context.Set<ProvinceCadreTrain>().Count();
+                    jsonResult.Data = data.Data;
+                }
+                else
+                {
+                    if (CurrentUser.DepartmentId == null)
+                        throw new PartyMemberException("该用户不合法，请设置该用户所属部门");
+                    var data = await _context.Set<ProvinceCadreTrain>().Where(filter).Include(d => d.Department).Include(d => d.YearTerm).Where(d => d.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    if (data == null)
+                        throw new PartyMemberException("未找到数据");
+                    jsonResult.Count = _context.Set<ProvinceCadreTrain>().Count();
+                    jsonResult.Data = data.Data;
+                }
+            }
+
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Msg = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Msg = "发生系统错误";
+            }
+            return Json(jsonResult);
         }
 
         // GET: ProvinceCadreTrains/Details/5
@@ -55,8 +114,8 @@ namespace PartyMemberManager.Controllers
         public IActionResult Create()
         {
             ProvinceCadreTrain provinceCadreTrain = new ProvinceCadreTrain();
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name");
-            ViewData["YearTermId"] = new SelectList(_context.YearTerms.Where(d=>d.Enabled==true), "Id", "Name");
+            ViewBag.DepartmentId = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId= new SelectList(_context.YearTerms.Where(d=>d.Enabled==true), "Id", "Name");
             return View(provinceCadreTrain);
         }
 
@@ -74,14 +133,14 @@ namespace PartyMemberManager.Controllers
             {
                 return NotFoundData();
             }
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", provinceCadreTrain.DepartmentId);
-            ViewData["YearTermId"] = new SelectList(_context.YearTerms.Where(d => d.Enabled == true), "Id", "Name", provinceCadreTrain.YearTermId);
+            ViewBag.DepartmentId = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.Where(d => d.Enabled == true), "Id", "Name");
             return View(provinceCadreTrain);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("YearTermId,Organizer,TrainOrganizational,TrainTime,TrainDuration,Name,Phone,IDNumber,Sex,DepartmentId,Post,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ProvinceCadreTrain provinceCadreTrain)
+        public override async Task<IActionResult> Save([Bind("YearTermId,Organizer,TrainOrganizational,TrainTime,TrainDuration,Name,Phone,IdNumber,Sex,DepartmentId,Post,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ProvinceCadreTrain provinceCadreTrain)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -102,7 +161,7 @@ namespace PartyMemberManager.Controllers
                         provinceCadreTrainInDb.TrainDuration = provinceCadreTrain.TrainDuration;
                         provinceCadreTrainInDb.Name = provinceCadreTrain.Name;
                         provinceCadreTrainInDb.Phone = provinceCadreTrain.Phone;
-                        provinceCadreTrainInDb.IDNumber = provinceCadreTrain.IDNumber;
+                        provinceCadreTrainInDb.IdNumber = provinceCadreTrain.IdNumber;
                         provinceCadreTrainInDb.Sex = provinceCadreTrain.Sex;
                         provinceCadreTrainInDb.DepartmentId = provinceCadreTrain.DepartmentId;
                         provinceCadreTrainInDb.Post = provinceCadreTrain.Post;

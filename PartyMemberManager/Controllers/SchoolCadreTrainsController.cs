@@ -14,6 +14,7 @@ using PartyMemberManager.Framework.Models.JsonModels;
 using Microsoft.AspNetCore.Http;
 using PartyMemberManager.Dal;
 using PartyMemberManager.Dal.Entities;
+using PartyMemberManager.Core.Enums;
 
 namespace PartyMemberManager.Controllers
 {
@@ -30,7 +31,64 @@ namespace PartyMemberManager.Controllers
             var pMContext = _context.SchoolCadreTrains.Include(s => s.Department).Include(s => s.YearTerm);
             return View(await pMContext.ToListAsync());
         }
+        /// <summary>
+        /// 获取数据（通过ajax调用)
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId, Guid? yearTermId, int page = 1, int limit = 10)
+        {
+            JsonResultDatasModel<SchoolCadreTrain> jsonResult = new JsonResultDatasModel<SchoolCadreTrain>
+            {
+                Code = 0,
+                Msg = ""
+            };
 
+            try
+            {
+                var filter = PredicateBuilder.True<SchoolCadreTrain>();
+                if (departmentId != null)
+                {
+                    filter = filter.And(d => d.DepartmentId == departmentId);
+                }
+                if (yearTermId != null)
+                {
+                    filter = filter.And(d => d.YearTermId == yearTermId);
+                }
+                if (CurrentUser.Roles > Role.学院党委)
+                {
+                    var data = await _context.Set<SchoolCadreTrain>().Include(d => d.Department).Include(d => d.YearTerm).Where(filter).OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    if (data == null)
+                        throw new PartyMemberException("未找到数据");
+                    jsonResult.Count = _context.Set<SchoolCadreTrain>().Count();
+                    jsonResult.Data = data.Data;
+                }
+                else
+                {
+                    if (CurrentUser.DepartmentId == null)
+                        throw new PartyMemberException("该用户不合法，请设置该用户所属部门");
+                    var data = await _context.Set<SchoolCadreTrain>().Where(filter).Include(d => d.Department).Include(d => d.YearTerm).Where(d => d.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    if (data == null)
+                        throw new PartyMemberException("未找到数据");
+                    jsonResult.Count = _context.Set<SchoolCadreTrain>().Count();
+                    jsonResult.Data = data.Data;
+                }
+            }
+
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Msg = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Msg = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
         // GET: SchoolCadreTrains/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
@@ -55,9 +113,8 @@ namespace PartyMemberManager.Controllers
         public IActionResult Create()
         {
             SchoolCadreTrain schoolCadreTrain = new SchoolCadreTrain();
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Code");
-            ViewData["TrainClassId"] = new SelectList(_context.TrainClasses, "Id", "Name");
-            ViewData["YearTermId"] = new SelectList(_context.YearTerms, "Id", "Id");
+            ViewBag.DepartmentId = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.Where(d => d.Enabled == true), "Id", "Name");
             return View(schoolCadreTrain);
         }
 
@@ -75,14 +132,14 @@ namespace PartyMemberManager.Controllers
             {
                 return NotFoundData();
             }
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", schoolCadreTrain.DepartmentId);
-            ViewData["YearTermId"] = new SelectList(_context.YearTerms.Where(d => d.Enabled == true), "Id", "Name", schoolCadreTrain.YearTermId);
+            ViewBag.DepartmentId = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.Where(d => d.Enabled == true), "Id", "Name");
             return View(schoolCadreTrain);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("YearTermId,Organizer,TrainOrganizational,TrainTime,TrainDuration,Name,Phone,IDNumber,Sex,DepartmentId,Post,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] SchoolCadreTrain schoolCadreTrain)
+        public override async Task<IActionResult> Save([Bind("YearTermId,Organizer,TrainOrganizational,TrainTime,TrainDuration,Name,Phone,IdNumber,Sex,DepartmentId,Post,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] SchoolCadreTrain schoolCadreTrain)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -103,7 +160,7 @@ namespace PartyMemberManager.Controllers
                         schoolCadreTrainInDb.TrainDuration = schoolCadreTrain.TrainDuration;
                         schoolCadreTrainInDb.Name = schoolCadreTrain.Name;
                         schoolCadreTrainInDb.Phone = schoolCadreTrain.Phone;
-                        schoolCadreTrainInDb.IDNumber = schoolCadreTrain.IDNumber;
+                        schoolCadreTrainInDb.IdNumber = schoolCadreTrain.IdNumber;
                         schoolCadreTrainInDb.Sex = schoolCadreTrain.Sex;
                         schoolCadreTrainInDb.DepartmentId = schoolCadreTrain.DepartmentId;
                         schoolCadreTrainInDb.Department = schoolCadreTrain.Department;
