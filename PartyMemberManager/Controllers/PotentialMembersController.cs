@@ -228,47 +228,49 @@ namespace PartyMemberManager.Controllers
                     {
                         Guid activistTrainResultId = Guid.Parse(item);
                         var activistTrainResult = await _context.ActivistTrainResults.FindAsync(activistTrainResultId);
-                        var potentialMemberOld = _context.PotentialMembers.Where(d => d.PartyActivistId == activistTrainResult.PartyActivistId).FirstOrDefault();
-                        
-                        if (potentialMemberOld==null)
+                        var potentialMemberOld = _context.PotentialMembers.Where(d => d.PartyActivistId == activistTrainResult.PartyActivistId && d.TrainClassId == potentialMember.TrainClassId).FirstOrDefault();
+
+                        if (potentialMemberOld != null)
                         {
-                            var partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);
-                            PotentialMember potentialMemberNew = new PotentialMember
-                            {
-                                ApplicationTime = partyActivist.ApplicationTime,
-                                ActiveApplicationTime = partyActivist.ActiveApplicationTime,
-                                Name = partyActivist.Name,
-                                JobNo = partyActivist.JobNo,
-                                IdNumber = partyActivist.IdNumber,
-                                NationId=partyActivist.NationId,
-                                PartyMemberType = partyActivist.PartyMemberType,
-                                BirthDate = partyActivist.BirthDate,
-                                Phone = partyActivist.Phone,
-                                Department = partyActivist.Department,
-                                Class = partyActivist.Class,
-                                CreateTime = DateTime.Now,
-                                OperatorId = CurrentUser.Id,
-                                Ordinal = _context.PotentialMembers.Count() + 1,
-                                IsDeleted = partyActivist.IsDeleted,
-                                DepartmentId = partyActivist.DepartmentId,
-                                PartyActivistId= partyActivist.Id,
-                                Sex=partyActivist.Sex,
-                                ///后期选择的信息
-                                TrainClassId = potentialMember.TrainClassId,
-                                YearTermId = potentialMember.YearTermId,
-                                PotentialMemberTime = potentialMember.PotentialMemberTime
-                            };
-                            PotentialTrainResult potentialTrainResult = new PotentialTrainResult
-                            {
-                                PotentialMemberId = potentialMemberNew.Id,
-                                CreateTime = DateTime.Now,
-                                OperatorId = CurrentUser.Id,
-                                IsDeleted = false,
-                                Ordinal = _context.PotentialMembers.Count() + 1
-                            };
-                            _context.Add(potentialMemberNew);
-                            _context.Add(potentialTrainResult);
+                            var noName = "【" + potentialMemberOld.Name + "-" + potentialMemberOld.JobNo + "】" + "已在该培训班";
+                            throw new PartyMemberException(noName);
                         }
+                        var partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);
+                        PotentialMember potentialMemberNew = new PotentialMember
+                        {
+                            ApplicationTime = partyActivist.ApplicationTime,
+                            ActiveApplicationTime = partyActivist.ActiveApplicationTime,
+                            Name = partyActivist.Name,
+                            JobNo = partyActivist.JobNo,
+                            IdNumber = partyActivist.IdNumber,
+                            NationId = partyActivist.NationId,
+                            PartyMemberType = partyActivist.PartyMemberType,
+                            BirthDate = partyActivist.BirthDate,
+                            Phone = partyActivist.Phone,
+                            Department = partyActivist.Department,
+                            Class = partyActivist.Class,
+                            CreateTime = DateTime.Now,
+                            OperatorId = CurrentUser.Id,
+                            Ordinal = _context.PotentialMembers.Count() + 1,
+                            IsDeleted = partyActivist.IsDeleted,
+                            DepartmentId = partyActivist.DepartmentId,
+                            PartyActivistId = partyActivist.Id,
+                            Sex = partyActivist.Sex,
+                            ///后期选择的信息
+                            TrainClassId = potentialMember.TrainClassId,
+                            YearTermId = potentialMember.YearTermId,
+                            PotentialMemberTime = potentialMember.PotentialMemberTime
+                        };
+                        PotentialTrainResult potentialTrainResult = new PotentialTrainResult
+                        {
+                            PotentialMemberId = potentialMemberNew.Id,
+                            CreateTime = DateTime.Now,
+                            OperatorId = CurrentUser.Id,
+                            IsDeleted = false,
+                            Ordinal = _context.PotentialMembers.Count() + 1
+                        };
+                        _context.Add(potentialMemberNew);
+                        _context.Add(potentialTrainResult);
                     }
                 }
                 await _context.SaveChangesAsync();
