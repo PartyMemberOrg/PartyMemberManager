@@ -1,7 +1,10 @@
 ﻿@model PartyActivistImportViewModel
 
-<form action="@Url.Action("Import")" method="post" enctype="multipart/form-data">
-    <div class="form-group">
+@{
+    Guid trainClassTypeId = (Guid)ViewBag.TrainClassTypeId;
+}
+<form action="@Url.Action("Import")" method="post" enctype="multipart/form-data" style="margin-top:20px;">
+    @*<div class="form-group">
         <div class="row">
             <div class="@LabelDivDefaultClass">
                 <label asp-for="TrainClassTypeId" asp-required="false" class="control-label"></label>
@@ -13,7 +16,7 @@
                 <span asp-validation-for="TrainClassTypeId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
             </div>
         </div>
-    </div>
+    </div>*@
     <div class="form-group">
         <div class="row">
             <div class="@LabelDivDefaultClass">
@@ -84,9 +87,9 @@
 @section Scripts{
     <script type="text/javascript">
         $(document).ready(function () {
-            $("#TrainClassTypeId").change(function () {
-                filterTrainClass();
-            });
+            //$("#TrainClassTypeId").change(function () {
+            //    filterTrainClass();
+            //});
             $("#YearTermId").change(function () {
                 filterTrainClass();
             });
@@ -98,7 +101,7 @@
         /**过滤培训班 */
         function filterTrainClass() {
             var url = '@Url.Action("GetTrainClassDatas")';
-            var trainClassTypeId = $("#TrainClassTypeId").val();
+            var trainClassTypeId = '@trainClassTypeId';
             var yearTermId = $("#YearTermId").val();
             var departmentId = $("#DepartmentId").val();
             var where = { trainClassTypeId: trainClassTypeId, yearTermId: yearTermId, departmentId: departmentId };

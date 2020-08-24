@@ -15,6 +15,11 @@ using Microsoft.AspNetCore.Http;
 using PartyMemberManager.Dal;
 using PartyMemberManager.Dal.Entities;
 using PartyMemberManager.Core.Enums;
+using PartyMemberManager.Models;
+using System.IO;
+using System.Data;
+using ExcelCore;
+using Newtonsoft.Json;
 
 namespace PartyMemberManager.Controllers
 {
@@ -252,13 +257,22 @@ namespace PartyMemberManager.Controllers
                     {
                         Guid id = Guid.Parse(subItem[0]);
                         PotentialTrainResult potentialTrainResult = await _context.PotentialTrainResults.Include(d => d.PotentialMember.TrainClass).Where(d => d.Id == id).FirstOrDefaultAsync();
+                        PotentialMember potentialMember = await _context.PotentialMembers.FindAsync(potentialTrainResult.PotentialMemberId);
                         var psProp = potentialTrainResult.PotentialMember.TrainClass.PsGradeProportion;
                         var csProp = potentialTrainResult.PotentialMember.TrainClass.CsGradeProportion;
                         if (potentialTrainResult != null)
                         {
-                            potentialTrainResult.PsGrade = decimal.Parse(subItem[1]);
-                            potentialTrainResult.CsGrade = decimal.Parse(subItem[2]);
-                            potentialTrainResult.TotalGrade = Math.Round(psProp * potentialTrainResult.PsGrade.Value / 100 + csProp * potentialTrainResult.CsGrade.Value / 100, 2);
+                            decimal psGrade = 0;
+                            decimal csGrade = 0;
+                            if (decimal.TryParse(subItem[1], out psGrade))
+                                potentialTrainResult.PsGrade = psGrade;
+                            if (decimal.TryParse(subItem[2], out csGrade))
+                                potentialTrainResult.CsGrade = csGrade;
+                            if (psGrade > 100 || psGrade < 0)
+                                throw new PartyMemberException($"【{potentialMember.JobNo}-{potentialMember.Name}】的平时成绩非法");
+                            if (csGrade > 100 || csGrade < 0)
+                                throw new PartyMemberException($"【{potentialMember.JobNo}-{potentialMember.Name}】的考试成绩非法");
+                            potentialTrainResult.TotalGrade = Math.Round(psProp * psGrade / 100 + csProp * csGrade / 100, 2);
                             if (potentialTrainResult.TotalGrade >= 60)
                                 potentialTrainResult.IsPass = true;
                             else
@@ -280,6 +294,179 @@ namespace PartyMemberManager.Controllers
             {
                 jsonResult.Code = -1;
                 jsonResult.Message = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
+
+        /// <summary>
+        /// 导入发展对象培训成绩
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Import()
+        {
+            PotentialTrainResultImportViewModel model = new PotentialTrainResultImportViewModel
+            {
+                DepartmentId = CurrentUser.DepartmentId.HasValue ? CurrentUser.DepartmentId.Value : Guid.Empty,
+            };
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            if (CurrentUser.Roles == Role.学院党委)
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
+            else
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "41").OrderBy(d => d.Ordinal), "Id", "Name");
+            //if (CurrentUser.Roles == Role.学院党委)
+            //    ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.Where(d => d.Code.StartsWith("4")).OrderByDescending(d => d.Code), "Id", "Name");
+            //else
+            //    ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderBy(d => d.Code), "Id", "Name");
+            TrainClassType trainClassType = _context.TrainClassTypes.Where(t => t.Code == "42").FirstOrDefault();
+            if (trainClassType != null)
+                ViewBag.TrainClassTypeId = trainClassType.Id;
+            else
+                ViewBag.TrainClassTypeId = Guid.Empty;
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term), "Id", "Name");
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Import(PotentialTrainResultImportViewModel model)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "数据保存成功"
+            };
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    IFormFile file = model.File;
+                    if (file != null)
+                    {
+                        TrainClass trainClass = await _context.TrainClasses.FindAsync(model.TrainClassId);
+                        Stream stream = file.OpenReadStream();
+                        var filePath = Path.GetTempFileName();
+                        var fileStream = System.IO.File.Create(filePath);
+                        await file.CopyToAsync(fileStream);
+                        await fileStream.FlushAsync();
+                        fileStream.Close();
+                        #region 导入成绩
+                        DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
+                        int rowIndex = 0;
+                        string fieldsTeacher = "工号/学号,平时成绩,考试成绩";
+                        string[] fieldListTeacher = fieldsTeacher.Split(',');
+                        foreach (string field in fieldListTeacher)
+                        {
+                            if (!table.Columns.Contains(field))
+                                throw new PartyMemberException($"缺少【{field}】列");
+                        }
+                        foreach (DataRow row in table.Rows)
+                        {
+                            rowIndex++;
+                            string empNoField = "工号/学号";
+                            string psScoreField = "平时成绩";
+                            string csScoreField = "考试成绩";
+                            string psScore = row[psScoreField].ToString();
+                            string csScore = row[csScoreField].ToString();
+                            string empNo = row[empNoField].ToString();
+                            //跳过工号/学号为空的记录
+                            if (string.IsNullOrEmpty(empNoField)) continue;
+                            decimal psScoreValue = 0;
+                            decimal csScoreValue = 0;
+                            if (!decimal.TryParse(psScore, out psScoreValue))
+                            {
+                                throw new PartyMemberException($"第{rowIndex}行数据中的【{psScoreField}】数据不合法");
+                            }
+                            if (!decimal.TryParse(csScore, out csScoreValue))
+                            {
+                                throw new PartyMemberException($"第{rowIndex}行数据中的【{csScoreField}】数据不合法");
+                            }
+                            if (psScoreValue < 0 || psScoreValue > 100)
+                            {
+                                throw new PartyMemberException($"第{rowIndex}行数据中的【{psScoreField}】数据不合法");
+                            }
+                            if (csScoreValue < 0 || csScoreValue > 100)
+                            {
+                                throw new PartyMemberException($"第{rowIndex}行数据中的【{csScoreField}】数据不合法");
+                            }
+                            PotentialMember potentialMember = await _context.PotentialMembers.Where(p => p.TrainClassId == model.TrainClassId && p.JobNo == empNo).FirstOrDefaultAsync();
+                            if (potentialMember == null)
+                                throw new PartyMemberException($"第{rowIndex}行数据中的【{empNo}】未找到，请核对工号/学号是否正确");
+                            PotentialTrainResult potentialTrainResult = await _context.PotentialTrainResults.Where(p => p.PotentialMemberId == potentialMember.Id).FirstOrDefaultAsync();
+                            var psProp = trainClass.PsGradeProportion;
+                            var csProp = trainClass.CsGradeProportion;
+                            if (potentialTrainResult == null)
+                            {
+                                potentialTrainResult = new PotentialTrainResult
+                                {
+                                    Id = Guid.NewGuid(),
+                                    PotentialMemberId = potentialMember.Id,
+                                    CreateTime = DateTime.Now,
+                                    OperatorId = CurrentUser.Id,
+                                    IsDeleted = false,
+                                    Ordinal = _context.ActivistTrainResults.Count() + 1,
+                                    PsGrade = psScoreValue,
+                                    CsGrade = csScoreValue,
+                                    TotalGrade= Math.Round(psProp * psScoreValue / 100 + csProp * csScoreValue / 100, 2)
+                            };
+                                _context.PotentialTrainResults.Add(potentialTrainResult);
+                            }
+                            else
+                            {
+                                potentialTrainResult.PsGrade = psScoreValue;
+                                potentialTrainResult.CsGrade = csScoreValue;
+                                potentialTrainResult.TotalGrade = Math.Round(psProp * psScoreValue / 100 + csProp * csScoreValue / 100, 2);
+                            }
+                            if (potentialTrainResult.TotalGrade >= 60)
+                                potentialTrainResult.IsPass = true;
+                            else
+                                potentialTrainResult.IsPass = false;
+                            await _context.SaveChangesAsync();
+                        }
+                        #endregion
+                    }
+                    else
+                    {
+                        jsonResult.Code = -1;
+                        jsonResult.Message = "请选择文件";
+                    }
+                }
+                else
+                {
+                    foreach (string key in ModelState.Keys)
+                    {
+                        if (ModelState[key].Errors.Count > 0)
+                            jsonResult.Errors.Add(new ModelError
+                            {
+                                Key = key,
+                                Message = ModelState[key].Errors[0].ErrorMessage
+                            });
+                    }
+                    jsonResult.Code = -1;
+                    jsonResult.Message = "数据错误";
+                }
+
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "入党积极分子导入错误";
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (JsonReaderException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "JSON文件内容格式错误";
             }
             catch (Exception ex)
             {

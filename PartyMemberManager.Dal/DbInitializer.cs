@@ -450,6 +450,7 @@ namespace PartyMemberManager.Dal
                 Id = Guid.NewGuid(),
                 CreateTime = DateTime.Now,
                 IsDeleted = false,
+                Enabled=true,
                 Ordinal = 1,
                 StartYear = year,
                 Term = term
