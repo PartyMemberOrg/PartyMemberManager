@@ -74,6 +74,7 @@
             var trainClassTypeId = $("#TrainClassTypeId").val();
             var yearTermId = $("#YearTermId").val();
             var departmentId = $("#DepartmentId").val();
+            var trainClassId = $("#TrainClassId").val();
             var where = { trainClassTypeId: trainClassTypeId, yearTermId: yearTermId, departmentId: departmentId };
             $.ajax({
                 url: url,
@@ -85,7 +86,10 @@
                     if (data.code == 0) {
                         var options = "<option value=''>-请选择培训班-</option>";
                         for (var i = 0; i < data.datas.length; i++) {
-                            options+="<option value='" + data.datas[i].id + "'>" + data.datas[i].name+"</option>";
+                            if (data.datas[i].id == trainClassId)
+                                options += "<option selected value='" + data.datas[i].id + "'>" + data.datas[i].name + "</option>";
+                            else
+                                options += "<option value='" + data.datas[i].id + "'>" + data.datas[i].name + "</option>";
                         }
                         $("#TrainClassId").html(options);
                     }
@@ -104,5 +108,4 @@
             var element = layui.element;
         });
     </script>
-}
 }

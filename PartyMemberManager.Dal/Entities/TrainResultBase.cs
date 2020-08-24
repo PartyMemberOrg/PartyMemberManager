@@ -42,6 +42,14 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("打印证书时间")]
         public string PrintTime { get; set; }
 
+        /// 证书序号
+        /// </summary>
+        [DisplayName("证书序号")]
+        public int? CertificateOrder { get; set; }
 
+        /// 证书编号
+        /// </summary>
+        [DisplayName("证书编号")]
+        public string CertificateNumber { get; set; }
     }
 }

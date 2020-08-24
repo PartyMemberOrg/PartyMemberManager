@@ -7,7 +7,7 @@
     <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
         <div style="display:inline-block">
             <div class="layui-input-inline" style="width:80px">
-                <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,650)" class="layui-btn layui-btn-primary">+添加</a>
+                <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,550)" class="layui-btn layui-btn-primary">+添加</a>
             </div>
         </div>
         @if (CurrentUser.Roles > Role.学院党委)
@@ -159,7 +159,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 600, 650);
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 600, 550);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);
