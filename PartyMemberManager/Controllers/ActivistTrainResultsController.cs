@@ -398,7 +398,7 @@ namespace PartyMemberManager.Controllers
             webReport.Report.RegisterData(partyActivistPrintViewModels, "datas");
             webReport.Report.Load(reportFile);
             webReport.Report.Prepare();
-            return View(webReport);
+            return View("Print",webReport);
         }
 
         /// <summary>
