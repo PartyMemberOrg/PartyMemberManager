@@ -76,7 +76,9 @@
         </div>
     </div>
 </div>
-<table class="layui-hide" id="datatable" lay-filter="datatable"></table>
+<form id="GradeTable" method="post">
+    <table class="layui-hide" id="datatable" lay-filter="datatable"></table>
+</form>
 <div style="margin-top: 10px">
     <div class="layui-input-inline" style="width:110px">
         <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="saveGrade()" id="saveGrade" data-type="saveGrade">
@@ -163,8 +165,9 @@
                         { field: 'trainClassDisplay', title: '培训班', align: 'center', templet: '#optTrainClassDisplayTpl'},
                         { field: 'partyActivistJobNoDisplay', title: '学号/工号', align: 'center', templet: '#optPartyActivistJobNoTpl'},
                         { field: 'partyActivistNameDisplay', title: '姓名', align: 'center', templet: '#optPartyActivistNameoTpl' },
-                        { field: 'psGrade', title: '平时成绩', align: 'center', edit: 'text', templet: function (d) { return '<input type="number" oninput="" max="100" min="0" class="form-control"  style="width:100%;height:26px" value="' + d.psGrade + '">' } },
-                        { field: 'csGrade', title: '考试成绩', align: 'center', edit: 'text', templet: function (d) { return '<input type="number" oninput="" max="100" min="0" class="form-control" style="width:100%;height:26px" value="' + d.csGrade + '">' } },
+                        { field: 'id', title: '序号', align: 'center',hide:true, templet: function (d) { return '<input type="text" name="id" class="form-control" value="' + d.id + '">' }  },
+                        { field: 'psGrade', title: '平时成绩', align: 'center',  templet: function (d) { return '<input type="number" name="psGrade"  class="form-control"  style="width:100%;height:26px" value="' + d.psGrade + '">' } },
+                        { field: 'csGrade', title: '考试成绩', align: 'center', templet: function (d) { return '<input type="number" name="csGrade"  class="form-control" style="width:100%;height:26px" value="' + d.csGrade + '">' } },
                         //{ field: 'psGrade', title: '平时成绩', align: 'center', edit: 'text'},
                         //{ field: 'csGrade', title: '考试成绩', align: 'center', edit: 'text'},
                         { field: 'totalGrade', title: '总成绩', align: 'center' },
@@ -178,16 +181,6 @@
 
                     }
                 });
-                //table.on('edit(datatable)', function (obj) {
-                //    var value = obj.value //得到修改后的值
-                //        , data = obj.data //得到所在行所有键值
-                //        , field = obj.field; //得到字段
-                //    var oldData = $(this).prev().text();
-                //    if (isNaN(value))
-                //        layer.msg('输入非数值');
-                //    else
-                //        layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
-                //});
             });
         }
         /**过滤数据 */
@@ -212,8 +205,50 @@
                 });
             });
         }
-        /*保存成绩*/
+
         function saveGrade() {
+            var forGrade = $("#GradeTable").serializeArray();
+            var dataList = new Array();
+            try {
+                if (forGrade.length > 0) {
+                    var mId = '';
+                    var psGrade = 0;
+                    var csGrade = 0;
+                    for (var i = 0; i < forGrade.length-1; i=i+3) {
+                        if (forGrade[i + 1] != null) {
+                            var psGrade = parseFloat(forGrade[i + 1].value);
+                            if (psGrade < 0 || psGrade > 100)
+                                throw new Error(noName + "平时成绩不合法");
+                        }
+                        if (forGrade[i + 2] != null) {
+                            var csGrade = parseFloat(forGrade[i + 2].value);
+                            if (csGrade < 0 || csGrade > 100)
+                                throw new Error(noName + "考试成绩不合法");
+                        }
+                        var item = forGrade[i].value + "," + forGrade[i + 1].value + "," + forGrade[i + 2].value;
+                        dataList.push(item);
+                    }
+                }
+                if (dataList.length > 0) {
+                   $.ajax({
+                        type: 'post',
+                        url: '@Url.Action("SaveGradeData")',
+                        traditional: true,
+                        data: { datas: dataList },
+                        dataType: 'json',
+                        success: function (data) {
+                            layer.msg(data.message);
+                            tablefilter();
+                    }
+                });
+                }
+            }
+            catch (error) {
+                showError(error.message);
+            }
+        }
+        /*保存成绩*/
+        @*function saveGrade() {
             try {
                 var tableId = "dataGrid";
                 var dataList = new Array();
@@ -253,7 +288,7 @@
             catch (error) {
                 showError(error.message);
             }
-        }
+        }*@
 
         function addToPotential() {
             var datas="";
@@ -321,9 +356,6 @@
     </script>
     <script type="text/html" id="optPartyActivistNameoTpl">
         {{d.nameDisplay}}
-    </script>
-    <script type="text/html" id="optIdoTpl">
-        {{d.id}}
     </script>
     <script>
         function filterTrainClass() {
