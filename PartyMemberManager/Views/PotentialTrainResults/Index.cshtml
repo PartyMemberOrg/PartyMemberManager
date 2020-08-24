@@ -163,6 +163,8 @@
                         { field: 'partyActivistJobNoDisplay', title: '学号/工号', align: 'center', templet: '#optPartyActivistJobNoTpl' },
                         { field: 'partyActivistNameDisplay', title: '姓名', align: 'center', templet: '#optPartyActivistNameoTpl' },
                         { field: 'id', title: '序号', align: 'center', hide: true, templet: function (d) { return '<input type="text" name="id" class="form-control" value="' + d.id + '">' } },
+                        { field: 'name', title: '姓名', align: 'center', hide: true, templet: function (d) { return '<input type="text" name="name" class="form-control" value="' + d.nameDisplay + '">' } },
+                        { field: 'jobNo', title: '学号/工号', align: 'center', hide: true, templet: function (d) { return '<input type="text" name="jobno" class="form-control" value="' + d.jobNoDisplay + '">' } },
                         { field: 'psGrade', title: '平时成绩', align: 'center', templet: function (d) { return '<input type="number" name="psGrade"  class="form-control"  style="width:100%;height:26px" value="' + d.psGrade + '">' } },
                         { field: 'csGrade', title: '考试成绩', align: 'center', templet: function (d) { return '<input type="number" name="csGrade"  class="form-control" style="width:100%;height:26px" value="' + d.csGrade + '">' } },
                         { field: 'totalGrade', title: '总成绩', align: 'center' },
@@ -215,13 +217,14 @@
                         keyword: $("#keyword").val()
                     }
                     , done: function (res, curr, count) {
-                        fillPatientList(res,curr,count);showHideScrollBars(res.data.length);
+                        //fillPatientList(res, curr, count);
+                        showHideScrollBars(res.data.length);
                     }
                 });
             });
         }
         /*保存成绩*/
-                function saveGrade() {
+        function saveGrade() {
             var forGrade = $("#GradeTable").serializeArray();
             var dataList = new Array();
             try {
@@ -229,18 +232,19 @@
                     var mId = '';
                     var psGrade = 0;
                     var csGrade = 0;
-                    for (var i = 0; i < forGrade.length-1; i=i+3) {
-                        if (forGrade[i + 1] != null) {
-                            var psGrade = parseFloat(forGrade[i + 1].value);
+                    for (var i = 0; i < forGrade.length - 1; i = i + 5) {
+                        var noName = "【" + forGrade[i+1].value + "-" + forGrade[i+2].value + "】";
+                        if (forGrade[i + 3] != null) {
+                            var psGrade = parseFloat(forGrade[i + 3].value);
                             if (psGrade < 0 || psGrade > 100)
                                 throw new Error(noName + "平时成绩不合法");
                         }
-                        if (forGrade[i + 2] != null) {
-                            var csGrade = parseFloat(forGrade[i + 2].value);
+                        if (forGrade[i + 4] != null) {
+                            var csGrade = parseFloat(forGrade[i + 4].value);
                             if (csGrade < 0 || csGrade > 100)
                                 throw new Error(noName + "考试成绩不合法");
                         }
-                        var item = forGrade[i].value + "," + forGrade[i + 1].value + "," + forGrade[i + 2].value;
+                        var item = forGrade[i].value + "," + forGrade[i + 3].value + "," + forGrade[i + 4].value;
                         dataList.push(item);
                     }
                 }
