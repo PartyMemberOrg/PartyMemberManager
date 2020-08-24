@@ -304,7 +304,7 @@ namespace PartyMemberManager.Controllers
                         partyActivist.Ordinal = _context.PartyActivists.Count() + 1;
                         var partyActivistOld = _context.PartyActivists.Where(d => d.JobNo == partyActivist.JobNo && d.TrainClassId==partyActivist.TrainClassId).FirstOrDefault();
                         if (partyActivistOld != null)
-                            throw new PartyMemberException("该学号或工号已在该培训班");
+                            throw new PartyMemberException("学号或工号已在该培训班");
 
                         ActivistTrainResult activistTrainResult = new ActivistTrainResult
                         {
