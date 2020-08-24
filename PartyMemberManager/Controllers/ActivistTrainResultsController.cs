@@ -345,12 +345,54 @@ namespace PartyMemberManager.Controllers
             };
             return model;
         }
+        private async Task<List<PartyActivistPrintViewModel>> GetReportDatas(Guid[] ids)
+        {
+            List<PartyActivistPrintViewModel> datas = new List<PartyActivistPrintViewModel>();
+            foreach (Guid id in ids)
+            {
+                ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.FindAsync(id);
+                PartyActivist partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);
+                YearTerm yearTerm = await _context.YearTerms.FindAsync(partyActivist.YearTermId);
+                TrainClass trainClass = await _context.TrainClasses.FindAsync(partyActivist.TrainClassId);
+                Department department = await _context.Departments.FindAsync(trainClass.DepartmentId);
+                TrainClassType trainClassType = await _context.TrainClassTypes.FindAsync(trainClass.TrainClassTypeId);
+                DateTime dateTime = DateTime.Today;
+                //编号可能需要在录入成绩后生成，暂时生成1号结业证编号
+                string no = string.Format("{0:yyyy}{1:00}{2:00}{0:MM}{3:000}", trainClass.StartTime.Value, trainClassType.Code, department.Code, 1);
+                PartyActivistPrintViewModel model = new PartyActivistPrintViewModel
+                {
+                    No = no,
+                    Name = partyActivist.Name,
+                    StartYear = partyActivist.YearTerm.StartYear.ToString(),
+                    EndYear = partyActivist.YearTerm.EndYear.ToString(),
+                    Term = partyActivist.YearTerm.Term == Term.第一学期 ? "一" : "二",
+                    Year = dateTime.Year.ToString(),
+                    Month = dateTime.Month.ToString(),
+                    Day = dateTime.Day.ToString()
+                };
+                datas.Add(model);
+            }
+
+            return datas;
+        }
 
         public async Task<IActionResult> Print(Guid id)
         {
             PartyActivistPrintViewModel model = await GetReportData(id);
             List<PartyActivistPrintViewModel> partyActivistPrintViewModels = new List<PartyActivistPrintViewModel>();
             partyActivistPrintViewModels.Add(model);
+            string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
+            WebReport webReport = new WebReport();
+            webReport.Report.RegisterData(partyActivistPrintViewModels, "datas");
+            webReport.Report.Load(reportFile);
+            webReport.Report.Prepare();
+            return View(webReport);
+        }
+
+        public async Task<IActionResult> PrintSelected(string idList)
+        {
+            Guid[] ids = idList.Split(',',StringSplitOptions.RemoveEmptyEntries).Select(s=>Guid.Parse(s)).ToArray();
+            List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
             string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
             WebReport webReport = new WebReport();
             webReport.Report.RegisterData(partyActivistPrintViewModels, "datas");
@@ -464,8 +506,8 @@ namespace PartyMemberManager.Controllers
                                     OperatorId = CurrentUser.Id,
                                     IsDeleted = false,
                                     Ordinal = _context.ActivistTrainResults.Count() + 1,
-                                    PsGrade=psScoreValue,
-                                    CsGrade=csScoreValue,
+                                    PsGrade = psScoreValue,
+                                    CsGrade = csScoreValue,
                                     TotalGrade = Math.Round(psProp * psScoreValue / 100 + csProp * csScoreValue / 100, 2)
                                 };
                                 _context.ActivistTrainResults.Add(activistTrainResult);
