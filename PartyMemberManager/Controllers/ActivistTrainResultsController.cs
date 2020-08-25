@@ -93,7 +93,8 @@ namespace PartyMemberManager.Controllers
                 if (CurrentUser.Roles > Role.学院党委)
                 {
                     var data = await _context.Set<ActivistTrainResult>().Include(d => d.PartyActivist).Include(d => d.PartyActivist.TrainClass).Include(d => d.PartyActivist.YearTerm)
-                        .Where(filter).Where(d => d.PartyActivist.YearTerm.Enabled == true)
+                        .Where(filter)
+                        //.Where(d => d.PartyActivist.YearTerm.Enabled == true)
                         .OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");

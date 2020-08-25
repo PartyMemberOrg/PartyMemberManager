@@ -70,7 +70,9 @@ namespace PartyMemberManager.Controllers
                 {
                     if (CurrentUser.DepartmentId == null)
                         throw new PartyMemberException("该用户不合法，请设置该用户所属部门");
-                    var data = await _context.Set<ActiveApplicationSurvey>().Where(filter).Include(d => d.Department).Include(d=>d.YearTerm).Where(d => d.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                    var data = await _context.Set<ActiveApplicationSurvey>().Where(filter).Include(d => d.Department).Include(d=>d.YearTerm)
+                        .Where(d=>d.YearTerm.Enabled==true)
+                        .Where(d => d.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     jsonResult.Count = _context.Set<ActiveApplicationSurvey>().Count();
