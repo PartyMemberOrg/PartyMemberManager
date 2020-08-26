@@ -1,9 +1,10 @@
 ﻿using AspNetCorePdf.PdfProvider.DataModel;
+using System.IO;
 
 namespace AspNetCorePdf.PdfProvider
 {
     public interface IPdfSharpService
     {
-        string CreatePdf(PdfData pdfData);
+        Stream CreatePdf(PdfData pdfData);
     }
 }

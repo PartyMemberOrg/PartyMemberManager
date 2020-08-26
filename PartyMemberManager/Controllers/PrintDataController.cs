@@ -72,6 +72,8 @@ namespace PartyMemberManager.Controllers
         {
             var data = new PdfData
             {
+                //A4 new XSize(595, 842);
+                PageSize = new System.Drawing.Size(297,210),
                 DocumentTitle = "入党积极分子培训结业证",
                 DocumentName = "入党积极分子培训结业证",
                 CreatedBy = "预备党员管理系统",
@@ -83,38 +85,39 @@ namespace PartyMemberManager.Controllers
                         Text="证书编号",
                         Font="楷体",
                         FontSize=14,
-                        Location=new System.Drawing.Point(100,200)
+                        Location=new System.Drawing.Point(100,20)
                     },
                     new DisplayItem{
                         Text="证书内容",
                         Font="楷体",
                         FontSize=14,
-                        Location=new System.Drawing.Point(100,300)
+                        Location=new System.Drawing.Point(100,30)
                     },
                     new DisplayItem{
                         Text="2020",
                         Font="楷体",
                         FontSize=14,
-                        Location=new System.Drawing.Point(100,400)
+                        Location=new System.Drawing.Point(100,40)
                     },
                     new DisplayItem{
                         Text="08",
                         Font="楷体",
                         FontSize=14,
-                        Location=new System.Drawing.Point(150,400)
+                        Location=new System.Drawing.Point(150,40)
                     },
                     new DisplayItem{
                         Text="26",
                         Font="楷体",
                         FontSize=14,
-                        Location=new System.Drawing.Point(200,400)
+                        Location=new System.Drawing.Point(200,40)
                     }
                 }
 
             };
-            var path = _pdfService.CreatePdf(data);
+            //var path = _pdfService.CreatePdf(data);
 
-            var stream = new FileStream(path, FileMode.Open);
+            //var stream = new FileStream(path, FileMode.Open);
+            var stream= _pdfService.CreatePdf(data);
             return File(stream, "application/pdf");
         }
     }
