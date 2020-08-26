@@ -456,43 +456,43 @@ namespace PartyMemberManager.Controllers
                     new DisplayItem{
                         Text=$@"党校证字 {potentialMemberPrintViewModel.No} 号",
                         Font="楷体",
-                        FontSize=14,
+                        FontSize=12,
                         Location=new System.Drawing.Point(60,26)
                     },
                     new DisplayItem{
                         Text=$@" {name} 同志：",
-                        Font="楷体",
-                        FontSize=25,
-                        Location=new System.Drawing.Point(32,87)
+                        Font="黑体",
+                        FontSize=20,
+                        Location=new System.Drawing.Point(32,95)
                     },
                     new DisplayItem{
-                        Text=$@" {name} 同志参加了 {potentialMemberPrintViewModel.StartYear} 至 {potentialMemberPrintViewModel.EndYear} 学年",
-                        Font="楷体",
-                        FontSize=25,
-                        Location=new System.Drawing.Point(52,87)
+                        Text=$@"参加了 {potentialMemberPrintViewModel.StartYear} 至 {potentialMemberPrintViewModel.EndYear} 学年",
+                        Font="黑体",
+                        FontSize=20,
+                        Location=new System.Drawing.Point(47,110)
                     },
                     new DisplayItem{
                         Text=$@"第 {potentialMemberPrintViewModel.Term} 期发展对象培训班学习，",
-                        Font="楷体",
-                        FontSize=25,
-                        Location=new System.Drawing.Point(72,87)
+                        Font="黑体",
+                        FontSize=20,
+                        Location=new System.Drawing.Point(32,125)
                     },
                     new DisplayItem{
                         Text=$@"培训考核成绩合格，准予结业。",
-                        Font="楷体",
-                        FontSize=25,
-                        Location=new System.Drawing.Point(92,112)
+                        Font="黑体",
+                        FontSize=20,
+                        Location=new System.Drawing.Point(32,140)
                     },
                     new DisplayItem{
                         Text=$@"中共兰州财经大学委员会党校",
                         Font="楷体",
-                        FontSize=25,
-                        Location=new System.Drawing.Point(50,162)
+                        FontSize=20,
+                        Location=new System.Drawing.Point(50,155)
                     },
                     new DisplayItem{
                         Text=$@"{potentialMemberPrintViewModel.Year}年{potentialMemberPrintViewModel.Month}月{potentialMemberPrintViewModel.Day}日",
                         Font="楷体",
-                        FontSize=25,
+                        FontSize=20,
                         Location=new System.Drawing.Point(70,175)
                     }
                 }
