@@ -75,6 +75,13 @@
             </a>
         </div>
     </div>
+    <div style="display:inline-block">
+        <div class="layui-input-inline" style="width:110px">
+            <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="printSelected()">
+                <i class="layui-icon layui-icon-loading" style="font-size: 14px; color: #FFFFFF;"></i>打印
+            </a>
+        </div>
+    </div>
 </div>
 <form id="GradeTable" method="post">
     <table class="layui-hide" id="datatable" lay-filter="datatable"></table>
@@ -340,6 +347,23 @@
         }
         function importExcel() {
             showImport('@Url.Action("Import")', '@Url.Action("Import")', '导入发展对象培训成绩', 600, 450, function () { location.reload(); });
+        }
+        /**打印选中的发展对象培训结业证 */
+        function printSelected() {
+            var datas="";
+            layui.use('table', function () {
+                var table = layui.table;
+                var checkData = table.checkStatus('dataGrid').data;
+                    for (i = 0; i < checkData.length; i++) {
+                        if (checkData[i].isPass == true) {
+                            datas+=checkData[i].id+",";
+                        }
+                    }
+            });
+            if (datas == "")
+                showError("请选择成绩合格的发展对象");
+            else
+                showContent('@Url.Action("PrintSelected")' + '?idList=' + datas, '打印结业证', 800, 800);
         }
     </script>
     <script type="text/html" id="optTpl">

@@ -61,6 +61,15 @@ namespace AspNetCorePdf.PdfProvider
             {
                 return new FontResolverInfo($"{_resourcesPath}\\SIMKAI.TTF");
             }
+            else if (familyName.Equals("隶书"))
+            {
+                return new FontResolverInfo($"{_resourcesPath}\\SIMLI.TTF");
+            }
+            else
+            {
+                //如果未设置，则默认用宋体
+                return new FontResolverInfo($"{_resourcesPath}\\STSONG.TTF");
+            }
             return null;
         }
     }

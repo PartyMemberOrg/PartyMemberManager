@@ -105,7 +105,7 @@ namespace AspNetCorePdf.PdfProvider
                     fontName = "宋体";
                 var font = new XFont(displayItem.Font, displayItem.FontSize, XFontStyle.Regular);
                 XTextFormatter tf = new XTextFormatter(gfx);
-                XRect rect = new XRect(displayItem.Location.X * scale, displayItem.Location.Y * scale, 500, listItemHeight);
+                XRect rect = new XRect(displayItem.Location.X * scale, displayItem.Location.Y * scale, 900, listItemHeight);
                 //gfx.DrawRectangle(XBrushes.White, rect);
                 var data = $"{displayItem.Text}";
                 tf.DrawString(data, font, XBrushes.Black, rect, XStringFormats.TopLeft);

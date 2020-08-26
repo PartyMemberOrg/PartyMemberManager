@@ -20,14 +20,22 @@ using System.IO;
 using System.Data;
 using ExcelCore;
 using Newtonsoft.Json;
+using PartyMemberManager.Models.PrintViewModel;
+using AspNetCorePdf.PdfProvider.DataModel;
+using PartyMemberManager.PdfProvider.DataModel;
+using AspNetCorePdf.PdfProvider;
 
 namespace PartyMemberManager.Controllers
 {
     public class PotentialTrainResultsController : PartyMemberDataControllerBase<PotentialTrainResult>
     {
 
-        public PotentialTrainResultsController(ILogger<PotentialTrainResultsController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
+        private readonly IPdfSharpService _pdfService;
+        private readonly IMigraDocService _migraDocService;
+        public PotentialTrainResultsController(ILogger<PotentialTrainResultsController> logger, PMContext context, IHttpContextAccessor accessor, IPdfSharpService pdfService, IMigraDocService migraDocService) : base(logger, context, accessor)
         {
+            _pdfService = pdfService;
+            _migraDocService = migraDocService;
         }
 
         // GET: PotentialTrainResults
@@ -303,6 +311,199 @@ namespace PartyMemberManager.Controllers
                 jsonResult.Message = "发生系统错误";
             }
             return Json(jsonResult);
+        }
+        private async Task<List<PotentialMemberPrintViewModel>> GetReportDatas(Guid[] ids)
+        {
+            List<PotentialMemberPrintViewModel> datas = new List<PotentialMemberPrintViewModel>();
+            foreach (Guid id in ids)
+            {
+                PotentialTrainResult potentialTrainResult = await _context.PotentialTrainResults.FindAsync(id);
+                PotentialMember potentialMember = await _context.PotentialMembers.FindAsync(potentialTrainResult.PotentialMemberId);
+                YearTerm yearTerm = await _context.YearTerms.FindAsync(potentialMember.YearTermId);
+                TrainClass trainClass = await _context.TrainClasses.FindAsync(potentialMember.TrainClassId);
+                Department department = await _context.Departments.FindAsync(trainClass.DepartmentId);
+                TrainClassType trainClassType = await _context.TrainClassTypes.FindAsync(trainClass.TrainClassTypeId);
+                DateTime dateTime = DateTime.Today;
+                //编号可能需要在录入成绩后生成，暂时生成1号结业证编号
+                string no = string.Format("{0:yyyy}{1:00}{2:00}{0:MM}{3:000}", trainClass.StartTime.Value, trainClassType.Code, department.Code, 1);
+                PotentialMemberPrintViewModel model = new PotentialMemberPrintViewModel
+                {
+                    No = no,
+                    Name = potentialMember.Name,
+                    StartYear = potentialMember.YearTerm.StartYear.ToString(),
+                    EndYear = potentialMember.YearTerm.EndYear.ToString(),
+                    Term = potentialMember.YearTerm.Term == Term.第一学期 ? "一" : "二",
+                    Year = dateTime.Year.ToString(),
+                    Month = dateTime.Month.ToString(),
+                    Day = dateTime.Day.ToString()
+                };
+                datas.Add(model);
+            }
+
+            return datas;
+        }
+
+        public async Task<IActionResult> Print(Guid id)
+        {
+            var stream = await PrintPdf(new Guid[] { id });
+            return File(stream, "application/pdf");
+        }
+
+        public async Task<IActionResult> PrintSelected(string idList)
+        {
+            Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
+            var stream = await PrintPdf(ids);
+            FileStreamResult fileStreamResult = File(stream, "application/pdf");
+            return fileStreamResult;
+        }
+
+        /// <summary>
+        /// 打印PDF格式
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public async Task<Stream> PrintPdf(Guid[] ids)
+        {
+            List<PotentialMemberPrintViewModel> potentialMemberPrintViewModels = await GetReportDatas(ids); ;
+            List<PdfData> pdfDatas = new List<PdfData>();
+            foreach (PotentialMemberPrintViewModel potentialMemberPrintViewModel in potentialMemberPrintViewModels)
+            {
+                //如果套打，则只打印空
+                bool isFillBlank = false;
+                if (isFillBlank)
+                {
+                    var data = new PdfData
+                    {
+                        //A4 new XSize(595, 842);
+                        PageSize = new System.Drawing.Size(143, 210),
+                        DocumentTitle = "发展对象培训结业证",
+                        DocumentName = "发展对象培训结业证",
+                        CreatedBy = "预备党员管理系统",
+                        Description = "预备党员管理系统",
+                        BackgroundImage = "PotentialTrain.jpg",
+                        DisplayItems = new List<DisplayItem>
+                {
+                    new DisplayItem{
+                        Text=potentialMemberPrintViewModel.No,
+                        Font="楷体",
+                        FontSize=14,
+                        Location=new System.Drawing.Point(219,25)
+                    },
+                    new DisplayItem{
+                        Text=potentialMemberPrintViewModel.Name,
+                        Font="楷体",
+                        FontSize=30,
+                        Location=new System.Drawing.Point(32,100)
+                    },
+                    new DisplayItem{
+                        Text=potentialMemberPrintViewModel.StartYear,
+                        Font="楷体",
+                        FontSize=30,
+                        Location=new System.Drawing.Point(50,100)
+                    },
+                    new DisplayItem{
+                        Text=potentialMemberPrintViewModel.EndYear,
+                        Font="楷体",
+                        FontSize=30,
+                        Location=new System.Drawing.Point(70,100)
+                    },
+                    new DisplayItem{
+                        Text=potentialMemberPrintViewModel.Term,
+                        Font="楷体",
+                        FontSize=30,
+                        Location=new System.Drawing.Point(100,100)
+                    },
+                    new DisplayItem{
+                        Text=potentialMemberPrintViewModel.Year,
+                        Font="楷体",
+                        FontSize=25,
+                        Location=new System.Drawing.Point(158,181)
+                    },
+                    new DisplayItem{
+                        Text=potentialMemberPrintViewModel.Month,
+                        Font="楷体",
+                        FontSize=25,
+                        Location=new System.Drawing.Point(176,181)
+                    },
+                    new DisplayItem{
+                        Text=potentialMemberPrintViewModel.Day,
+                        Font="楷体",
+                        FontSize=25,
+                        Location=new System.Drawing.Point(187,181)
+                    }
+                }
+
+                    };
+                    pdfDatas.Add(data);
+                }
+                else
+                {
+                    //打印全部文字（不打印背景图片）
+                    string name = potentialMemberPrintViewModel.Name;
+                    if (name.Length < 3)
+                        name = " " + name + " ";
+                    var data = new PdfData
+                    {
+                        //A4 new XSize(595, 842);
+                        PageSize = new System.Drawing.Size(143, 210),
+                        DocumentTitle = "发展对象培训结业证",
+                        DocumentName = "发展对象培训结业证",
+                        CreatedBy = "预备党员管理系统",
+                        Description = "预备党员管理系统",
+                        BackgroundImage = "PotentialTrain.jpg",
+                        DisplayItems = new List<DisplayItem>
+                {
+                    new DisplayItem{
+                        Text=$@"党校证字 {potentialMemberPrintViewModel.No} 号",
+                        Font="楷体",
+                        FontSize=14,
+                        Location=new System.Drawing.Point(60,26)
+                    },
+                    new DisplayItem{
+                        Text=$@" {name} 同志：",
+                        Font="楷体",
+                        FontSize=25,
+                        Location=new System.Drawing.Point(32,87)
+                    },
+                    new DisplayItem{
+                        Text=$@" {name} 同志参加了 {potentialMemberPrintViewModel.StartYear} 至 {potentialMemberPrintViewModel.EndYear} 学年",
+                        Font="楷体",
+                        FontSize=25,
+                        Location=new System.Drawing.Point(52,87)
+                    },
+                    new DisplayItem{
+                        Text=$@"第 {potentialMemberPrintViewModel.Term} 期发展对象培训班学习，",
+                        Font="楷体",
+                        FontSize=25,
+                        Location=new System.Drawing.Point(72,87)
+                    },
+                    new DisplayItem{
+                        Text=$@"培训考核成绩合格，准予结业。",
+                        Font="楷体",
+                        FontSize=25,
+                        Location=new System.Drawing.Point(92,112)
+                    },
+                    new DisplayItem{
+                        Text=$@"中共兰州财经大学委员会党校",
+                        Font="楷体",
+                        FontSize=25,
+                        Location=new System.Drawing.Point(50,162)
+                    },
+                    new DisplayItem{
+                        Text=$@"{potentialMemberPrintViewModel.Year}年{potentialMemberPrintViewModel.Month}月{potentialMemberPrintViewModel.Day}日",
+                        Font="楷体",
+                        FontSize=25,
+                        Location=new System.Drawing.Point(70,175)
+                    }
+                }
+
+                    };
+                    pdfDatas.Add(data);
+
+                }
+            }
+            var stream = _pdfService.CreatePdf(pdfDatas);
+            return stream;
         }
 
         /// <summary>
