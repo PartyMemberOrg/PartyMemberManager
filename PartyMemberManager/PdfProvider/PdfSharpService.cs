@@ -6,6 +6,7 @@ using PdfSharp.Drawing.Layout;
 using PdfSharp.Fonts;
 using PdfSharp.Pdf;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace AspNetCorePdf.PdfProvider
@@ -17,7 +18,7 @@ namespace AspNetCorePdf.PdfProvider
         private string _resourcesPath = ".\\PdfProvider\\Resources";
         private double scale = 2.835016835016835;
 
-        public Stream CreatePdf(PdfData pdfData)
+        public Stream CreatePdf(IEnumerable<PdfData> pdfDatas)
         {
             if (GlobalFontSettings.FontResolver == null)
             {
@@ -25,18 +26,21 @@ namespace AspNetCorePdf.PdfProvider
             }
 
             var document = new PdfDocument();
-            var page = document.AddPage();
-            //A4 new XSize(595, 842);，从mm转换
-            page.Width = (int)(pdfData.PageSize.Width * scale);
-            page.Height = (int)(pdfData.PageSize.Height * scale);
-            var gfx = XGraphics.FromPdfPage(page);
-            if (!string.IsNullOrEmpty(pdfData.BackgroundImage))
-                AddBackground(gfx, page, $"{_imagesPath}\\{pdfData.BackgroundImage}", 0, 0);
-            //AddTitleAndFooter(page, gfx, pdfData.DocumentTitle, document, pdfData);
-            //AddDescription(gfx, pdfData);
-            AddText(gfx, pdfData);
+            foreach (PdfData  pdfData in pdfDatas)
+            {
+                var page = document.AddPage();
+                //A4 new XSize(595, 842);，从mm转换
+                page.Width = (int)(pdfData.PageSize.Width * scale);
+                page.Height = (int)(pdfData.PageSize.Height * scale);
+                var gfx = XGraphics.FromPdfPage(page);
+                if (!string.IsNullOrEmpty(pdfData.BackgroundImage))
+                    AddBackground(gfx, page, $"{_imagesPath}\\{pdfData.BackgroundImage}", 0, 0);
+                //AddTitleAndFooter(page, gfx, pdfData.DocumentTitle, document, pdfData);
+                //AddDescription(gfx, pdfData);
+                AddText(gfx, pdfData);
+            }
 
-            string docName = $"{_createdDocsPath}/{pdfData.DocumentName}-{DateTime.UtcNow.ToOADate()}.pdf";
+            //string docName = $"{_createdDocsPath}/{pdfData.DocumentName}-{DateTime.UtcNow.ToOADate()}.pdf";
             MemoryStream memoryStream = new MemoryStream();
             //document.Save(docName);
             document.Save(memoryStream);
@@ -52,7 +56,11 @@ namespace AspNetCorePdf.PdfProvider
             }
 
             XImage xImage = XImage.FromFile(imagePath);
-            gfx.DrawImage(xImage, xPosition, yPosition, xImage.PixelWidth / 4, xImage.PixelHeight / 4);
+            double imageScale = xImage.PixelHeight / page.Height;
+            //gfx.DrawImage(xImage, xPosition, yPosition, xImage.PixelWidth / imageScale, xImage.PixelHeight / imageScale);
+            XRect xrectSource = new XRect { X = xPosition, Y = yPosition, Width = xImage.PixelWidth, Height = xImage.PixelHeight };
+            XRect xrect = new XRect { X = xPosition, Y = yPosition, Width = xImage.PixelWidth / imageScale, Height = xImage.PixelHeight / imageScale };
+            gfx.DrawImage(xImage, xrect, xrect, XGraphicsUnit.Point);
         }
 
         void AddTitleAndFooter(PdfPage page, XGraphics gfx, string title, PdfDocument document, PdfData pdfData)

@@ -25,14 +25,22 @@ using System.IO;
 using System.Data;
 using ExcelCore;
 using Newtonsoft.Json;
+using AspNetCorePdf.PdfProvider.DataModel;
+using AspNetCorePdf.PdfProvider;
+using Microsoft.VisualBasic;
+using PartyMemberManager.PdfProvider.DataModel;
 
 namespace PartyMemberManager.Controllers
 {
     public class ActivistTrainResultsController : PartyMemberDataControllerBase<ActivistTrainResult>
     {
+        private readonly IPdfSharpService _pdfService;
+        private readonly IMigraDocService _migraDocService;
 
-        public ActivistTrainResultsController(ILogger<ActivistTrainResultsController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
+        public ActivistTrainResultsController(ILogger<ActivistTrainResultsController> logger, PMContext context, IHttpContextAccessor accessor, IPdfSharpService pdfService, IMigraDocService migraDocService) : base(logger, context, accessor)
         {
+            _pdfService = pdfService;
+            _migraDocService = migraDocService;
         }
 
         // GET: ActivistTrainResults
@@ -379,29 +387,94 @@ namespace PartyMemberManager.Controllers
 
         public async Task<IActionResult> Print(Guid id)
         {
-            PartyActivistPrintViewModel model = await GetReportData(id);
-            List<PartyActivistPrintViewModel> partyActivistPrintViewModels = new List<PartyActivistPrintViewModel>();
-            partyActivistPrintViewModels.Add(model);
-            string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
-            WebReport webReport = new WebReport();
-            webReport.Report.Load(reportFile);
-            webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
-            webReport.Report.Prepare();
-            return View(webReport);
+            //PartyActivistPrintViewModel model = await GetReportData(id);
+            //List<PartyActivistPrintViewModel> partyActivistPrintViewModels = new List<PartyActivistPrintViewModel>();
+            //partyActivistPrintViewModels.Add(model);
+            //string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
+            //WebReport webReport = new WebReport();
+            //webReport.Report.Load(reportFile);
+            //webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
+            //webReport.Report.Prepare();
+            //return View(webReport);
+            var stream = await PrintPdf(new Guid[] { id });
+            return File(stream, "application/pdf");
         }
 
         public async Task<IActionResult> PrintSelected(string idList)
         {
-            Guid[] ids = idList.Split(',',StringSplitOptions.RemoveEmptyEntries).Select(s=>Guid.Parse(s)).ToArray();
-            List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
-            string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
-            WebReport webReport = new WebReport();
-            webReport.Report.Load(reportFile);
-            webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
-            webReport.Report.Prepare();
-            return View("Print",webReport);
+            Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
+            //List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
+            //string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
+            //WebReport webReport = new WebReport();
+            //webReport.Report.Load(reportFile);
+            //webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
+            //webReport.Report.Prepare();
+            //return View("Print",webReport);
+            var stream = await PrintPdf(ids);
+            return File(stream, "application/pdf");
+
         }
 
+        /// <summary>
+        /// 打印PDF格式
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public async Task<Stream> PrintPdf(Guid[] ids)
+        {
+            List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
+            List<PdfData> pdfDatas = new List<PdfData>();
+            foreach (PartyActivistPrintViewModel partyActivistPrintViewModel in partyActivistPrintViewModels)
+            {
+                var data = new PdfData
+                {
+                    //A4 new XSize(595, 842);
+                    PageSize = new System.Drawing.Size(297, 210),
+                    DocumentTitle = "入党积极分子培训结业证",
+                    DocumentName = "入党积极分子培训结业证",
+                    CreatedBy = "预备党员管理系统",
+                    Description = "预备党员管理系统",
+                    BackgroundImage = "ActivistTrain.jpg",
+                    DisplayItems = new List<DisplayItem>
+                {
+                    new DisplayItem{
+                        Text=partyActivistPrintViewModel.No,
+                        Font="楷体",
+                        FontSize=14,
+                        Location=new System.Drawing.Point(100,20)
+                    },
+                    new DisplayItem{
+                        Text=partyActivistPrintViewModel.Name,
+                        Font="楷体",
+                        FontSize=14,
+                        Location=new System.Drawing.Point(100,30)
+                    },
+                    new DisplayItem{
+                        Text=partyActivistPrintViewModel.Year,
+                        Font="楷体",
+                        FontSize=14,
+                        Location=new System.Drawing.Point(100,40)
+                    },
+                    new DisplayItem{
+                        Text=partyActivistPrintViewModel.Month,
+                        Font="楷体",
+                        FontSize=14,
+                        Location=new System.Drawing.Point(150,40)
+                    },
+                    new DisplayItem{
+                        Text=partyActivistPrintViewModel.Day,
+                        Font="楷体",
+                        FontSize=14,
+                        Location=new System.Drawing.Point(200,40)
+                    }
+                }
+
+                };
+                pdfDatas.Add(data);
+            }
+            var stream = _pdfService.CreatePdf(pdfDatas);
+            return stream;
+        }
         /// <summary>
         /// 导入入党积极分子培训成绩
         /// </summary>

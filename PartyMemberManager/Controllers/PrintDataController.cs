@@ -70,6 +70,7 @@ namespace PartyMemberManager.Controllers
         [HttpGet]
         public FileStreamResult CreatePdf()
         {
+            List<PdfData> pdfDatas = new List<PdfData>();
             var data = new PdfData
             {
                 //A4 new XSize(595, 842);
@@ -114,10 +115,11 @@ namespace PartyMemberManager.Controllers
                 }
 
             };
+            pdfDatas.Add(data);
             //var path = _pdfService.CreatePdf(data);
 
             //var stream = new FileStream(path, FileMode.Open);
-            var stream= _pdfService.CreatePdf(data);
+            var stream= _pdfService.CreatePdf(pdfDatas);
             return File(stream, "application/pdf");
         }
     }
