@@ -86,4 +86,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="PdfProvider\Created\" />
+  </ItemGroup>
+
 </Project>

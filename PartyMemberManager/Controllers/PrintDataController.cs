@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCorePdf.PdfProvider;
+using AspNetCorePdf.PdfProvider.DataModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,19 +13,24 @@ using PartyMemberManager.Core.Enums;
 using PartyMemberManager.Dal;
 using PartyMemberManager.Dal.Entities;
 using PartyMemberManager.Models.PrintViewModel;
+using PartyMemberManager.PdfProvider.DataModel;
 
 namespace PartyMemberManager.Controllers
 {
     public class PrintDataController : Controller
     {
+        private readonly IPdfSharpService _pdfService;
+        private readonly IMigraDocService _migraDocService;
         private IHttpContextAccessor _accessor;
         protected readonly PMContext _context;
         protected readonly ILogger<PrintDataController> _logger;
-        public PrintDataController(ILogger<PrintDataController> logger, PMContext context, IHttpContextAccessor accessor)
+        public PrintDataController(ILogger<PrintDataController> logger, PMContext context, IHttpContextAccessor accessor, IPdfSharpService pdfService, IMigraDocService migraDocService)
         {
             _context = context;
             _logger = logger;
             _accessor = accessor;
+            _pdfService = pdfService;
+            _migraDocService = migraDocService;
         }
         /// <summary>
         /// 获取入党积极分子结业证打印数据(设计报表用，因此只返回第一条)
@@ -57,6 +65,57 @@ namespace PartyMemberManager.Controllers
                 models.Add(model);
             }
             return Json(models);
+        }
+
+        [HttpGet]
+        public FileStreamResult CreatePdf()
+        {
+            var data = new PdfData
+            {
+                DocumentTitle = "入党积极分子培训结业证",
+                DocumentName = "入党积极分子培训结业证",
+                CreatedBy = "预备党员管理系统",
+                Description = "预备党员管理系统",
+                BackgroundImage = "ActivistTrain.jpg",
+                DisplayItems = new List<DisplayItem>
+                {
+                    new DisplayItem{
+                        Text="证书编号",
+                        Font="楷体",
+                        FontSize=14,
+                        Location=new System.Drawing.Point(100,200)
+                    },
+                    new DisplayItem{
+                        Text="证书内容",
+                        Font="楷体",
+                        FontSize=14,
+                        Location=new System.Drawing.Point(100,300)
+                    },
+                    new DisplayItem{
+                        Text="2020",
+                        Font="楷体",
+                        FontSize=14,
+                        Location=new System.Drawing.Point(100,400)
+                    },
+                    new DisplayItem{
+                        Text="08",
+                        Font="楷体",
+                        FontSize=14,
+                        Location=new System.Drawing.Point(150,400)
+                    },
+                    new DisplayItem{
+                        Text="26",
+                        Font="楷体",
+                        FontSize=14,
+                        Location=new System.Drawing.Point(200,400)
+                    }
+                }
+
+            };
+            var path = _pdfService.CreatePdf(data);
+
+            var stream = new FileStream(path, FileMode.Open);
+            return File(stream, "application/pdf");
         }
     }
 }
