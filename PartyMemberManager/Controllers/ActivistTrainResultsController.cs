@@ -383,8 +383,8 @@ namespace PartyMemberManager.Controllers
             partyActivistPrintViewModels.Add(model);
             string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
             WebReport webReport = new WebReport();
-            webReport.Report.RegisterData(partyActivistPrintViewModels, "datas");
             webReport.Report.Load(reportFile);
+            webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
             webReport.Report.Prepare();
             return View(webReport);
         }
@@ -395,8 +395,8 @@ namespace PartyMemberManager.Controllers
             List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
             string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
             WebReport webReport = new WebReport();
-            webReport.Report.RegisterData(partyActivistPrintViewModels, "datas");
             webReport.Report.Load(reportFile);
+            webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
             webReport.Report.Prepare();
             return View("Print",webReport);
         }

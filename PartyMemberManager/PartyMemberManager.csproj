@@ -38,6 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.11.3" />
     <PackageReference Include="FastReport.OpenSource.Web" Version="2020.3.17" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.6">
@@ -58,9 +59,13 @@
     <ProjectReference Include="..\ExcelCore\ExcelCore.csproj" />
     <ProjectReference Include="..\ExceptionCore\ExceptionCore.csproj" />
     <ProjectReference Include="..\HtmlHelperExtension\HtmlHelperExtension.csproj" />
+    <ProjectReference Include="..\MigraDoc.DocumentObjectModel\MigraDoc.DocumentObjectModel.csproj" />
+    <ProjectReference Include="..\MigraDoc.Rendering\MigraDoc.Rendering.csproj" />
     <ProjectReference Include="..\PartyMemberManager.Core\PartyMemberManager.Core.csproj" />
     <ProjectReference Include="..\PartyMemberManager.Dal\PartyMemberManager.Dal.csproj" />
     <ProjectReference Include="..\PartyMemberManager.Framework\PartyMemberManager.Framework.csproj" />
+    <ProjectReference Include="..\PdfSharp.Charting\PdfSharp.Charting.csproj" />
+    <ProjectReference Include="..\PdfSharp\PdfSharp.csproj" />
   </ItemGroup>
 
   <ItemGroup>
