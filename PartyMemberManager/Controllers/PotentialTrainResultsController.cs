@@ -452,25 +452,25 @@ namespace PartyMemberManager.Controllers
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.Name,
-                        Font="黑体",
+                        Font="楷体",
                         FontSize=18,
                         Location=new System.Drawing.PointF(30,93)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.StartYear,
-                        Font="黑体",
+                        Font="楷体",
                         FontSize=18,
                         Location=new System.Drawing.PointF(60,108)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.EndYear,
-                        Font="黑体",
+                        Font="楷体",
                         FontSize=18,
                         Location=new System.Drawing.PointF(90,108)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.Term,
-                        Font="黑体",
+                        Font="楷体",
                         FontSize=18,
                         Location=new System.Drawing.PointF(40,123)
                     },

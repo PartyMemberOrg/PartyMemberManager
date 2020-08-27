@@ -59,7 +59,7 @@ namespace AspNetCorePdf.PdfProvider
             }
             else if (familyName.Equals("楷体"))
             {
-                return new FontResolverInfo($"{_resourcesPath}\\SIMKAI.TTF");
+                return new FontResolverInfo($"{_resourcesPath}\\楷体_GB2312.TTF");
             }
             else if (familyName.Equals("隶书"))
             {
