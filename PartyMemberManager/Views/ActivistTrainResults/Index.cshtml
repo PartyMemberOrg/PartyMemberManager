@@ -4,8 +4,8 @@
     ViewData["Title"] = "Index";
 }
 
-    <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
-        @*<div class="layui-input-inline" style="width:60px">
+<div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
+    @*<div class="layui-input-inline" style="width:60px">
             <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,800)" class="layui-btn layui-btn-primary">+添加</a>
         </div>*@
     <input type="hidden" id="TrainClassTypeId" value="@ViewBag.TrainClassTypeId" />
@@ -41,8 +41,18 @@
         <div class="layui-input-inline" style="width:80px;">
             <select name="isPass" class="layui-input" id="isPass">
                 <option value="">-全部-</option>
-                <option value="true">-合格-</option>
-                <option value="false">-不合格-</option>
+                <option value="true">合格</option>
+                <option value="false">不合格</option>
+            </select>
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <label class="layui-form-label" style="padding:5px">是否补考:</label>
+        <div class="layui-input-inline" style="width:80px;">
+            <select name="isBcGrade" class="layui-input" id="isBcGrade">
+                <option value="">-全部-</option>
+                <option value="true">补考</option>
+                <option value="false">非补考</option>
             </select>
         </div>
     </div>
@@ -51,8 +61,8 @@
         <div class="layui-input-inline" style="width:80px;">
             <select name="isPrint" class="layui-input" id="isPrint">
                 <option value="">-全部-</option>
-                <option value="true">-已打印-</option>
-                <option value="false">-未打印-</option>
+                <option value="true">已打印</option>
+                <option value="false">未打印</option>
             </select>
         </div>
     </div>
