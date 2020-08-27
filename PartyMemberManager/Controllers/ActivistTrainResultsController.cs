@@ -361,7 +361,7 @@ namespace PartyMemberManager.Controllers
             {
                 ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.FindAsync(id);
                 //如果成绩和补考成绩均不合格，不能打印，也不生成证书编号
-                if ((activistTrainResult.TotalGrade == null || activistTrainResult.TotalGrade < 0))
+                if (!activistTrainResult.IsPass)
                     continue;
                 PartyActivist partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);
                 YearTerm yearTerm = await _context.YearTerms.FindAsync(partyActivist.YearTermId);

@@ -319,7 +319,7 @@ namespace PartyMemberManager.Controllers
             {
                 PotentialTrainResult potentialTrainResult = await _context.PotentialTrainResults.FindAsync(id);
                 //如果成绩和补考成绩均不合格，不能打印，也不生成证书编号
-                if ((potentialTrainResult.TotalGrade == null || potentialTrainResult.TotalGrade < 0))
+                if (!potentialTrainResult.IsPass)
                     continue;
                 PotentialMember potentialMember = await _context.PotentialMembers.FindAsync(potentialTrainResult.PotentialMemberId);
                 YearTerm yearTerm = await _context.YearTerms.FindAsync(potentialMember.YearTermId);
