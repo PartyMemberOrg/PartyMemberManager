@@ -399,40 +399,62 @@ namespace PartyMemberManager.Controllers
                 };
                 datas.Add(model);
             }
-
+            await _context.SaveChangesAsync();
             return datas;
         }
 
         public async Task<IActionResult> Print(Guid id)
         {
-            //PartyActivistPrintViewModel model = await GetReportData(id);
-            //List<PartyActivistPrintViewModel> partyActivistPrintViewModels = new List<PartyActivistPrintViewModel>();
-            //partyActivistPrintViewModels.Add(model);
-            //string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
-            //WebReport webReport = new WebReport();
-            //webReport.Report.Load(reportFile);
-            //webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
-            //webReport.Report.Prepare();
-            //return View(webReport);
-            var stream = await PrintPdf(new Guid[] { id });
-            return File(stream, "application/pdf");
+            try
+            {
+                //PartyActivistPrintViewModel model = await GetReportData(id);
+                //List<PartyActivistPrintViewModel> partyActivistPrintViewModels = new List<PartyActivistPrintViewModel>();
+                //partyActivistPrintViewModels.Add(model);
+                //string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
+                //WebReport webReport = new WebReport();
+                //webReport.Report.Load(reportFile);
+                //webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
+                //webReport.Report.Prepare();
+                //return View(webReport);
+                var stream = await PrintPdf(new Guid[] { id });
+                return File(stream, "application/pdf");
+            }
+            catch (PartyMemberException ex)
+            {
+                return View("PrintError", ex);
+            }
+            catch (Exception ex)
+            {
+                return View("PrintError", ex);
+            }
         }
 
         public async Task<IActionResult> PrintSelected(string idList)
         {
-            Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
-            //List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
-            //string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
-            //WebReport webReport = new WebReport();
-            //webReport.Report.Load(reportFile);
-            //webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
-            //webReport.Report.Prepare();
-            //return View("Print",webReport);
-            var stream = await PrintPdf(ids);
-            //return File(stream, "application/pdf","入党积极分子结业证.pdf");
-            FileStreamResult fileStreamResult= File(stream, "application/pdf");
-            //fileStreamResult.FileDownloadName = "入党积极分子结业证.pdf";
-            return fileStreamResult;
+            try
+            {
+                Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
+                //List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
+                //string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
+                //WebReport webReport = new WebReport();
+                //webReport.Report.Load(reportFile);
+                //webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
+                //webReport.Report.Prepare();
+                //return View("Print",webReport);
+                var stream = await PrintPdf(ids);
+                //return File(stream, "application/pdf","入党积极分子结业证.pdf");
+                FileStreamResult fileStreamResult = File(stream, "application/pdf");
+                //fileStreamResult.FileDownloadName = "入党积极分子结业证.pdf";
+                return fileStreamResult;
+            }
+            catch (PartyMemberException ex)
+            {
+                return View("PrintError", ex);
+            }
+            catch (Exception ex)
+            {
+                return View("PrintError", ex);
+            }
         }
 
         /// <summary>
@@ -443,6 +465,8 @@ namespace PartyMemberManager.Controllers
         public async Task<Stream> PrintPdf(Guid[] ids)
         {
             List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
+            if (partyActivistPrintViewModels.Count == 0)
+                throw new PartyMemberException("选择的所有发展对象成绩均不合格，无法打印");
             List<PdfData> pdfDatas = new List<PdfData>();
             foreach (PartyActivistPrintViewModel partyActivistPrintViewModel in partyActivistPrintViewModels)
             {

@@ -24,6 +24,7 @@ using PartyMemberManager.Models.PrintViewModel;
 using AspNetCorePdf.PdfProvider.DataModel;
 using PartyMemberManager.PdfProvider.DataModel;
 using AspNetCorePdf.PdfProvider;
+using Microsoft.DotNet.PlatformAbstractions;
 
 namespace PartyMemberManager.Controllers
 {
@@ -331,7 +332,7 @@ namespace PartyMemberManager.Controllers
                 string no = null;
                 if (string.IsNullOrEmpty(potentialTrainResult.CertificateNumber))
                 {
-                    PotentialTrainResult potentialTrainResultLast=await _context.PotentialTrainResults.Include(p => p.PotentialMember).Where(p => p.PotentialMember.TrainClassId == trainClass.Id && p.CertificateOrder > 0).OrderByDescending(p => p.CertificateOrder).FirstOrDefaultAsync();
+                    PotentialTrainResult potentialTrainResultLast = await _context.PotentialTrainResults.Include(p => p.PotentialMember).Where(p => p.PotentialMember.TrainClassId == trainClass.Id && p.CertificateOrder > 0).OrderByDescending(p => p.CertificateOrder).FirstOrDefaultAsync();
                     int certificateOrder = 1;
                     if (potentialTrainResultLast != null)
                         certificateOrder = potentialTrainResultLast.CertificateOrder.Value + 1;
@@ -357,22 +358,44 @@ namespace PartyMemberManager.Controllers
                 };
                 datas.Add(model);
             }
-
+            await _context.SaveChangesAsync();
             return datas;
         }
 
         public async Task<IActionResult> Print(Guid id)
         {
-            var stream = await PrintPdf(new Guid[] { id });
-            return File(stream, "application/pdf");
+            try
+            {
+                var stream = await PrintPdf(new Guid[] { id });
+                return File(stream, "application/pdf");
+            }
+            catch (PartyMemberException ex)
+            {
+                return View("PrintError", ex);
+            }
+            catch (Exception ex)
+            {
+                return View("PrintError", ex);
+            }
         }
 
         public async Task<IActionResult> PrintSelected(string idList)
         {
-            Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
-            var stream = await PrintPdf(ids);
-            FileStreamResult fileStreamResult = File(stream, "application/pdf");
-            return fileStreamResult;
+            try
+            {
+                Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
+                var stream = await PrintPdf(ids);
+                FileStreamResult fileStreamResult = File(stream, "application/pdf");
+                return fileStreamResult;
+            }
+            catch (PartyMemberException ex)
+            {
+                return View("PrintError", ex);
+            }
+            catch (Exception ex)
+            {
+                return View("PrintError", ex);
+            }
         }
 
         /// <summary>
@@ -382,7 +405,9 @@ namespace PartyMemberManager.Controllers
         /// <returns></returns>
         public async Task<Stream> PrintPdf(Guid[] ids)
         {
-            List<PotentialMemberPrintViewModel> potentialMemberPrintViewModels = await GetReportDatas(ids); ;
+            List<PotentialMemberPrintViewModel> potentialMemberPrintViewModels = await GetReportDatas(ids);
+            if (potentialMemberPrintViewModels.Count == 0)
+                throw new PartyMemberException("选择的所有发展对象成绩均不合格，无法打印");
             List<PdfData> pdfDatas = new List<PdfData>();
             foreach (PotentialMemberPrintViewModel potentialMemberPrintViewModel in potentialMemberPrintViewModels)
             {
