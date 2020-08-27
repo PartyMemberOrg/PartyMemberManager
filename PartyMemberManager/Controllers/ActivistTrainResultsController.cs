@@ -360,6 +360,9 @@ namespace PartyMemberManager.Controllers
             foreach (Guid id in ids)
             {
                 ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.FindAsync(id);
+                //如果成绩和补考成绩均不合格，不能打印，也不生成证书编号
+                if ((activistTrainResult.TotalGrade == null || activistTrainResult.TotalGrade < 0))
+                    continue;
                 PartyActivist partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);
                 YearTerm yearTerm = await _context.YearTerms.FindAsync(partyActivist.YearTermId);
                 TrainClass trainClass = await _context.TrainClasses.FindAsync(partyActivist.TrainClassId);
@@ -367,7 +370,22 @@ namespace PartyMemberManager.Controllers
                 TrainClassType trainClassType = await _context.TrainClassTypes.FindAsync(trainClass.TrainClassTypeId);
                 DateTime dateTime = DateTime.Today;
                 //编号可能需要在录入成绩后生成，暂时生成1号结业证编号
-                string no = string.Format("{0:yyyy}{1:00}{2:00}{0:MM}{3:000}", trainClass.StartTime.Value, trainClassType.Code, department.Code, 1);
+                string no = null;
+                if (string.IsNullOrEmpty(activistTrainResult.CertificateNumber))
+                {
+                    PotentialTrainResult potentialTrainResultLast = await _context.PotentialTrainResults.Include(p => p.PotentialMember).Where(p => p.PotentialMember.TrainClassId == trainClass.Id && p.CertificateOrder > 0).OrderByDescending(p => p.CertificateOrder).FirstOrDefaultAsync();
+                    int certificateOrder = 1;
+                    if (potentialTrainResultLast != null)
+                        certificateOrder = potentialTrainResultLast.CertificateOrder.Value + 1;
+                    no = string.Format("{0:yyyy}{1:00}{2:00}{0:MM}{3:000}", trainClass.StartTime.Value, trainClassType.Code, department.Code, certificateOrder);
+                    //更新证书编号
+                    activistTrainResult.CertificateOrder = certificateOrder;
+                    activistTrainResult.CertificateNumber = no;
+                }
+                else
+                {
+                    no = activistTrainResult.CertificateNumber;
+                }
                 PartyActivistPrintViewModel model = new PartyActivistPrintViewModel
                 {
                     No = no,

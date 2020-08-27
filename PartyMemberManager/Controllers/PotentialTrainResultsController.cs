@@ -318,6 +318,9 @@ namespace PartyMemberManager.Controllers
             foreach (Guid id in ids)
             {
                 PotentialTrainResult potentialTrainResult = await _context.PotentialTrainResults.FindAsync(id);
+                //如果成绩和补考成绩均不合格，不能打印，也不生成证书编号
+                if ((potentialTrainResult.TotalGrade == null || potentialTrainResult.TotalGrade < 0))
+                    continue;
                 PotentialMember potentialMember = await _context.PotentialMembers.FindAsync(potentialTrainResult.PotentialMemberId);
                 YearTerm yearTerm = await _context.YearTerms.FindAsync(potentialMember.YearTermId);
                 TrainClass trainClass = await _context.TrainClasses.FindAsync(potentialMember.TrainClassId);
@@ -325,7 +328,22 @@ namespace PartyMemberManager.Controllers
                 TrainClassType trainClassType = await _context.TrainClassTypes.FindAsync(trainClass.TrainClassTypeId);
                 DateTime dateTime = DateTime.Today;
                 //编号可能需要在录入成绩后生成，暂时生成1号结业证编号
-                string no = string.Format("{0:yyyy}{1:00}{2:00}{0:MM}{3:000}", trainClass.StartTime.Value, trainClassType.Code, department.Code, 1);
+                string no = null;
+                if (string.IsNullOrEmpty(potentialTrainResult.CertificateNumber))
+                {
+                    PotentialTrainResult potentialTrainResultLast=await _context.PotentialTrainResults.Include(p => p.PotentialMember).Where(p => p.PotentialMember.TrainClassId == trainClass.Id && p.CertificateOrder > 0).OrderByDescending(p => p.CertificateOrder).FirstOrDefaultAsync();
+                    int certificateOrder = 1;
+                    if (potentialTrainResultLast != null)
+                        certificateOrder = potentialTrainResultLast.CertificateOrder.Value + 1;
+                    no = string.Format("{0:yyyy}{1:00}{2:00}{0:MM}{3:000}", trainClass.StartTime.Value, trainClassType.Code, department.Code, certificateOrder);
+                    //更新证书编号
+                    potentialTrainResult.CertificateOrder = certificateOrder;
+                    potentialTrainResult.CertificateNumber = no;
+                }
+                else
+                {
+                    no = potentialTrainResult.CertificateNumber;
+                }
                 PotentialMemberPrintViewModel model = new PotentialMemberPrintViewModel
                 {
                     No = no,
@@ -613,8 +631,8 @@ namespace PartyMemberManager.Controllers
                                     Ordinal = _context.ActivistTrainResults.Count() + 1,
                                     PsGrade = psScoreValue,
                                     CsGrade = csScoreValue,
-                                    TotalGrade= Math.Round(psProp * psScoreValue / 100 + csProp * csScoreValue / 100, 2)
-                            };
+                                    TotalGrade = Math.Round(psProp * psScoreValue / 100 + csProp * csScoreValue / 100, 2)
+                                };
                                 _context.PotentialTrainResults.Add(potentialTrainResult);
                             }
                             else
