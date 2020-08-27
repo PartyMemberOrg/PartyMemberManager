@@ -1,9 +1,11 @@
 ﻿using AspNetCorePdf.PdfProvider.DataModel;
+using System.Collections.Generic;
+using System.IO;
 
 namespace AspNetCorePdf.PdfProvider
 {
     public interface IMigraDocService
     {
-        string CreateMigraDocPdf(PdfData pdfData);
+        Stream CreateMigraDocPdf(IEnumerable<PdfData> pdfDatas);
     }
 }

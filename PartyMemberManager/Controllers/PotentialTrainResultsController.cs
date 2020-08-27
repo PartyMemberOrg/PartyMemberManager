@@ -340,6 +340,7 @@ namespace PartyMemberManager.Controllers
                     //更新证书编号
                     potentialTrainResult.CertificateOrder = certificateOrder;
                     potentialTrainResult.CertificateNumber = no;
+                    await _context.SaveChangesAsync();
                 }
                 else
                 {
@@ -397,13 +398,32 @@ namespace PartyMemberManager.Controllers
                 return View("PrintError", ex);
             }
         }
+        public async Task<IActionResult> PreviewSelected(string idList)
+        {
+            try
+            {
+                Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
+                var stream = await PrintPdf(ids,true);
+                FileStreamResult fileStreamResult = File(stream, "application/pdf");
+                return fileStreamResult;
+            }
+            catch (PartyMemberException ex)
+            {
+                return View("PrintError", ex);
+            }
+            catch (Exception ex)
+            {
+                return View("PrintError", ex);
+            }
+        }
 
         /// <summary>
         /// 打印PDF格式
         /// </summary>
         /// <param name="ids"></param>
+        /// <param name="isFillBlank">如果套打，则只打印空</param>
         /// <returns></returns>
-        public async Task<Stream> PrintPdf(Guid[] ids)
+        public async Task<Stream> PrintPdf(Guid[] ids, bool isFillBlank = false)
         {
             List<PotentialMemberPrintViewModel> potentialMemberPrintViewModels = await GetReportDatas(ids);
             if (potentialMemberPrintViewModels.Count == 0)
@@ -411,8 +431,6 @@ namespace PartyMemberManager.Controllers
             List<PdfData> pdfDatas = new List<PdfData>();
             foreach (PotentialMemberPrintViewModel potentialMemberPrintViewModel in potentialMemberPrintViewModels)
             {
-                //如果套打，则只打印空
-                bool isFillBlank = false;
                 if (isFillBlank)
                 {
                     var data = new PdfData
@@ -423,56 +441,56 @@ namespace PartyMemberManager.Controllers
                         DocumentName = "发展对象培训结业证",
                         CreatedBy = "预备党员管理系统",
                         Description = "预备党员管理系统",
-                        BackgroundImage = "PotentialTrain.jpg",
+                        BackgroundImage = "PotentialTrain.png",
                         DisplayItems = new List<DisplayItem>
                 {
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.No,
                         Font="楷体",
-                        FontSize=14,
-                        Location=new System.Drawing.Point(219,25)
+                        FontSize=10,
+                        Location=new System.Drawing.PointF(82,22.3f)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.Name,
-                        Font="楷体",
-                        FontSize=30,
-                        Location=new System.Drawing.Point(32,100)
+                        Font="黑体",
+                        FontSize=18,
+                        Location=new System.Drawing.PointF(30,93)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.StartYear,
-                        Font="楷体",
-                        FontSize=30,
-                        Location=new System.Drawing.Point(50,100)
+                        Font="黑体",
+                        FontSize=18,
+                        Location=new System.Drawing.PointF(60,108)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.EndYear,
-                        Font="楷体",
-                        FontSize=30,
-                        Location=new System.Drawing.Point(70,100)
+                        Font="黑体",
+                        FontSize=18,
+                        Location=new System.Drawing.PointF(90,108)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.Term,
-                        Font="楷体",
-                        FontSize=30,
-                        Location=new System.Drawing.Point(100,100)
+                        Font="黑体",
+                        FontSize=18,
+                        Location=new System.Drawing.PointF(40,123)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.Year,
                         Font="楷体",
-                        FontSize=25,
-                        Location=new System.Drawing.Point(158,181)
+                        FontSize=16,
+                        Location=new System.Drawing.PointF(55,171)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.Month,
                         Font="楷体",
-                        FontSize=25,
-                        Location=new System.Drawing.Point(176,181)
+                        FontSize=16,
+                        Location=new System.Drawing.PointF(75,171)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.Day,
                         Font="楷体",
-                        FontSize=25,
-                        Location=new System.Drawing.Point(187,181)
+                        FontSize=16,
+                        Location=new System.Drawing.PointF(84,171)
                     }
                 }
 
@@ -493,50 +511,50 @@ namespace PartyMemberManager.Controllers
                         DocumentName = "发展对象培训结业证",
                         CreatedBy = "预备党员管理系统",
                         Description = "预备党员管理系统",
-                        BackgroundImage = "PotentialTrain.jpg",
+                        BackgroundImage = "PotentialTrain.png",
                         DisplayItems = new List<DisplayItem>
                 {
                     new DisplayItem{
                         Text=$@"党校证字 {potentialMemberPrintViewModel.No} 号",
                         Font="楷体",
-                        FontSize=12,
-                        Location=new System.Drawing.Point(60,26)
+                        FontSize=10,
+                        Location=new System.Drawing.PointF(65,22)
                     },
                     new DisplayItem{
                         Text=$@" {name} 同志：",
                         Font="黑体",
-                        FontSize=20,
-                        Location=new System.Drawing.Point(32,95)
+                        FontSize=18,
+                        Location=new System.Drawing.PointF(27,95)
                     },
                     new DisplayItem{
                         Text=$@"参加了 {potentialMemberPrintViewModel.StartYear} 至 {potentialMemberPrintViewModel.EndYear} 学年",
                         Font="黑体",
-                        FontSize=20,
-                        Location=new System.Drawing.Point(47,110)
+                        FontSize=18,
+                        Location=new System.Drawing.PointF(40,108)
                     },
                     new DisplayItem{
                         Text=$@"第 {potentialMemberPrintViewModel.Term} 期发展对象培训班学习，",
                         Font="黑体",
-                        FontSize=20,
-                        Location=new System.Drawing.Point(32,125)
+                        FontSize=18,
+                        Location=new System.Drawing.PointF(27,123)
                     },
                     new DisplayItem{
                         Text=$@"培训考核成绩合格，准予结业。",
                         Font="黑体",
-                        FontSize=20,
-                        Location=new System.Drawing.Point(32,140)
+                        FontSize=18,
+                        Location=new System.Drawing.PointF(27,138)
                     },
                     new DisplayItem{
                         Text=$@"中共兰州财经大学委员会党校",
                         Font="楷体",
-                        FontSize=20,
-                        Location=new System.Drawing.Point(50,155)
+                        FontSize=16,
+                        Location=new System.Drawing.PointF(42,161)
                     },
                     new DisplayItem{
                         Text=$@"{potentialMemberPrintViewModel.Year}年{potentialMemberPrintViewModel.Month}月{potentialMemberPrintViewModel.Day}日",
                         Font="楷体",
-                        FontSize=20,
-                        Location=new System.Drawing.Point(70,175)
+                        FontSize=16,
+                        Location=new System.Drawing.PointF(55,172)
                     }
                 }
 

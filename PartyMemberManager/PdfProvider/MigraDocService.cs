@@ -5,6 +5,8 @@ using MigraDoc.DocumentObjectModel.Shapes.Charts;
 using MigraDoc.DocumentObjectModel.Tables;
 using MigraDoc.Rendering;
 using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace AspNetCorePdf.PdfProvider
 {
@@ -17,30 +19,32 @@ namespace AspNetCorePdf.PdfProvider
         private readonly string _fillerTextMediumText = "中文fdvsvsvsfv fdsfsdfsf fdsfs fsdf fdsfsdfsd fdsfdsf f dsfdsfs  deded deded dedede dedede deded deded deded defdsfsdf fdfsdfsd  fdfdsfsdf fdfsdfs fdfdsfsd fdsfsdf fdf"; 
         private readonly string _fillerTextText = "中文fdvsvsvsfv fdsfsdfsf fdsfs fsdf fdsfsdfsd fdsfdsf f dsfdsfs fdsfsdf fdfsdfsd  fdfdsfsdf fdfsdfs fdfdsfsd fdsfsdf fdf";
 
-        public string CreateMigraDocPdf(PdfData pdfData)
+        public Stream CreateMigraDocPdf(IEnumerable<PdfData> pdfDatas)
         {
             // Create a MigraDoc document
-            Document document = CreateDocument(pdfData);
-            string mdddlName = $"{_createdDocsPath}/{pdfData.DocumentName}-{DateTime.UtcNow.ToOADate()}.mdddl";
-            string docName = $"{_createdDocsPath}/{pdfData.DocumentName}-{DateTime.UtcNow.ToOADate()}.pdf";
+            Document document = CreateDocument(pdfDatas);
+            string mdddlName = $"{_createdDocsPath}/测试-{DateTime.UtcNow.ToOADate()}.mdddl";
+            //string docName = $"{_createdDocsPath}/{pdfData.DocumentName}-{DateTime.UtcNow.ToOADate()}.pdf";
 
             MigraDoc.DocumentObjectModel.IO.DdlWriter.WriteToFile(document, mdddlName);
 
             PdfDocumentRenderer renderer = new PdfDocumentRenderer(true);
             renderer.Document = document;
             renderer.RenderDocument();
-            renderer.PdfDocument.Save(docName);
-
-            return docName;
+            //renderer.PdfDocument.Save(docName);
+            MemoryStream memoryStream = new MemoryStream();
+            renderer.PdfDocument.Save(memoryStream);
+            //return docName;
+            return memoryStream;
         }
 
-        private Document CreateDocument(PdfData pdfData)
+        private Document CreateDocument(IEnumerable<PdfData> pdfDatas)
         {
             // Create a new MigraDoc document
             Document document = new Document();
-            document.Info.Title = pdfData.DocumentTitle;
-            document.Info.Subject = pdfData.Description;
-            document.Info.Author = pdfData.CreatedBy;
+            //document.Info.Title = pdfDatas.GetEnumerator().Current.DocumentTitle;
+            //document.Info.Subject = pdfDatas.GetEnumerator().Current.Description;
+            //document.Info.Author = pdfDatas.GetEnumerator().Current.CreatedBy;
 
             DefineStyles(document);
 
@@ -116,8 +120,8 @@ namespace AspNetCorePdf.PdfProvider
             Paragraph paragraph = section.AddParagraph();
             paragraph.Format.SpaceAfter = "3cm";
 
-            Image image = section.AddImage($"{_imagesPath}\\logo.jpg");
-            image.Width = "4cm";
+            Image image = section.AddImage($"{_imagesPath}\\PotentialTrain.jpg");
+            image.Width = "20cm";
 
             paragraph = section.AddParagraph("A sample document that demonstrates the\ncapabilities of MigraDoc");
             paragraph.Format.Font.Size = 16;

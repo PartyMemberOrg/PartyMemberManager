@@ -373,14 +373,15 @@ namespace PartyMemberManager.Controllers
                 string no = null;
                 if (string.IsNullOrEmpty(activistTrainResult.CertificateNumber))
                 {
-                    PotentialTrainResult potentialTrainResultLast = await _context.PotentialTrainResults.Include(p => p.PotentialMember).Where(p => p.PotentialMember.TrainClassId == trainClass.Id && p.CertificateOrder > 0).OrderByDescending(p => p.CertificateOrder).FirstOrDefaultAsync();
+                    ActivistTrainResult activistTrainResultLast = await _context.ActivistTrainResults.Include(p => p.PartyActivist).Where(p => p.PartyActivist.TrainClassId == trainClass.Id && p.CertificateOrder > 0).OrderByDescending(p => p.CertificateOrder).FirstOrDefaultAsync();
                     int certificateOrder = 1;
-                    if (potentialTrainResultLast != null)
-                        certificateOrder = potentialTrainResultLast.CertificateOrder.Value + 1;
+                    if (activistTrainResultLast != null)
+                        certificateOrder = activistTrainResultLast.CertificateOrder.Value + 1;
                     no = string.Format("{0:yyyy}{1:00}{2:00}{0:MM}{3:000}", trainClass.StartTime.Value, trainClassType.Code, department.Code, certificateOrder);
                     //更新证书编号
                     activistTrainResult.CertificateOrder = certificateOrder;
                     activistTrainResult.CertificateNumber = no;
+                    await _context.SaveChangesAsync();
                 }
                 else
                 {
@@ -399,7 +400,6 @@ namespace PartyMemberManager.Controllers
                 };
                 datas.Add(model);
             }
-            await _context.SaveChangesAsync();
             return datas;
         }
 
@@ -457,12 +457,32 @@ namespace PartyMemberManager.Controllers
             }
         }
 
+        public async Task<IActionResult> PreviewSelected(string idList)
+        {
+            try
+            {
+                Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
+                var stream = await PrintPdf(ids,true);
+                FileStreamResult fileStreamResult = File(stream, "application/pdf");
+                return fileStreamResult;
+            }
+            catch (PartyMemberException ex)
+            {
+                return View("PrintError", ex);
+            }
+            catch (Exception ex)
+            {
+                return View("PrintError", ex);
+            }
+        }
+
         /// <summary>
         /// 打印PDF格式
         /// </summary>
         /// <param name="ids"></param>
+        /// <param name="isFillBlank">//如果套打，则只打印空</param>
         /// <returns></returns>
-        public async Task<Stream> PrintPdf(Guid[] ids)
+        public async Task<Stream> PrintPdf(Guid[] ids, bool isFillBlank = false)
         {
             List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
             if (partyActivistPrintViewModels.Count == 0)
@@ -470,8 +490,6 @@ namespace PartyMemberManager.Controllers
             List<PdfData> pdfDatas = new List<PdfData>();
             foreach (PartyActivistPrintViewModel partyActivistPrintViewModel in partyActivistPrintViewModels)
             {
-                //如果套打，则只打印空
-                bool isFillBlank = false;
                 if (isFillBlank)
                 {
                     var data = new PdfData
@@ -482,56 +500,56 @@ namespace PartyMemberManager.Controllers
                         DocumentName = "入党积极分子培训结业证",
                         CreatedBy = "预备党员管理系统",
                         Description = "预备党员管理系统",
-                        BackgroundImage = "ActivistTrain.jpg",
+                        BackgroundImage = "ActivistTrain.png",
                         DisplayItems = new List<DisplayItem>
                 {
                     new DisplayItem{
                         Text=partyActivistPrintViewModel.No,
                         Font="楷体",
-                        FontSize=14,
-                        Location=new System.Drawing.Point(219,25)
+                        FontSize=15,
+                        Location=new System.Drawing.PointF(220,22)
                     },
                     new DisplayItem{
                         Text=partyActivistPrintViewModel.Name,
                         Font="楷体",
-                        FontSize=30,
-                        Location=new System.Drawing.Point(32,100)
+                        FontSize=27,
+                        Location=new System.Drawing.PointF(35,92)
                     },
                     new DisplayItem{
                         Text=partyActivistPrintViewModel.StartYear,
                         Font="楷体",
-                        FontSize=30,
-                        Location=new System.Drawing.Point(50,100)
+                        FontSize=27,
+                        Location=new System.Drawing.PointF(116,92)
                     },
                     new DisplayItem{
                         Text=partyActivistPrintViewModel.EndYear,
                         Font="楷体",
-                        FontSize=30,
-                        Location=new System.Drawing.Point(70,100)
+                        FontSize=27,
+                        Location=new System.Drawing.PointF(155,92)
                     },
                     new DisplayItem{
                         Text=partyActivistPrintViewModel.Term,
                         Font="楷体",
-                        FontSize=30,
-                        Location=new System.Drawing.Point(100,100)
+                        FontSize=27,
+                        Location=new System.Drawing.PointF(214,92)
                     },
                     new DisplayItem{
                         Text=partyActivistPrintViewModel.Year,
                         Font="楷体",
-                        FontSize=25,
-                        Location=new System.Drawing.Point(158,181)
+                        FontSize=26,
+                        Location=new System.Drawing.PointF(159,178)
                     },
                     new DisplayItem{
                         Text=partyActivistPrintViewModel.Month,
                         Font="楷体",
-                        FontSize=25,
-                        Location=new System.Drawing.Point(176,181)
+                        FontSize=26,
+                        Location=new System.Drawing.PointF(190,178)
                     },
                     new DisplayItem{
                         Text=partyActivistPrintViewModel.Day,
                         Font="楷体",
-                        FontSize=25,
-                        Location=new System.Drawing.Point(187,181)
+                        FontSize=26,
+                        Location=new System.Drawing.PointF(205,178)
                     }
                 }
 
@@ -552,44 +570,44 @@ namespace PartyMemberManager.Controllers
                         DocumentName = "入党积极分子培训结业证",
                         CreatedBy = "预备党员管理系统",
                         Description = "预备党员管理系统",
-                        BackgroundImage = "ActivistTrain.jpg",
+                        BackgroundImage = "ActivistTrain.png",
                         DisplayItems = new List<DisplayItem>
                 {
                     new DisplayItem{
                         Text=$@"党校证字 {partyActivistPrintViewModel.No} 号",
                         Font="楷体",
-                        FontSize=14,
-                        Location=new System.Drawing.Point(194,26)
+                        FontSize=15,
+                        Location=new System.Drawing.PointF(196,22)
                     },
                     new DisplayItem{
                         Text=$@" {name} 同志参加了 {partyActivistPrintViewModel.StartYear} 至 {partyActivistPrintViewModel.EndYear} 学年第 {partyActivistPrintViewModel.Term} 期入党",
                         Font="楷体",
-                        FontSize=25,
-                        Location=new System.Drawing.Point(32,87)
+                        FontSize=27,
+                        Location=new System.Drawing.PointF(32,93)
                     },
                     new DisplayItem{
                         Text=$@"积极分子培训班学习，培训考核成绩合格，准予结业。",
                         Font="楷体",
-                        FontSize=25,
-                        Location=new System.Drawing.Point(32,112)
+                        FontSize=27,
+                        Location=new System.Drawing.PointF(32,117)
                     },
                     new DisplayItem{
                         Text=$@"党校校长：",
                         Font="隶书",
                         FontSize=30,
-                        Location=new System.Drawing.Point(75,140)
+                        Location=new System.Drawing.PointF(75,140)
                     },
                     new DisplayItem{
                         Text=$@"中共兰州财经大学委员会党校",
                         Font="楷体",
                         FontSize=25,
-                        Location=new System.Drawing.Point(145,162)
+                        Location=new System.Drawing.PointF(145,162)
                     },
                     new DisplayItem{
                         Text=$@"{partyActivistPrintViewModel.Year}年{partyActivistPrintViewModel.Month}月{partyActivistPrintViewModel.Day}日",
                         Font="楷体",
-                        FontSize=25,
-                        Location=new System.Drawing.Point(187,175)
+                        FontSize=26,
+                        Location=new System.Drawing.PointF(158,178)
                     }
                 }
 
@@ -599,6 +617,7 @@ namespace PartyMemberManager.Controllers
                 }
             }
             var stream = _pdfService.CreatePdf(pdfDatas);
+            //var stream = _migraDocService.CreateMigraDocPdf(pdfDatas);
             return stream;
         }
         /// <summary>

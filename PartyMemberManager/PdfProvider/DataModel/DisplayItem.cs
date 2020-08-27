@@ -14,7 +14,7 @@ namespace PartyMemberManager.PdfProvider.DataModel
         /// <summary>
         /// 显示位置（单位毫米)
         /// </summary>
-        public System.Drawing.Point Location { get; set; }
+        public System.Drawing.PointF Location { get; set; }
         public string Font { get; set; }
         /// <summary>
         /// 字体大小（单位用point)
