@@ -158,7 +158,7 @@ namespace PartyMemberManager.Controllers
                         activeApplicationSurveyInDb.YearTermId = activeApplicationSurvey.YearTermId;
                         activeApplicationSurveyInDb.Total = activeApplicationSurvey.Total;
                         activeApplicationSurveyInDb.TrainTotal = activeApplicationSurvey.TrainTotal;
-                        activeApplicationSurveyInDb.Proportion = (double)(activeApplicationSurvey.TrainTotal) / (double)activeApplicationSurvey.Total;
+                        activeApplicationSurveyInDb.Proportion = Math.Round((double)(activeApplicationSurvey.TrainTotal) / (double)activeApplicationSurvey.Total,2);
                         activeApplicationSurveyInDb.Id = activeApplicationSurvey.Id;
                         activeApplicationSurveyInDb.CreateTime = DateTime.Now;
                         activeApplicationSurveyInDb.OperatorId = CurrentUser.Id;

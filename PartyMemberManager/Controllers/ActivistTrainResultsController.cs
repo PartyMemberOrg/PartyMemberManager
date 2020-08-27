@@ -55,7 +55,7 @@ namespace PartyMemberManager.Controllers
             return View(await pMContext.ToListAsync());
         }
 
-        public async Task<IActionResult> GetDatasWithFilter(Guid? yearTermId, Guid? departmentId, string isPass, string isPrint, Guid? trainClassId, string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? yearTermId, Guid? departmentId, string isPass, string isPrint, Guid? trainClassId, string isBcGrade, string keyword, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<ActivistTrainResult> jsonResult = new JsonResultDatasModel<ActivistTrainResult>
             {
@@ -82,9 +82,16 @@ namespace PartyMemberManager.Controllers
                 {
                     filter = filter.And(d => d.IsPass == (isPass == "true"));
                 }
+                if (!string.IsNullOrEmpty(isBcGrade))
+                {
+                    if (isBcGrade == "true")
+                        filter = filter.And(d => d.BcGrade != null);
+                    else if(isBcGrade == "false")
+                        filter = filter.And(d => d.BcGrade == null);
+                }
                 if (!string.IsNullOrEmpty(isPrint))
                 {
-                    filter = filter.And(d => d.IsPrint == (isPrint == "true"));
+                    filter = filter.And(d => d.PartyActivist.IsPrint == (isPrint == "true"));
                 }
                 if (trainClassId != null)
                 {
@@ -174,10 +181,77 @@ namespace PartyMemberManager.Controllers
             ViewData["PartyActivistId"] = new SelectList(_context.PartyActivists, "Id", "ActiveApplicationTime", activistTrainResult.PartyActivistId);
             return View(activistTrainResult);
         }
+        // GET: ActivistTrainResults/Edit/5
+        public async Task<IActionResult> BcGrade(Guid? id)
+        {
+            if (id == null)
+            {
+                return NotFoundData();
+            }
 
+            var activistTrainResult = await _context.ActivistTrainResults.Include(d => d.PartyActivist).Include(d => d.PartyActivist.TrainClass).Include(d => d.PartyActivist.TrainClass.YearTerm).SingleOrDefaultAsync(m => m.Id == id);
+            if (activistTrainResult == null)
+            {
+                return NotFoundData();
+            }
+            //ViewData["PartyActivistId"] = new SelectList(_context.PartyActivists, "Id", "ActiveApplicationTime", activistTrainResult.PartyActivistId);
+            return View(activistTrainResult);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("PartyActivistId,PsGrade,CsGrade,TotalGrade,IsPass,IsPrint,PrintTime,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ActivistTrainResult activistTrainResult)
+        public async Task<IActionResult> BcGrade([Bind("Id,PartyActivistId,BcGrade")] ActivistTrainResult activistTrainResult)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "数据保存成功"
+            };
+            try
+            {
+
+                ActivistTrainResult activistTrainResultInDb = await _context.ActivistTrainResults.Include(d => d.PartyActivist.TrainClass).Where(d => d.Id == activistTrainResult.Id).FirstOrDefaultAsync();
+                PartyActivist partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);
+                var psProp = activistTrainResultInDb.PartyActivist.TrainClass.PsGradeProportion;
+                var csProp = activistTrainResultInDb.PartyActivist.TrainClass.CsGradeProportion;
+                if (activistTrainResultInDb == null)
+                    throw new PartyMemberException("未找到数据");
+                if (!activistTrainResult.BcGrade.HasValue)
+                    throw new PartyMemberException("请输入补考成绩");
+                decimal bcGrade = activistTrainResult.BcGrade.Value;
+                decimal psGrade = activistTrainResultInDb.PsGrade.Value;
+                if (bcGrade > 100 || bcGrade < 0)
+                    throw new PartyMemberException($"【{partyActivist.JobNo}-{partyActivist.Name}】的补考成绩非法");
+                activistTrainResultInDb.BcGrade = bcGrade;
+                activistTrainResultInDb.TotalGrade = Math.Round(psProp * psGrade / 100 + csProp * bcGrade / 100, 2);
+                if (activistTrainResultInDb.TotalGrade >= 60)
+                    activistTrainResultInDb.IsPass = true;
+                else
+                    activistTrainResultInDb.IsPass = false;
+                _context.Update(activistTrainResultInDb);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "更新数据库错误";
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public override async Task<IActionResult> Save([Bind("PartyActivistId,PsGrade,CsGrade,TotalGrade,IsPass,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ActivistTrainResult activistTrainResult)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -197,8 +271,8 @@ namespace PartyMemberManager.Controllers
                         activistTrainResultInDb.CsGrade = activistTrainResult.CsGrade;
                         activistTrainResultInDb.TotalGrade = activistTrainResult.TotalGrade;
                         activistTrainResultInDb.IsPass = activistTrainResult.IsPass;
-                        activistTrainResultInDb.IsPrint = activistTrainResult.IsPrint;
-                        activistTrainResultInDb.PrintTime = activistTrainResult.PrintTime;
+                        //activistTrainResultInDb.IsPrint = activistTrainResult.IsPrint;
+                        //activistTrainResultInDb.PrintTime = activistTrainResult.PrintTime;
                         activistTrainResultInDb.Id = activistTrainResult.Id;
                         activistTrainResultInDb.CreateTime = activistTrainResult.CreateTime;
                         activistTrainResultInDb.OperatorId = activistTrainResult.OperatorId;
@@ -268,8 +342,8 @@ namespace PartyMemberManager.Controllers
                         PartyActivist partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);
                         var psProp = activistTrainResult.PartyActivist.TrainClass.PsGradeProportion;
                         var csProp = activistTrainResult.PartyActivist.TrainClass.CsGradeProportion;
-                        if (activistTrainResult != null)
-                        {
+                        if (activistTrainResult != null && partyActivist.IsPrint == false)
+                        {   
                             decimal psGrade = 0;
                             decimal csGrade = 0;
                             if (decimal.TryParse(subItem[1], out psGrade))
@@ -392,14 +466,14 @@ namespace PartyMemberManager.Controllers
 
         public async Task<IActionResult> PrintSelected(string idList)
         {
-            Guid[] ids = idList.Split(',',StringSplitOptions.RemoveEmptyEntries).Select(s=>Guid.Parse(s)).ToArray();
+            Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
             List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
             string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
             WebReport webReport = new WebReport();
             webReport.Report.Load(reportFile);
             webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
             webReport.Report.Prepare();
-            return View("Print",webReport);
+            return View("Print", webReport);
         }
 
         /// <summary>

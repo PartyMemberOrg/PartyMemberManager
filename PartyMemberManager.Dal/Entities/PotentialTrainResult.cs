@@ -38,13 +38,34 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("学年/学期")]
         [NotMapped]
-        public string YearTermDisplay { get => PotentialMember.TrainClass.YearTerm == null ? "" : PotentialMember.TrainClass.YearTerm.Name; }
+        public string YearTermDisplay { get => PotentialMember == null ? "" : PotentialMember.TrainClass == null ? "" : PotentialMember.TrainClass.YearTerm == null ? "" : PotentialMember.TrainClass.YearTerm.Name; }
 
         /// <summary>
         /// 培训班名称
         /// </summary>
         [DisplayName("培训班名称")]
         [NotMapped]
-        public string TrainClassDisplay { get => PotentialMember.TrainClass == null ? "" : PotentialMember.TrainClass.Name; }
+        public string TrainClassDisplay { get => PotentialMember == null ? "" : PotentialMember.TrainClass == null ? "" : PotentialMember.TrainClass.Name; }
+
+        /// <summary>
+        /// 是否已打印
+        /// </summary>
+        [DisplayName("是否已打印")]
+        [NotMapped]
+        public bool IsPrint { get => PotentialMember == null ? false : PotentialMember.IsPrint; }
+
+        /// <summary>
+        /// 是否已打印
+        /// </summary>
+        [DisplayName("是否已打印")]
+        [NotMapped]
+        public string IsPrintDisplay { get => PotentialMember == null?"": PotentialMember.IsPrint ? "是" : "否"; }
+
+        /// <summary>
+        /// 打印时间
+        /// </summary>
+        [DisplayName("打印时间")]
+        [NotMapped]
+        public DateTime? PrintTimeDisplay { get => PotentialMember == null ? null : PotentialMember.PrintTime; }
     }
 }

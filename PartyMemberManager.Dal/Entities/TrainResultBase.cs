@@ -21,6 +21,13 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("考试成绩")]
         [Range(0, 100.00, ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public decimal? CsGrade { get; set; }
+
+        /// <summary>
+        /// 补考成绩
+        /// </summary>
+        [DisplayName("补考成绩")]
+        [Range(0, 100.00, ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public decimal? BcGrade { get; set; }
         /// <summary>
         /// 总评成绩
         /// </summary>
@@ -31,16 +38,6 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("是否合格")]
         public bool IsPass { get; set; }
-        /// <summary>
-        /// 是否合格
-        /// </summary>
-        [DisplayName("是否已打印证书")]
-        public bool IsPrint { get; set; }
-        /// <summary>
-        /// 打印证书时间
-        /// </summary>
-        [DisplayName("打印证书时间")]
-        public string PrintTime { get; set; }
 
         /// 证书序号
         /// </summary>

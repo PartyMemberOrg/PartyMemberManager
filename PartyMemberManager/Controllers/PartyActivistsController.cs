@@ -219,9 +219,66 @@ namespace PartyMemberManager.Controllers
                 var dataResult = await _context.Set<ActivistTrainResult>().SingleOrDefaultAsync(m => m.PartyActivistId == id);
                 if (data == null)
                     throw new PartyMemberException("未找到要删除的数据");
+                if (data.IsPrint && CurrentUser.Roles == Role.学院党委)
+                {
+                    var noName = "【" + data.Name + "-" + data.JobNo + "】";
+                    throw new PartyMemberException(noName + "已经打印证书，请联系管理员删除");
+                }
                 ValidateDeleteObject(data);
                 _context.Set<ActivistTrainResult>().Remove(dataResult);
                 _context.Set<PartyActivist>().Remove(data);
+                await _context.SaveChangesAsync();
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
+        /// <summary>
+        /// 删除数据（通过ajax调用)
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost, ActionName("BatchDelete")]
+        public async Task<IActionResult> BatchDelete(string idList)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "数据删除成功"
+            };
+
+            try
+            {
+                if (string.IsNullOrEmpty(idList))
+                    throw new PartyMemberException("未选择删除的入党积极分子");
+                string[] idListSplit = idList.Split(",");
+                foreach (var item in idListSplit)
+                {
+                    var partyActivitId = Guid.Parse(item);
+                    var data = await _context.Set<PartyActivist>().SingleOrDefaultAsync(m => m.Id == partyActivitId);
+                    var dataResult = await _context.Set<ActivistTrainResult>().SingleOrDefaultAsync(m => m.PartyActivistId == partyActivitId);
+                    if (data == null)
+                        throw new PartyMemberException("未找到要删除的数据");
+                    if (data.IsPrint && CurrentUser.Roles == Role.学院党委)
+                    {
+                        var noName = "【" + data.Name + "-" + data.JobNo + "】";
+                        throw new PartyMemberException(noName + "已经打印证书，请联系管理员删除");
+                    }
+                    ValidateDeleteObject(data);
+                    _context.Set<ActivistTrainResult>().Remove(dataResult);
+                    _context.Set<PartyActivist>().Remove(data);
+                }
+
                 await _context.SaveChangesAsync();
             }
             catch (PartyMemberException ex)
@@ -276,6 +333,11 @@ namespace PartyMemberManager.Controllers
                     PartyActivist partyActivistInDb = await _context.PartyActivists.FindAsync(partyActivist.Id);
                     if (partyActivistInDb != null)
                     {
+                        if (partyActivistInDb.IsPrint && CurrentUser.Roles == Role.学院党委)
+                        {
+                            var noName = "【" + partyActivistInDb.Name + "-" + partyActivistInDb.JobNo + "】";
+                            throw new PartyMemberException(noName + "已经打印证书，请联系管理员修改");
+                        }
                         partyActivistInDb.ApplicationTime = partyActivist.ApplicationTime;
                         partyActivistInDb.ActiveApplicationTime = partyActivist.ActiveApplicationTime;
                         partyActivistInDb.Duty = partyActivist.Duty;
@@ -303,7 +365,7 @@ namespace PartyMemberManager.Controllers
                         partyActivist.CreateTime = DateTime.Now;
                         partyActivist.OperatorId = CurrentUser.Id;
                         partyActivist.Ordinal = _context.PartyActivists.Count() + 1;
-                        var partyActivistOld = _context.PartyActivists.Where(d => d.JobNo == partyActivist.JobNo && d.TrainClassId==partyActivist.TrainClassId).FirstOrDefault();
+                        var partyActivistOld = _context.PartyActivists.Where(d => d.JobNo == partyActivist.JobNo && d.TrainClassId == partyActivist.TrainClassId).FirstOrDefault();
                         if (partyActivistOld != null)
                             throw new PartyMemberException("学号或工号已在该培训班");
 

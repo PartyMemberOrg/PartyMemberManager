@@ -17,28 +17,59 @@ using PartyMemberManager.Dal.Entities;
 
 namespace PartyMemberManager.Controllers
 {
-    public class SchoolCadreTrainsController : PartyMemberDataControllerBase<SchoolCadreTrain>
+    public class ProvinceTrainClassesController : PartyMemberDataControllerBase<ProvinceTrainClass>
     {
 
-        public SchoolCadreTrainsController(ILogger<SchoolCadreTrainsController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
+        public ProvinceTrainClassesController(ILogger<ProvinceTrainClassesController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
         {
         }
 
-        // GET: SchoolCadreTrains
+        // GET: ProvinceTrainClasses
         public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.SchoolCadreTrains.OrderBy(s => s.Ordinal).GetPagedDataAsync(page));
+            return View(await _context.ProvinceTrainClasses.OrderBy(p => p.Ordinal).GetPagedDataAsync(page));
         }
 
+        public async Task<IActionResult> StatisticsTotal()
+        {
+            JsonResultDatasModel<ProvinceTrainClass> jsonResult = new JsonResultDatasModel<ProvinceTrainClass>
+            {
+                Code = 0,
+                Msg = "统计成功"
+            };
+            try
+            {
+                var provinceTrainClasses = await _context.ProvinceTrainClasses.ToListAsync();
+                foreach (var item in provinceTrainClasses)
+                {
+                    item.Total = _context.ProvinceCadreTrains.Where(d => d.ProvinceTrainClassId == item.Id).Count();
+                    _context.Update(item);
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Msg = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Msg = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
         /// <summary>
         /// 获取数据（通过ajax调用)
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(string year,  string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(string year, string keyword, int page = 1, int limit = 10)
         {
-            JsonResultDatasModel<SchoolCadreTrain> jsonResult = new JsonResultDatasModel<SchoolCadreTrain>
+            JsonResultDatasModel<ProvinceTrainClass> jsonResult = new JsonResultDatasModel<ProvinceTrainClass>
             {
                 Code = 0,
                 Msg = ""
@@ -46,21 +77,21 @@ namespace PartyMemberManager.Controllers
 
             try
             {
-                var filter = PredicateBuilder.True<SchoolCadreTrain>();
+                var filter = PredicateBuilder.True<ProvinceTrainClass>();
                 if (year != null)
                 {
                     filter = filter.And(d => d.Year == year);
                 }
                 if (keyword != null)
                 {
-                    filter = filter.And(d => d.Name.Contains(keyword) || d.Organizer.Contains(keyword) || d.TrainClassName.Contains(keyword) || d.TrainOrganizational.Contains(keyword));
+                    filter = filter.And(d => d.Name.Contains(keyword));
                 }
-                var data = await _context.Set<SchoolCadreTrain>()
+                var data = await _context.Set<ProvinceTrainClass>()
                     .Where(filter)
                     .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
                 if (data == null)
                     throw new PartyMemberException("未找到数据");
-                jsonResult.Count = _context.Set<SchoolCadreTrain>().Count();
+                jsonResult.Count = _context.Set<ProvinceTrainClass>().Count();
                 jsonResult.Data = data.Data;
             }
 
@@ -78,7 +109,7 @@ namespace PartyMemberManager.Controllers
             return Json(jsonResult);
         }
 
-        // GET: SchoolCadreTrains/Details/5
+        // GET: ProvinceTrainClasses/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -86,25 +117,25 @@ namespace PartyMemberManager.Controllers
                 return NotFoundData();
             }
 
-            var schoolCadreTrain = await _context.SchoolCadreTrains
+            var provinceTrainClass = await _context.ProvinceTrainClasses
             .SingleOrDefaultAsync(m => m.Id == id);
-            if (schoolCadreTrain == null)
+            if (provinceTrainClass == null)
             {
                 return NotFoundData();
             }
 
-            return View(schoolCadreTrain);
+            return View(provinceTrainClass);
         }
 
-        // GET: SchoolCadreTrains/Create
+        // GET: ProvinceTrainClasses/Create
         public IActionResult Create()
         {
-            SchoolCadreTrain schoolCadreTrain = new SchoolCadreTrain();
-            return View(schoolCadreTrain);
+            ProvinceTrainClass provinceTrainClass = new ProvinceTrainClass();
+            return View(provinceTrainClass);
         }
 
 
-        // GET: SchoolCadreTrains/Edit/5
+        // GET: ProvinceTrainClasses/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -112,12 +143,12 @@ namespace PartyMemberManager.Controllers
                 return NotFoundData();
             }
 
-            var schoolCadreTrain = await _context.SchoolCadreTrains.SingleOrDefaultAsync(m => m.Id == id);
-            if (schoolCadreTrain == null)
+            var provinceTrainClass = await _context.ProvinceTrainClasses.SingleOrDefaultAsync(m => m.Id == id);
+            if (provinceTrainClass == null)
             {
                 return NotFoundData();
             }
-            return View(schoolCadreTrain);
+            return View(provinceTrainClass);
         }
         /// <summary>
         /// 删除数据（通过ajax调用)
@@ -125,8 +156,8 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpPost, ActionName("BatchDelete")]
-        public async Task<IActionResult> BatchDelete(string idList)
+        [HttpPost, ActionName("Delete")]
+        public override async Task<IActionResult> Delete(Guid? id)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -136,19 +167,16 @@ namespace PartyMemberManager.Controllers
 
             try
             {
-                if (string.IsNullOrEmpty(idList))
-                    throw new PartyMemberException("未选择删除的人员");
-                string[] idListSplit = idList.Split(",");
-                foreach (var item in idListSplit)
-                {
-                    var id = Guid.Parse(item);
-                    var data = await _context.Set<SchoolCadreTrain>().SingleOrDefaultAsync(m => m.Id == id);
-                    if (data == null)
-                        throw new PartyMemberException("未找到要删除的数据");
-                    ValidateDeleteObject(data);
-                    _context.Set<SchoolCadreTrain>().Remove(data);
-                }
-
+                if (id == null)
+                    throw new PartyMemberException("未传入删除项目的Id");
+                var provinceCadreTrains = await _context.ProvinceCadreTrains.Where(d => d.ProvinceTrainClassId == id).ToListAsync();
+                if (provinceCadreTrains.Count() > 0)
+                    throw new PartyMemberException("培训班学员，不能直接删除");
+                var data = await _context.Set<ProvinceTrainClass>().Where(DataFilter).SingleOrDefaultAsync(m => m.Id == id);
+                if (data == null)
+                    throw new PartyMemberException("未找到要删除的数据");
+                ValidateDeleteObject(data);
+                _context.Set<ProvinceTrainClass>().Remove(data);
                 await _context.SaveChangesAsync();
             }
             catch (PartyMemberException ex)
@@ -166,7 +194,7 @@ namespace PartyMemberManager.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("Year,Name,TrainClassName,Organizer,TrainOrganizational,TrainTime,TrainAddress,TrainDuration,ClassHour,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] SchoolCadreTrain schoolCadreTrain)
+        public override async Task<IActionResult> Save([Bind("Year,Name,Total,Enabled,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ProvinceTrainClass provinceTrainClass)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -177,29 +205,23 @@ namespace PartyMemberManager.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    SchoolCadreTrain schoolCadreTrainInDb = await _context.SchoolCadreTrains.FindAsync(schoolCadreTrain.Id);
-                    if (schoolCadreTrainInDb != null)
+                    ProvinceTrainClass provinceTrainClassInDb = await _context.ProvinceTrainClasses.FindAsync(provinceTrainClass.Id);
+                    if (provinceTrainClassInDb != null)
                     {
-                        schoolCadreTrainInDb.Year = schoolCadreTrain.Year;
-                        schoolCadreTrainInDb.Name = schoolCadreTrain.Name;
-                        schoolCadreTrainInDb.TrainClassName = schoolCadreTrain.TrainClassName;
-                        schoolCadreTrainInDb.Organizer = schoolCadreTrain.Organizer;
-                        schoolCadreTrainInDb.TrainOrganizational = schoolCadreTrain.TrainOrganizational;
-                        schoolCadreTrainInDb.TrainTime = schoolCadreTrain.TrainTime;
-                        schoolCadreTrainInDb.TrainAddress = schoolCadreTrain.TrainAddress;
-                        schoolCadreTrainInDb.TrainDuration = schoolCadreTrain.TrainDuration;
-                        schoolCadreTrainInDb.ClassHour = schoolCadreTrain.ClassHour;
-                        schoolCadreTrainInDb.Id = schoolCadreTrain.Id;
-                        schoolCadreTrainInDb.CreateTime = schoolCadreTrain.CreateTime;
-                        schoolCadreTrainInDb.OperatorId = schoolCadreTrain.OperatorId;
-                        schoolCadreTrainInDb.Ordinal = schoolCadreTrain.Ordinal;
-                        schoolCadreTrainInDb.IsDeleted = schoolCadreTrain.IsDeleted;
-                        _context.Update(schoolCadreTrainInDb);
+                        provinceTrainClassInDb.Year = provinceTrainClass.Year;
+                        provinceTrainClassInDb.Name = provinceTrainClass.Name;
+                        provinceTrainClassInDb.Enabled = provinceTrainClass.Enabled;
+                        provinceTrainClassInDb.Id = provinceTrainClass.Id;
+                        provinceTrainClassInDb.CreateTime = provinceTrainClass.CreateTime;
+                        provinceTrainClassInDb.OperatorId = provinceTrainClass.OperatorId;
+                        provinceTrainClassInDb.Ordinal = provinceTrainClass.Ordinal;
+                        provinceTrainClassInDb.IsDeleted = provinceTrainClass.IsDeleted;
+                        _context.Update(provinceTrainClassInDb);
                     }
                     else
                     {
-                        //schoolCadreTrain.Id = Guid.NewGuid();
-                        _context.Add(schoolCadreTrain);
+                        //provinceTrainClass.Id = Guid.NewGuid();
+                        _context.Add(provinceTrainClass);
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -239,9 +261,9 @@ namespace PartyMemberManager.Controllers
         }
 
 
-        private bool SchoolCadreTrainExists(Guid id)
+        private bool ProvinceTrainClassExists(Guid id)
         {
-            return _context.SchoolCadreTrains.Any(e => e.Id == id);
+            return _context.ProvinceTrainClasses.Any(e => e.Id == id);
         }
     }
 }

@@ -41,8 +41,18 @@
         <div class="layui-input-inline" style="width:80px;">
             <select name="isPass" class="layui-input" id="isPass">
                 <option value="">-全部-</option>
-                <option value="true">-合格-</option>
-                <option value="false">-不合格-</option>
+                <option value="true">合格</option>
+                <option value="false">不合格</option>
+            </select>
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <label class="layui-form-label" style="padding:5px">是否补考:</label>
+        <div class="layui-input-inline" style="width:80px;">
+            <select name="isBcGrade" class="layui-input" id="isBcGrade">
+                <option value="">-全部-</option>
+                <option value="true">补考</option>
+                <option value="false">非补考</option>
             </select>
         </div>
     </div>
@@ -51,8 +61,8 @@
         <div class="layui-input-inline" style="width:80px;">
             <select name="isPrint" class="layui-input" id="isPrint">
                 <option value="">-全部-</option>
-                <option value="true">-已打印-</option>
-                <option value="false">-未打印-</option>
+                <option value="true">已打印</option>
+                <option value="false">未打印</option>
             </select>
         </div>
     </div>
@@ -162,15 +172,50 @@
                         { field: 'trainClassDisplay', title: '培训班', align: 'center', templet: '#optTrainClassDisplayTpl' },
                         { field: 'partyActivistJobNoDisplay', title: '学号/工号', align: 'center', templet: '#optPartyActivistJobNoTpl' },
                         { field: 'partyActivistNameDisplay', title: '姓名', align: 'center', templet: '#optPartyActivistNameoTpl' },
-                        { field: 'id', title: '序号', align: 'center', hide: true, templet: function (d) { return '<input type="text" name="id" class="form-control" value="' + d.id + '">' } },
-                        { field: 'name', title: '姓名', align: 'center', hide: true, templet: function (d) { return '<input type="text" name="name" class="form-control" value="' + d.nameDisplay + '">' } },
-                        { field: 'jobNo', title: '学号/工号', align: 'center', hide: true, templet: function (d) { return '<input type="text" name="jobno" class="form-control" value="' + d.jobNoDisplay + '">' } },
-                        { field: 'psGrade', title: '平时成绩', align: 'center', templet: function (d) { return '<input type="number" name="psGrade"  class="form-control"  style="width:100%;height:26px" value="' + d.psGrade + '">' } },
-                        { field: 'csGrade', title: '考试成绩', align: 'center', templet: function (d) { return '<input type="number" name="csGrade"  class="form-control" style="width:100%;height:26px" value="' + d.csGrade + '">' } },
+                        {
+                            field: 'id', title: '序号', align: 'center', hide: true, templet: function (d) {
+                                return '<input type="text" name="id" class="form-control" value="' + d.id + '">'
+                            }
+                        },
+                        {
+                            field: 'name', title: '姓名', align: 'center', hide: true, templet: function (d) {
+                                return '<input type="text" name="name" class="form-control" value="' + d.nameDisplay + '">'
+                            }
+                        },
+                        {
+                            field: 'jobNo', title: '学号/工号', align: 'center', hide: true, templet: function (d) {
+                                return '<input type="text" name="jobno" class="form-control" value="' + d.jobNoDisplay + '">'
+                            }
+                        },
+                        {
+                            field: 'psGradeTemp', title: '平时成绩', align: 'center', templet: function (d) {
+                                if (d.isPrint == true) {
+                                    return '<input type="number" name="psGrade" class="form-control" style="width:100%;height:26px" readonly value="' + d.psGrade + '">';
+                                } else {
+                                    return '<input type="number" name="psGrade" class="form-control" style="width:100%;height:26px"  value="' + d.psGrade + '">';
+                                }
+                            }
+                        },
+                        {
+                            field: 'csGradeTemp', title: '考试成绩', align: 'center', templet: function (d) {
+                                if (d.isPrint == true) {
+                                    return '<input type="number" name="csGrade" class="form-control" style="width:100%;height:26px" readonly value="' + d.csGrade + '">';
+                                } else {
+                                    return '<input type="number" name="csGrade" class="form-control" style="width:100%;height:26px"  value="' + d.csGrade + '">';
+                                }
+                            }
+                        },
+                        {
+                            field: 'isPrint', title: '是否打印', align: 'center', hide: true, templet: function (d) {
+                                return '<input type="text" name="isPrint" class="form-control" value="' + d.isPrint + '">'
+                            }
+                        },
+                        { field: 'bcGrade', title: '补考成绩', align: 'center'},
+
                         { field: 'totalGrade', title: '总成绩', align: 'center' },
                         { field: 'isPass', title: '是否合格', align: 'center', templet: function (d) { return d.isPass ? "是" : "否" } },
-                        { field: 'isPrint', title: '是否已打印', align: 'center', templet: function (d) { return d.isPrint ? "是" : "否" } },
-                        { field: 'printTime', title: '打印时间', align: 'center'},
+                        { field: 'isPrintDisplay', title: '是否已打印', align: 'center' },
+                        { field: 'printTimeDisplay', title: '打印时间', align: 'center', templet: function (d) { return formatDate(d.printTimeDisplay, 'yyyy-MM-dd'); } },
                         { field: 'id', title: '操作',  align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
@@ -214,7 +259,8 @@
                         trainClassId: $("#TrainClassId").val(),
                         isPass: $("#isPass").val(),
                         isPrint: $("#isPrint").val(),
-                        keyword: $("#keyword").val()
+                        keyword: $("#keyword").val(),
+                        isBcGrade: $("#isBcGrade").val()
                     }
                     , done: function (res, curr, count) {
                         //fillPatientList(res, curr, count);
@@ -232,7 +278,7 @@
                     var mId = '';
                     var psGrade = 0;
                     var csGrade = 0;
-                    for (var i = 0; i < forGrade.length - 1; i = i + 5) {
+                    for (var i = 0; i < forGrade.length - 1; i = i + 6) {
                         var noName = "【" + forGrade[i+1].value + "-" + forGrade[i+2].value + "】";
                         if (forGrade[i + 3] != null) {
                             var psGrade = parseFloat(forGrade[i + 3].value);
@@ -244,8 +290,10 @@
                             if (csGrade < 0 || csGrade > 100)
                                 throw new Error(noName + "考试成绩不合法");
                         }
-                        var item = forGrade[i].value + "," + forGrade[i + 3].value + "," + forGrade[i + 4].value;
-                        dataList.push(item);
+                        if (forGrade[i + 5].value == "false") {
+                            var item = forGrade[i].value + "," + forGrade[i + 3].value + "," + forGrade[i + 4].value;
+                            dataList.push(item);
+                        }
                     }
                 }
                 if (dataList.length > 0) {
@@ -319,15 +367,15 @@
             }
         }
         /**显示操作菜单 */
-        function showOperatMenu(event, id) {
+        function showOperatMenu(event, id, totalGrade, isPass) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("打印", function () {
                 showEdit('@Url.Action("Print")'+'/' + id, '@Url.Action("Save")', '打印', 800, 800);
             })
-            @*contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 800, 800);
-            })
-            contextMenu.addMenuItem("删除", function () {
+                contextMenu.addMenuItem("录入补考成绩", function () {
+                    showEdit('@Url.Action("BcGrade", "PotentialTrainResults")' + '/' + id, '@Url.Action("BcGrade", "PotentialTrainResults")', '录入补考成绩', 500, 400);
+                })
+           @* contextMenu.addMenuItem("删除", function () {
                 Delete(id);
             })*@
             contextMenu.addMenuItem("上移", function () {
@@ -343,7 +391,7 @@
         }
     </script>
     <script type="text/html" id="optTpl">
-        <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
+        <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}','{{d.totalGrade}}','{{d.isPass}}')" style="padding-left:10px;padding-right:10px;">
             <img src="~/images/gridmenu1x.png" />
         </a>
     </script>

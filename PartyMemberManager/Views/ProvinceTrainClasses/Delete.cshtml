@@ -1,4 +1,4 @@
-﻿@model PartyMemberManager.Dal.Entities.ActivistTrainResult
+﻿@model PartyMemberManager.Dal.Entities.ProvinceTrainClass
 
 @{
     ViewData["Title"] = "Delete";
@@ -8,38 +8,32 @@
 
 <h3>你确信要删除吗?</h3>
 <div>
-    <h4>ActivistTrainResult</h4>
+    <h4>ProvinceTrainClass</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PartyActivist)
+            @Html.DisplayNameFor(model => model.Year)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PartyActivist.ActiveApplicationTime)
-        </dd class>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PsGrade)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PsGrade)
+            @Html.DisplayFor(model => model.Year)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CsGrade)
+            @Html.DisplayNameFor(model => model.Name)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CsGrade)
+            @Html.DisplayFor(model => model.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TotalGrade)
+            @Html.DisplayNameFor(model => model.Total)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TotalGrade)
+            @Html.DisplayFor(model => model.Total)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsPass)
+            @Html.DisplayNameFor(model => model.Enabled)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsPass)
+            @Html.DisplayFor(model => model.Enabled)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.CreateTime)

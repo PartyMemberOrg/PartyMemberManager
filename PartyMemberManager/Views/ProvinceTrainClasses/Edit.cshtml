@@ -1,8 +1,8 @@
-﻿@model PartyMemberManager.Dal.Entities.SchoolCadreTrain
+﻿@model PartyMemberManager.Dal.Entities.ProvinceTrainClass
 
 @{
     Layout = "_LayoutEmpty";
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Edit";
 }
 <div class="row form-padding-top">
     <div class="col-md-12">
@@ -13,24 +13,10 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
     <script src="~/lib/layui/layui.js"></script>
-    <script>
-        $(document).ready(function () {
-            $("#TrainDuration").change(function () {
-                computeHour();
-            });
-        });
-        /**计算比例 */
-        function computeHour() {
-            var TrainDuration = parseInt($("#TrainDuration").val());
-            $("#ClassHour").val(TrainDuration * 8);
-        }
-    </script>
-    <script>
+    <script type="text/javascript">
         layui.use('form', function () {
             var form = layui.form;
         });
-    </script>
-    <script type="text/javascript">
         layui.use('laydate', function () {
             var laydate = layui.laydate;
             laydate.render({
@@ -38,10 +24,7 @@
                 type: 'year'
                 , trigger: 'click'
             });
-            laydate.render({
-                elem: '#TrainTime'
-                , trigger: 'click'
-            });
         });
     </script>
 }
+

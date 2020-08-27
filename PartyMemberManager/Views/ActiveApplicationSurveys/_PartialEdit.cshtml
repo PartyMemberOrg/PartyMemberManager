@@ -56,8 +56,8 @@
             <label asp-for="Proportion" asp-required="true" class="control-label"></label>
         </div>
         <div class="@InputDivDefaultClass">
-            <input asp-for="Proportion" class="form-control" />
-            <span asp-validation-for="Proportion" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+            <input asp-for="Proportion" class="form-control" readonly />
+            @*<span asp-validation-for="Proportion" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
         </div>
     </div>
 </div>

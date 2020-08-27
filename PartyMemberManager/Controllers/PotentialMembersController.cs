@@ -191,7 +191,105 @@ namespace PartyMemberManager.Controllers
             ViewBag.TrainClassTypeId = _context.TrainClassTypes.Where(d => d.Code == "42").Select(d => d.Id).SingleOrDefault();
             return View(potentialMember);
         }
+        /// <summary>
+        /// 删除数据（通过ajax调用)
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost, ActionName("BatchDelete")]
+        public async Task<IActionResult> BatchDelete(string idList)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "数据删除成功"
+            };
 
+            try
+            {
+                if (string.IsNullOrEmpty(idList))
+                    throw new PartyMemberException("未选择删除的入党积极分子");
+                string[] idListSplit = idList.Split(",");
+                foreach (var item in idListSplit)
+                {
+                    var potentialMemberId = Guid.Parse(item);
+                    var data = await _context.Set<PotentialMember>().SingleOrDefaultAsync(m => m.Id == potentialMemberId);
+                    var dataResult = await _context.Set<PotentialTrainResult>().SingleOrDefaultAsync(m => m.PotentialMemberId == potentialMemberId);
+                    if (data == null)
+                        throw new PartyMemberException("未找到要删除的数据");
+                    if (data.IsPrint && CurrentUser.Roles == Role.学院党委)
+                    {
+                        var noName = "【" + data.Name + "-" + data.JobNo + "】";
+                        throw new PartyMemberException(noName + "已经打印证书，请联系管理员删除");
+                    }
+                    ValidateDeleteObject(data);
+                    _context.Set<PotentialTrainResult>().Remove(dataResult);
+                    _context.Set<PotentialMember>().Remove(data);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
+
+        /// <summary>
+        /// 删除数据（通过ajax调用)
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost, ActionName("Delete")]
+        public override async Task<IActionResult> Delete(Guid? id)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "数据删除成功"
+            };
+
+            try
+            {
+                if (id == null)
+                    throw new PartyMemberException("未传入删除项目的Id");
+                var data = await _context.Set<PotentialMember>().SingleOrDefaultAsync(m => m.Id == id);
+                var dataResult = await _context.Set<PotentialTrainResult>().SingleOrDefaultAsync(m => m.PotentialMemberId == id);
+                if (data == null)
+                    throw new PartyMemberException("未找到要删除的数据");
+                if (data.IsPrint && CurrentUser.Roles==Role.学院党委)
+                {
+                    var noName = "【" + data.Name + "-" + data.JobNo + "】";
+                    throw new PartyMemberException(noName + "已经打印证书，请联系管理员删除");
+                }
+                ValidateDeleteObject(data);
+                _context.Set<PotentialTrainResult>().Remove(dataResult);
+                _context.Set<PotentialMember>().Remove(data);
+                await _context.SaveChangesAsync();
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public override async Task<IActionResult> Save(PotentialMember potentialMember)
@@ -212,6 +310,11 @@ namespace PartyMemberManager.Controllers
                 PotentialMember potentialMemberInDb = await _context.PotentialMembers.FindAsync(potentialMember.Id);
                 if (potentialMemberInDb != null)
                 {
+                    if (potentialMemberInDb.IsPrint && CurrentUser.Roles == Role.学院党委)
+                    {
+                        var noName = "【" + potentialMemberInDb.Name + "-" + potentialMemberInDb.JobNo + "】";
+                        throw new PartyMemberException(noName + "已经打印证书，请联系管理员修改");
+                    }
                     potentialMemberInDb.PotentialMemberTime = potentialMember.PotentialMemberTime;
                     potentialMemberInDb.TrainClassId = potentialMember.TrainClassId;
                     potentialMemberInDb.CreateTime = DateTime.Now;
@@ -228,12 +331,17 @@ namespace PartyMemberManager.Controllers
                     foreach (var item in partyAcitvistsId)
                     {
                         Guid activistTrainResultId = Guid.Parse(item);
-                        var activistTrainResult = await _context.ActivistTrainResults.FindAsync(activistTrainResultId);
+                        var activistTrainResult = await _context.ActivistTrainResults.Include(d=>d.PartyActivist).Where(d=>d.Id== activistTrainResultId).FirstOrDefaultAsync();
                         var potentialMemberOld = _context.PotentialMembers.Where(d => d.PartyActivistId == activistTrainResult.PartyActivistId && d.TrainClassId == potentialMember.TrainClassId).FirstOrDefault();
 
                         if (potentialMemberOld != null)
                         {
                             var noName = "【" + potentialMemberOld.Name + "-" + potentialMemberOld.JobNo + "】" + "已在该培训班";
+                            throw new PartyMemberException(noName);
+                        }
+                        if (!activistTrainResult.PartyActivist.IsPrint)
+                        {
+                            var noName = "【" + activistTrainResult.PartyActivist.Name + "-" + activistTrainResult.PartyActivist.JobNo + "】" + "还不是合格的入党积极分子";
                             throw new PartyMemberException(noName);
                         }
                         var partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);

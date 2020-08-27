@@ -55,6 +55,13 @@
     </div>
 </div>
 <table class="layui-hide" id="datatable"></table>
+<div style="margin-top: 10px">
+    <div class="layui-input-inline" style="width:80px">
+        <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="batchDelete()" data-type="batchDelete">
+            <i class="layui-icon layui-icon-delete" style="font-size: 14px; color: #FFFFFF;"></i>批量删除
+        </a>
+    </div>
+</div>
 @Html.AntiForgeryToken()
 <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
 @section Scripts{
@@ -124,8 +131,7 @@
                     , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
                     , id: 'dataGrid'
                     , cols: [[
-                        //{ type: 'checkbox' }
-                        //,
+                        { type: 'checkbox' },
                         { field: 'yearTerm', title: '学年/学期', align: 'center', templet: '#optYearTermTpl' },
                         { field: 'trainClassDisplay', title: '培训班', align: 'center', templet: '#optTrainClassNameTpl' },
                         { field: 'name', title: '姓名', align: 'center' },
@@ -138,7 +144,7 @@
                         { field: 'applicationTime', title: '提交入党申请时间', align: 'center', templet: function (d) { return formatDate(d.applicationTime, 'yyyy-MM-dd'); } },
                         { field: 'activeApplicationTime', title: '确定为入党积极分子时间', align: 'center', templet: function (d) { return formatDate(d.activeApplicationTime, 'yyyy-MM-dd'); } },
                         { field: 'potentialMemberTime', title: '列为发展对象时间', align: 'center', templet: function (d) { return formatDate(d.potentialMemberTime, 'yyyy-MM-dd'); }  },
-                        { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
+                        { field: 'id', title: '操作', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);
@@ -179,14 +185,25 @@
             }
         }
         /**显示操作菜单 */
-        function showOperatMenu(event, id) {
+        function showOperatMenu(event, id,isPrint,curUser) {
             var contextMenu = new ContextMenu();
-            contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 600, 650);
-            })
-            contextMenu.addMenuItem("删除", function () {
-                Delete(id);
-            })
+            if (curUser != "学院党委") {
+                contextMenu.addMenuItem("编辑", function () {
+                    showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 600, 650);
+                })
+                contextMenu.addMenuItem("删除", function () {
+                    Delete(id);
+                })
+            }
+            else if (isPrint=="false") {
+                contextMenu.addMenuItem("编辑", function () {
+                    showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 600, 650);
+                })
+                contextMenu.addMenuItem("删除", function () {
+                    Delete(id);
+                })
+
+            }
             contextMenu.addMenuItem("上移", function () {
                 ItemUp(id);
             })
@@ -197,7 +214,7 @@
         }
     </script>
     <script type="text/html" id="optTpl">
-        <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
+        <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}','{{d.isPrint}}','@CurrentUser.Roles')" style="padding-left:10px;padding-right:10px;">
             <img src="~/images/gridmenu1x.png" />
         </a>
     </script>
@@ -242,6 +259,43 @@
             });
 
         }
+    </script>
+    <script>
+         /*批量删除*/
+        function batchDelete() {
+            var datas = "";
+            try {
+                layui.use('table', function () {
+                    var table = layui.table;
+                    var checkData = table.checkStatus('dataGrid').data;
+                    for (i = 0; i < checkData.length; i++) {
+                        datas += checkData[i].id + ",";
+                    }
+                });
+                if (datas == "")
+                    layer.msg("请选择要删除的入党积极分子");
+                else {
+                    layer.confirm("批量删除发展对象将删除成绩，不可恢复！", {
+                        btn: ['确定', '取消']
+                    }, function () {
+                        datas = datas.substring(0, datas.length - 1);
+                        $.ajax({
+                        type: 'post',
+                        url: '@Url.Action("BatchDelete")',
+                        data: { idList: datas },
+                        dataType: 'json',
+                        success: function (data) {
+                            layer.msg(data.message);
+                            tablefilter();
+                        }
+                    });
+                    });
+                }
+            }
+            catch (error) {
+                showError(error.message);
+            }
+          }
     </script>
 }
 

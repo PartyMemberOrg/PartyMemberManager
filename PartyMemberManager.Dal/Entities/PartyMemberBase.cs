@@ -175,5 +175,16 @@ namespace PartyMemberManager.Dal.Entities
         [DataType(DataType.Date)]
         public Nullable<DateTime> ActiveApplicationTime { get; set; }
 
+        /// <summary>
+        /// 是否打印
+        /// </summary>
+        [DisplayName("是否已打印证书")]
+        public bool IsPrint { get; set; }
+        /// <summary>
+        /// 打印证书时间
+        /// </summary>
+        [DisplayName("打印证书时间")]
+        public DateTime? PrintTime { get; set; }
+
     }
 }

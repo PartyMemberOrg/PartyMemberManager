@@ -1,0 +1,66 @@
+﻿@model PartyMemberManager.Dal.Entities.ActivistTrainResult
+
+@{
+    Layout = "_LayoutEmpty";
+    ViewData["Title"] = "Edit";
+}
+<div class="row form-padding-top">
+    <div class="col-md-12">
+        <form asp-action="Edit">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="PartyActivistId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="PartyActivist.Name" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="PartyActivist.Name" class="form-control" readonly />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="PartyActivist.JobNo" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="PartyActivist.JobNo" class="form-control" readonly />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="PsGrade" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="PsGrade" class="form-control" readonly />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="CsGrade" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="CsGrade" class="form-control" readonly />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="BcGrade" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="BcGrade" class="form-control" />
+                        <span asp-validation-for="BcGrade" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

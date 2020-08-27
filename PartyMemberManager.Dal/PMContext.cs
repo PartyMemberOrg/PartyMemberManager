@@ -33,6 +33,7 @@ namespace PartyMemberManager.Dal
         public virtual DbSet<PotentialMember> PotentialMembers { get; set; }
         public virtual DbSet<PotentialTrainResult> PotentialTrainResults { get; set; }
 
+        public virtual DbSet<ProvinceTrainClass> ProvinceTrainClasses { get; set; }
         public virtual DbSet<ProvinceCadreTrain> ProvinceCadreTrains { get; set; }
         public virtual DbSet<SchoolCadreTrain> SchoolCadreTrains { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -121,11 +122,21 @@ namespace PartyMemberManager.Dal
                 .HasOne(p => p.TrainClass)
                 .WithMany()
                 .HasForeignKey(p => p.TrainClassId);
+            modelBuilder.Entity<PotentialMember>()
+                .HasOne(p => p.PartyActivist)
+                .WithMany()
+                .HasForeignKey(p => p.PartyActivistId);
 
             modelBuilder.Entity<PotentialTrainResult>()
                 .HasOne(p => p.PotentialMember)
                 .WithMany()
                 .HasForeignKey(a => a.PotentialMemberId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ProvinceCadreTrain>()
+                .HasOne(p => p.ProvinceTrainClass)
+                .WithMany()
+                .HasForeignKey(a => a.ProvinceTrainClassId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

@@ -4,45 +4,54 @@
     ViewData["Title"] = "Index";
 }
 
-    <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
-        <div style="display:inline-block">
-            <div class="layui-input-inline" style="width:80px">
-                <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,550)" class="layui-btn layui-btn-primary">+添加</a>
-            </div>
-        </div>
-        @if (CurrentUser.Roles > Role.学院党委)
-        {
-            <div style="display:inline-block">
-                <label class="layui-form-label" style="padding:5px;width:60px">部门:</label>
-                <div class="layui-input-inline" style="width:300px">
-                    <select name="departmentId" asp-items="@ViewBag.DepartmentId" class="layui-input" id="departmentId">
-                        <option value="">-请选择部门-</option>
-                    </select>
-                </div>
-            </div>
-        }
-        <div style="display:inline-block">
-            <label class="layui-form-label" style="padding:5px">学年/学期:</label>
-            <div class="layui-input-inline" style="width:240px">
-                <select name="yearTermId" asp-items="@ViewBag.YearTermId" class="layui-input" id="yearTermId">
-                    <option value="">-请选择学年/学期-</option>
-                </select>
-            </div>
-        </div>
-        <div style="display:inline-block">
-            <div class="layui-input-inline" style="width:200px">
-                <input name="name" type="text" class="layui-input" placeholder="请输入关键字" id="keyword" />
-            </div>
-        </div>
-        <div style="display:inline-block">
-            <div class="layui-input-inline" style="width:80px">
-                <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
-                    <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
-                </a>
-            </div>
+<div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
+    <div style="display:inline-block">
+        <div class="layui-input-inline" style="width:80px">
+            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
         </div>
     </div>
+    <div style="display:inline-block">
+        <label class="layui-form-label" style="padding:5px;width:60px">年份:</label>
+        <div class="layui-input-inline" style="width:80px">
+            <input name="year" type="text" class="layui-input" readonly id="year" />
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <label class="layui-form-label" style="padding:5px;width:60px">培训班:</label>
+        <div class="layui-input-inline" style="width:240px">
+            <select name="ProvinceTrainClassId" asp-items="@ViewBag.ProvinceTrainClassId" class="layui-input" id="ProvinceTrainClassId">
+                <option value="">-请选择培训班-</option>
+            </select>
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <div class="layui-input-inline" style="width:200px">
+            <input name="keyword" type="text" class="layui-input" placeholder="请输入关键词" id="keyword" />
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <div class="layui-input-inline" style="width:80px">
+            <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
+                <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
+            </a>
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <div class="layui-input-inline" style="width:120px">
+            <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="importExcel()">
+                <i class="layui-icon layui-icon-loading" style="font-size: 14px; color: #FFFFFF;"></i>导入名单
+            </a>
+        </div>
+    </div>
+</div>
 <table class="layui-hide" id="datatable"></table>
+<div style="margin-top: 10px">
+    <div class="layui-input-inline" style="width:80px">
+        <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="batchDelete()" data-type="batchDelete">
+            <i class="layui-icon layui-icon-delete" style="font-size: 14px; color: #FFFFFF;"></i>批量删除
+        </a>
+    </div>
+</div>
 @Html.AntiForgeryToken()
 <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
 @section Scripts{
@@ -105,20 +114,18 @@
                     , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
                     , id: 'dataGrid'
                     , cols: [[
-                        //{ type: 'checkbox' }
-                        //,
-                        { field: 'yearTerm', title: '学年/学期', align: 'center', templet: '#optYearTermTpl' },
-                        { field: 'organizer', title: '组织机构', align: 'center' },
-                        { field: 'trainOrganizational', title: '培训机构', align: 'center' },
-                        { field: 'trainTime', title: '培训时间', align: 'center', templet: function (d) { return formatDate(d.trainTime, 'yyyy-MM-dd'); }},
-                        { field: 'trainDuration', title: '培训时长', align: 'center' },
-                        { field: 'name', title: '姓名', align: 'center' },
-                        { field: 'idNumber', title: '身份证号', align: 'center' },
+                        { type: 'checkbox' }
+                        ,
+                        { field: 'yearDisplay', title: '年份', align: 'center' },
+                        { field: 'trainClassDisplay', title: '培训班', align: 'center' },
+            { field: 'name', title: '姓名', align: 'center' },
+            { field: 'idNumber', title: '身份证号', align: 'center' },
                         { field: 'sexDisplay', title: '性别', align: 'center' },
-                        { field: 'departmentDisplay', title: '所属部门', align: 'center', templet: '#optDepartmentNameTpl' },
-                        { field: 'phone', title: '电话', align: 'center' },
-                        { field: 'post', title: '职务', align: 'center' },
-                        { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
+            { field: 'nationDisplay', title: '民族', align: 'center' },
+            { field: 'department', title: '所在单位', align: 'center' },
+            { field: 'post', title: '职务', align: 'center' },
+            { field: 'phone', title: '电话', align: 'center' },
+                        { field: 'id', title: '操作', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);
@@ -126,7 +133,7 @@
                 });
             });
         }
-                        /**过滤数据 */
+                /**过滤数据 */
         function tablefilter() {
             //此处Id不要#号
             var tableId = "dataGrid";
@@ -135,8 +142,8 @@
                 table.reload(tableId, {
                     url: '@Url.Action("GetDatasWithFilter")'
                     , where: {
-                        yearTermId: $("#yearTermId").val(),
-                        departmentId: $("#departmentId").val(),
+                        year: $("#year").val(),
+                        provinceTrainClassId: $("#ProvinceTrainClassId").val(),
                         keyword: $("#keyword").val()
                     }
                     , done: function (res, curr, count) {
@@ -159,7 +166,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 600, 550);
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 600, 600);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);
@@ -178,11 +185,82 @@
             <img src="~/images/gridmenu1x.png" />
         </a>
     </script>
-    <script type="text/html" id="optYearTermTpl">
-        {{d.yearTermDisplay}}
+    <script type="text/javascript">
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#year',
+                type: 'year',
+                trigger: 'click',
+                done: function (value, date, endDate) {
+                    filterProvinceTrainClass(value);
+                }
+            });
+        });
     </script>
-    <script type="text/html" id="optDepartmentNameTpl">
-        {{d.departmentDisplay}}
+    <script>
+        function filterProvinceTrainClass(year) {
+            var url = '@Url.Action("GetProvinceTrainClasses")';
+            var where = { year:year };
+            $.ajax({
+                url: url,
+                data: where,
+                dataType: "json",
+                type: "POST",
+                error: function () { },
+                success: function (data) {
+                    if (data.code == 0) {
+                        var options = "<option value=''>-请选择培训班-</option>";
+                        for (var i = 0; i < data.datas.length; i++) {
+                            options+="<option value='" + data.datas[i].id + "'>" + data.datas[i].name+"</option>";
+                        }
+                        $("#ProvinceTrainClassId").html(options);
+                    }
+                    else {
+                        showError(data.mssage);
+                    }
+                },
+                complete: function () { }
+            });
+
+        }
+    </script>
+    <script>
+         /*批量删除*/
+        function batchDelete() {
+            var datas = "";
+            try {
+                layui.use('table', function () {
+                    var table = layui.table;
+                    var checkData = table.checkStatus('dataGrid').data;
+                    for (i = 0; i < checkData.length; i++) {
+                        datas += checkData[i].id + ",";
+                    }
+                });
+                if (datas == "")
+                    layer.msg("请选择要删除的人员");
+                else {
+                    layer.confirm("批量删除将不可恢复！", {
+                        btn: ['确定', '取消']
+                    }, function () {
+                        datas = datas.substring(0, datas.length - 1);
+                        $.ajax({
+                        type: 'post',
+                        url: '@Url.Action("BatchDelete")',
+                        data: { idList: datas },
+                        dataType: 'json',
+                        success: function (data) {
+                            layer.msg(data.message);
+                            tablefilter();
+                        }
+                    });
+                    });
+                }
+            }
+            catch (error) {
+                showError(error.message);
+            }
+          }
     </script>
 }
 

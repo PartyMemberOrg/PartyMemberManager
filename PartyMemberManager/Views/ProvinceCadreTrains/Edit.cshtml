@@ -4,33 +4,13 @@
     Layout = "_LayoutEmpty";
     ViewData["Title"] = "Edit";
 }
-<div class="row">
+<div class="row form-padding-top">
     <div class="col-md-12">
         <partial name="_PartialEdit" model="@Model" />
     </div>
 </div>
-@section Scripts {
+@section Scripts{
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
     <script src="~/lib/layui/layui.js"></script>
-    <script>
-        layui.use('form', function () {
-            var form = layui.form;
-        });
-    </script>
-    <script type="text/javascript">
-        layui.use('laydate', function () {
-            var laydate = layui.laydate;
-            laydate.render({
-                elem: '#TrainTime'
-                , trigger: 'click'
-            });
-        });
-    </script>
-    <script>
-        //注意：选项卡 依赖 element 模块，否则无法进行功能性操作
-        layui.use('element', function () {
-            var element = layui.element;
-        });
-    </script>
 }

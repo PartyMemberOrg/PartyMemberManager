@@ -31,9 +31,9 @@
         function computeScale() {
             var trainTotal = parseFloat($("#TrainTotal").val());
             var total = parseFloat($("#Total").val());
-            var scale = trainTotal / total;
-            scale = Math.round(scale * 100) / 100;
-            $("#Proportion").val(scale);
+            var scale = (trainTotal / total);
+            scale = (scale * parseFloat(100)).toFixed(2);
+            $("#Proportion").val(scale.toString()+"%");
         }
     </script>
     <script type="text/javascript">

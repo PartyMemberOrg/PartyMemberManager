@@ -12,46 +12,16 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.YearTerm)
+            @Html.DisplayNameFor(model => model.ProvinceTrainClass)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.YearTerm.Id)
+            @Html.DisplayFor(model => model.ProvinceTrainClass.Name)
         </dd class>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Organizer)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Organizer)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TrainOrganizational)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TrainOrganizational)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TrainTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TrainTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TrainDuration)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TrainDuration)
-        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Phone)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Phone)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.IdNumber)
@@ -66,16 +36,28 @@
             @Html.DisplayFor(model => model.Sex)
         </dd>
         <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Nation)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Nation.Code)
+        </dd class>
+        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Department)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Department.Code)
-        </dd class>
+            @Html.DisplayFor(model => model.Department)
+        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Post)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Post)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Phone)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Phone)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.CreateTime)

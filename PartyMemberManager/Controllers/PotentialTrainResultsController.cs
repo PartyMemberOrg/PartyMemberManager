@@ -49,7 +49,7 @@ namespace PartyMemberManager.Controllers
             ViewBag.TrainClassTypeId = _context.TrainClassTypes.Where(d => d.Code == "42").Select(d => d.Id).SingleOrDefault();
             return View(await pMContext.ToListAsync());
         }
-        public async Task<IActionResult> GetDatasWithFilter(Guid? yearTermId, Guid? departmentId, string isPass, string isPrint, Guid? trainClassId, string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? yearTermId, Guid? departmentId, string isPass, string isPrint, string isBcGrade, Guid? trainClassId, string keyword, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<PotentialTrainResult> jsonResult = new JsonResultDatasModel<PotentialTrainResult>
             {
@@ -76,9 +76,16 @@ namespace PartyMemberManager.Controllers
                 {
                     filter = filter.And(d => d.IsPass == (isPass == "true"));
                 }
+                if (!string.IsNullOrEmpty(isBcGrade))
+                {
+                    if (isBcGrade == "true")
+                        filter = filter.And(d => d.BcGrade != null);
+                    else if (isBcGrade == "false")
+                        filter = filter.And(d => d.BcGrade == null);
+                }
                 if (!string.IsNullOrEmpty(isPrint))
                 {
-                    filter = filter.And(d => d.IsPrint == (isPrint == "true"));
+                    filter = filter.And(d => d.PotentialMember.IsPrint == (isPrint == "true"));
                 }
                 if (trainClassId != null)
                 {
@@ -168,10 +175,77 @@ namespace PartyMemberManager.Controllers
             ViewData["PotentialMemberId"] = new SelectList(_context.PotentialMembers, "Id", "BirthDate", potentialTrainResult.PotentialMemberId);
             return View(potentialTrainResult);
         }
+        // GET: ActivistTrainResults/Edit/5
+        public async Task<IActionResult> BcGrade(Guid? id)
+        {
+            if (id == null)
+            {
+                return NotFoundData();
+            }
 
+            var potentialTrainResult = await _context.PotentialTrainResults.Include(d => d.PotentialMember).Include(d => d.PotentialMember.TrainClass).Include(d => d.PotentialMember.TrainClass.YearTerm).SingleOrDefaultAsync(m => m.Id == id);
+            if (potentialTrainResult == null)
+            {
+                return NotFoundData();
+            }
+            //ViewData["PartyActivistId"] = new SelectList(_context.PartyActivists, "Id", "ActiveApplicationTime", activistTrainResult.PartyActivistId);
+            return View(potentialTrainResult);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("PotentialMemberId,PsGrade,CsGrade,TotalGrade,IsPass,IsPrint,PrintTime,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PotentialTrainResult potentialTrainResult)
+        public async Task<IActionResult> BcGrade([Bind("Id,PotentialMemberId,BcGrade")] PotentialTrainResult potentialTrainResult)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "数据保存成功"
+            };
+            try
+            {
+
+                PotentialTrainResult potentialTrainResultInDb = await _context.PotentialTrainResults.Include(d => d.PotentialMember.TrainClass).Where(d => d.Id == potentialTrainResult.Id).FirstOrDefaultAsync();
+                PotentialMember potentialMember = await _context.PotentialMembers.FindAsync(potentialTrainResult.PotentialMemberId);
+                var psProp = potentialTrainResultInDb.PotentialMember.TrainClass.PsGradeProportion;
+                var csProp = potentialTrainResultInDb.PotentialMember.TrainClass.CsGradeProportion;
+                if (potentialTrainResultInDb == null)
+                    throw new PartyMemberException("未找到数据");
+                if (!potentialTrainResult.BcGrade.HasValue)
+                    throw new PartyMemberException("请输入补考成绩");
+                decimal bcGrade = potentialTrainResult.BcGrade.Value;
+                decimal psGrade = potentialTrainResultInDb.PsGrade.Value;
+                if (bcGrade > 100 || bcGrade < 0)
+                    throw new PartyMemberException($"【{potentialMember.JobNo}-{potentialMember.Name}】的补考成绩非法");
+                potentialTrainResultInDb.BcGrade = bcGrade;
+                potentialTrainResultInDb.TotalGrade = Math.Round(psProp * psGrade / 100 + csProp * bcGrade / 100, 2);
+                if (potentialTrainResultInDb.TotalGrade >= 60)
+                    potentialTrainResultInDb.IsPass = true;
+                else
+                    potentialTrainResultInDb.IsPass = false;
+                _context.Update(potentialTrainResultInDb);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "更新数据库错误";
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public override async Task<IActionResult> Save([Bind("PotentialMemberId,PsGrade,CsGrade,TotalGrade,IsPass,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] PotentialTrainResult potentialTrainResult)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -191,8 +265,8 @@ namespace PartyMemberManager.Controllers
                         potentialTrainResultInDb.CsGrade = potentialTrainResult.CsGrade;
                         potentialTrainResultInDb.TotalGrade = potentialTrainResult.TotalGrade;
                         potentialTrainResultInDb.IsPass = potentialTrainResult.IsPass;
-                        potentialTrainResultInDb.IsPrint = potentialTrainResult.IsPrint;
-                        potentialTrainResultInDb.PrintTime = potentialTrainResult.PrintTime;
+                        //potentialTrainResultInDb.IsPrint = potentialTrainResult.IsPrint;
+                        //potentialTrainResultInDb.PrintTime = potentialTrainResult.PrintTime;
                         potentialTrainResultInDb.Id = potentialTrainResult.Id;
                         potentialTrainResultInDb.CreateTime = potentialTrainResult.CreateTime;
                         potentialTrainResultInDb.OperatorId = potentialTrainResult.OperatorId;
@@ -261,7 +335,7 @@ namespace PartyMemberManager.Controllers
                         PotentialMember potentialMember = await _context.PotentialMembers.FindAsync(potentialTrainResult.PotentialMemberId);
                         var psProp = potentialTrainResult.PotentialMember.TrainClass.PsGradeProportion;
                         var csProp = potentialTrainResult.PotentialMember.TrainClass.CsGradeProportion;
-                        if (potentialTrainResult != null)
+                        if (potentialTrainResult != null && potentialMember.IsPrint == false)
                         {
                             decimal psGrade = 0;
                             decimal csGrade = 0;
@@ -412,8 +486,8 @@ namespace PartyMemberManager.Controllers
                                     Ordinal = _context.ActivistTrainResults.Count() + 1,
                                     PsGrade = psScoreValue,
                                     CsGrade = csScoreValue,
-                                    TotalGrade= Math.Round(psProp * psScoreValue / 100 + csProp * csScoreValue / 100, 2)
-                            };
+                                    TotalGrade = Math.Round(psProp * psScoreValue / 100 + csProp * csScoreValue / 100, 2)
+                                };
                                 _context.PotentialTrainResults.Add(potentialTrainResult);
                             }
                             else

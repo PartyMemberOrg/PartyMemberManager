@@ -34,11 +34,12 @@ namespace PartyMemberManager.Controllers
                 ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.Where(d => d.Code.StartsWith("4")).OrderByDescending(d => d.Ordinal), "Id", "Name");
             else
                 ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderByDescending(d => d.Ordinal), "Id", "Name");
-            if (CurrentUser.Roles == Role.学院党委)
-                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Where(d => d.DepartmentId == CurrentUser.DepartmentId).OrderByDescending(d => d.Ordinal), "Id", "Name");
-            else
-                ViewBag.TrainClasses = new SelectList(_context.TrainClassTypes.OrderByDescending(d => d.Ordinal), "Id", "Name");
-            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            //if (CurrentUser.Roles == Role.学院党委)
+            //    ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Where(d => d.DepartmentId == CurrentUser.DepartmentId).OrderByDescending(d => d.Ordinal), "Id", "Name");
+            //else
+            //    ViewBag.TrainClasses = new SelectList(_context.TrainClassTypes.OrderByDescending(d => d.Ordinal), "Id", "Name");
+            ViewBag.DepartmentId = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(await pMContext.ToListAsync());
         }
         /// <summary>
@@ -47,7 +48,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(Guid? trainClassTypeId, Guid? departmentId, string keyword, int? year, Term? term, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? trainClassTypeId, Guid? departmentId, string keyword, Guid? yearTermId, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<TrainClass> jsonResult = new JsonResultDatasModel<TrainClass>
             {
@@ -58,17 +59,13 @@ namespace PartyMemberManager.Controllers
             try
             {
                 var filter = PredicateBuilder.True<TrainClass>();
-                if (year != null)
+                if (yearTermId != null)
                 {
-                    filter = filter.And(d => d.YearTerm.StartYear == year);
+                    filter = filter.And(d => d.YearTermId == yearTermId);
                 }
                 if (trainClassTypeId != null)
                 {
                     filter = filter.And(d => d.TrainClassTypeId == trainClassTypeId);
-                }
-                if (term != null)
-                {
-                    filter = filter.And(d => d.YearTerm.Term == term);
                 }
                 if (departmentId != null)
                 {
@@ -141,7 +138,7 @@ namespace PartyMemberManager.Controllers
             if (CurrentUser.Roles == Role.学院党委)
                 ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.Where(d => d.Code.StartsWith("4")).OrderByDescending(d => d.Code), "Id", "Name");
             else
-                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderBy(d => d.Code), "Id", "Name");
+                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderByDescending(d => d.Code), "Id", "Name");
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
             ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
             return View(trainClass);
@@ -164,12 +161,56 @@ namespace PartyMemberManager.Controllers
             if (CurrentUser.Roles == Role.学院党委)
                 ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.Where(d => d.Code.StartsWith("4")).OrderByDescending(d => d.Code), "Id", "Name", trainClass.TrainClassTypeId);
             else
-                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderBy(d => d.Code), "Id", "Name", trainClass.TrainClassTypeId);
+                ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderByDescending(d => d.Code), "Id", "Name", trainClass.TrainClassTypeId);
             ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name", trainClass.DepartmentId);
             ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
             return View(trainClass);
         }
+        /// <summary>
+        /// 删除数据（通过ajax调用)
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost, ActionName("Delete")]
+        public override async Task<IActionResult> Delete(Guid? id)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "数据删除成功"
+            };
 
+            try
+            {
+                if (id == null)
+                    throw new PartyMemberException("未传入删除项目的Id");
+                var partyActivits = await _context.PartyActivists.Where(d => d.TrainClassId == id).ToListAsync();
+                if(partyActivits.Count()>0)
+                    throw new PartyMemberException("培训班中有入党积极分子，不能直接删除");
+                var potentialMembers = await _context.PotentialMembers.Where(d => d.TrainClassId == id).ToListAsync();
+                if (potentialMembers.Count() > 0)
+                    throw new PartyMemberException("培训班中有发展对象，不能直接删除");
+                var data = await _context.Set<TrainClass>().Where(DataFilter).SingleOrDefaultAsync(m => m.Id == id);
+                if (data == null)
+                    throw new PartyMemberException("未找到要删除的数据");
+                ValidateDeleteObject(data);
+                _context.Set<TrainClass>().Remove(data);
+                await _context.SaveChangesAsync();
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public override async Task<IActionResult> Save([Bind("YearTermId,Name,TrainClassTypeId,StartTime,PsGradeProportion,CsGradeProportion,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] TrainClass trainClass)

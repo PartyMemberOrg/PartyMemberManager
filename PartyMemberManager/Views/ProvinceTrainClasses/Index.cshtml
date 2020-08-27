@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PartyMemberManager.Dal.Entities.TrainClass>
+﻿@model IEnumerable<PartyMemberManager.Dal.Entities.ProvinceTrainClass>
 
 @{
     ViewData["Title"] = "Index";
@@ -6,39 +6,18 @@
 <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
     <div style="display:inline-block">
         <div class="layui-input-inline" style="width:80px">
-            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',550,460)" class="layui-btn layui-btn-primary">+添加</a>
+            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',500,500)" class="layui-btn layui-btn-primary">+添加</a>
         </div>
     </div>
     <div style="display:inline-block">
-        <label class="layui-form-label" style="padding:5px">学年/学期:</label>
-        <div class="layui-input-inline" style="width:240px">
-            <select name="YearTermId" asp-items="@ViewBag.YearTermId" class="layui-input" id="YearTermId">
-                <option value="">-请选择学年/学期-</option>
-            </select>
-        </div>
-    </div>
-    @if (CurrentUser.Roles > Role.学院党委)
-    {
-        <div style="display:inline-block">
-            <label class="layui-form-label" style="padding:5px;width:60px">部门:</label>
-            <div class="layui-input-inline" style="width:200px">
-                <select name="departmentId" asp-items="@ViewBag.DepartmentId" class="layui-input" id="departmentId">
-                    <option value="">-请选择部门-</option>
-                </select>
-            </div>
-        </div>
-    }
-    <div style="display:inline-block">
-        <label class="layui-form-label" style="padding:5px;width:100px">培训班类型:</label>
-        <div class="layui-input-inline" style="width:200px">
-            <select name="trainClassTypeId" asp-items="@ViewBag.TrainClassTypeId" class="layui-input" id="trainClassTypeId">
-                <option value="">-请选择培训班类型-</option>
-            </select>
+        <label class="layui-form-label" style="padding:5px;width:60px">年份:</label>
+        <div class="layui-input-inline" style="width:80px">
+            <input name="year" type="text" class="layui-input" id="year" readonly />
         </div>
     </div>
     <div style="display:inline-block">
         <div class="layui-input-inline" style="width:200px">
-            <input name="name" type="text" class="layui-input" placeholder="请输入关键词" id="keyword" />
+            <input name="name" type="text" class="layui-input" placeholder="请输入关键字" id="keyword" />
         </div>
     </div>
     <div style="display:inline-block">
@@ -50,6 +29,13 @@
     </div>
 </div>
 <table class="layui-hide" id="datatable"></table>
+<div style="margin-top: 10px">
+    <div class="layui-input-inline" style="width:80px">
+        <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="statisticsTotal()" data-type="statisticsTotal">
+            <i class="layui-icon layui-icon-table" style="font-size: 14px; color: #FFFFFF;"></i>统计人数
+        </a>
+    </div>
+</div>
 @Html.AntiForgeryToken()
 <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
 @section Scripts{
@@ -96,7 +82,7 @@
             layui.use('table', function () {
                 var table = layui.table;
                 table.reload('dataGrid', {
-                    url: '@Url.Action("GetDatasWithFilter")'
+                    url: '@Url.Action("GetDatas")'
                 });
             });
         }
@@ -106,7 +92,7 @@
 
                 tableObject = table.render({
                     elem: '#datatable'
-                    , url: '@Url.Action("GetDatasWithFilter")'
+                    , url: '@Url.Action("GetDatas")'
                     , page: true //开启分页
                     , limits: [10, 20, 50]
                     , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
@@ -114,13 +100,10 @@
                     , cols: [[
                         //{ type: 'checkbox' }
                         //,
-                        { field: 'termDisplay', title: '学年/学期', align: 'center' },
-                        { field: 'name', title:'名称', align: 'center' },
-                        { field: 'trainClassTypeDisplay', title: '培训班类型', align: 'center', templet: '#optClassTypeNameTpl' },
-                        { field: 'departmentDisplay', title: '所属部门', align: 'center', templet: '#optDepartmentNameTpl' },
-                        { field: 'startTime', title: '开始时间', align: 'center', templet: function (d) { return formatDate(d.startTime, 'yyyy-MM-dd');}},
-                        { field: 'psGradeProportion', title: '平时成绩比例', align: 'center' },
-                        { field: 'csGradeProportion', title: '考试成绩比例', align: 'center' },
+                        { field: 'year', title: '年份', align: 'center' },
+                        { field: 'name', title: '名称', align: 'center' },
+                        { field: 'total', title: '总人数', align: 'center' },
+                        { field: 'enabledDisplay', title: '是否启用', align: 'center' },
                         { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
@@ -129,7 +112,6 @@
                 });
             });
         }
-                        /**过滤数据 */
         function tablefilter() {
             //此处Id不要#号
             var tableId = "dataGrid";
@@ -138,16 +120,26 @@
                 table.reload(tableId, {
                     url: '@Url.Action("GetDatasWithFilter")'
                     , where: {
-                        trainClassTypeId: $("#trainClassTypeId").val(),
-                        yearTermId: $("#YearTermId").val(),
-                        departmentId: $("#departmentId").val(),
-                        keyword: $("#keyword").val(),
+                        year: $("#year").val(),
+                        keyword: $("#keyword").val()
                     }
                     , done: function (res, curr, count) {
                         fillPatientList(res,curr,count);showHideScrollBars(res.data.length);
                     }
                 });
             });
+        }
+        function statisticsTotal() {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("StatisticsTotal")',
+                dataType: 'json',
+                success: function (data) {
+                    layer.msg(data.msg);
+                    tablefilter();
+                }
+            });
+
         }
         /**显示隐藏滚动条 */
         function showHideScrollBars(count) {
@@ -163,7 +155,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 550, 460);
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 500, 500);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);
@@ -182,20 +174,14 @@
             <img src="~/images/gridmenu1x.png" />
         </a>
     </script>
-    <script type="text/html" id="optDepartmentNameTpl">
-        {{d.departmentDisplay}}
-    </script>
-    <script type="text/html" id="optClassTypetNameTpl">
-        {{d.trainClassTypeDisplay}}
-    </script>
     <script type="text/javascript">
         layui.use('laydate', function () {
             var laydate = layui.laydate;
             laydate.render({
-                elem: '#kwyear',
-                type: 'year',
+                elem: '#year',
+                type: 'year'
+                , trigger: 'click'
             });
         });
     </script>
 }
-
