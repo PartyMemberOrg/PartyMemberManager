@@ -559,13 +559,131 @@ namespace PartyMemberManager.Controllers
         public async Task<Stream> PrintPdf(Guid[] ids, bool isFillBlank = false)
         {
             List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
-            string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
-            WebReport webReport = new WebReport();
-            webReport.Report.Load(reportFile);
-            webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
-            webReport.Report.Prepare();
-            return View("Print",webReport);
-        }
+            if (partyActivistPrintViewModels.Count == 0)
+                throw new PartyMemberException("选择的所有发展对象成绩均不合格，无法打印");
+            List<PdfData> pdfDatas = new List<PdfData>();
+            foreach (PartyActivistPrintViewModel partyActivistPrintViewModel in partyActivistPrintViewModels)
+            {
+                if (isFillBlank)
+                {
+                    var data = new PdfData
+                    {
+                        //A4 new XSize(595, 842);
+                        PageSize = new System.Drawing.Size(287, 211),
+                        DocumentTitle = "入党积极分子培训结业证",
+                        DocumentName = "入党积极分子培训结业证",
+                        CreatedBy = "预备党员管理系统",
+                        Description = "预备党员管理系统",
+                        BackgroundImage = "ActivistTrain.png",
+                        DisplayItems = new List<DisplayItem>
+                {
+                    new DisplayItem{
+                        Text=partyActivistPrintViewModel.No,
+                        Font="楷体",
+                        FontSize=15,
+                        Location=new System.Drawing.PointF(220,22)
+                    },
+                    new DisplayItem{
+                        Text=partyActivistPrintViewModel.Name,
+                        Font="楷体",
+                        FontSize=27,
+                        Location=new System.Drawing.PointF(35,92)
+                    },
+                    new DisplayItem{
+                        Text=partyActivistPrintViewModel.StartYear,
+                        Font="楷体",
+                        FontSize=27,
+                        Location=new System.Drawing.PointF(116,92)
+                    },
+                    new DisplayItem{
+                        Text=partyActivistPrintViewModel.EndYear,
+                        Font="楷体",
+                        FontSize=27,
+                        Location=new System.Drawing.PointF(155,92)
+                    },
+                    new DisplayItem{
+                        Text=partyActivistPrintViewModel.Term,
+                        Font="楷体",
+                        FontSize=27,
+                        Location=new System.Drawing.PointF(214,92)
+                    },
+                    new DisplayItem{
+                        Text=partyActivistPrintViewModel.Year,
+                        Font="楷体",
+                        FontSize=26,
+                        Location=new System.Drawing.PointF(159,178)
+                    },
+                    new DisplayItem{
+                        Text=partyActivistPrintViewModel.Month,
+                        Font="楷体",
+                        FontSize=26,
+                        Location=new System.Drawing.PointF(190,178)
+                    },
+                    new DisplayItem{
+                        Text=partyActivistPrintViewModel.Day,
+                        Font="楷体",
+                        FontSize=26,
+                        Location=new System.Drawing.PointF(205,178)
+                    }
+                }
+
+                    };
+                    pdfDatas.Add(data);
+                }
+                else
+                {
+                    //打印全部文字（不打印背景图片）
+                    string name = partyActivistPrintViewModel.Name;
+                    if (name.Length < 3)
+                        name = " " + name + " ";
+                    var data = new PdfData
+                    {
+                        //A4 new XSize(595, 842);
+                        PageSize = new System.Drawing.Size(287, 211),
+                        DocumentTitle = "入党积极分子培训结业证",
+                        DocumentName = "入党积极分子培训结业证",
+                        CreatedBy = "预备党员管理系统",
+                        Description = "预备党员管理系统",
+                        BackgroundImage = "ActivistTrain.png",
+                        DisplayItems = new List<DisplayItem>
+                {
+                    new DisplayItem{
+                        Text=$@"党校证字 {partyActivistPrintViewModel.No} 号",
+                        Font="楷体",
+                        FontSize=15,
+                        Location=new System.Drawing.PointF(196,22)
+                    },
+                    new DisplayItem{
+                        Text=$@" {name} 同志参加了 {partyActivistPrintViewModel.StartYear} 至 {partyActivistPrintViewModel.EndYear} 学年第 {partyActivistPrintViewModel.Term} 期入党",
+                        Font="楷体",
+                        FontSize=27,
+                        Location=new System.Drawing.PointF(32,93)
+                    },
+                    new DisplayItem{
+                        Text=$@"积极分子培训班学习，培训考核成绩合格，准予结业。",
+                        Font="楷体",
+                        FontSize=27,
+                        Location=new System.Drawing.PointF(32,117)
+                    },
+                    new DisplayItem{
+                        Text=$@"党校校长：",
+                        Font="隶书",
+                        FontSize=30,
+                        Location=new System.Drawing.PointF(75,140)
+                    },
+                    new DisplayItem{
+                        Text=$@"中共兰州财经大学委员会党校",
+                        Font="楷体",
+                        FontSize=25,
+                        Location=new System.Drawing.PointF(145,162)
+                    },
+                    new DisplayItem{
+                        Text=$@"{partyActivistPrintViewModel.Year}年{partyActivistPrintViewModel.Month}月{partyActivistPrintViewModel.Day}日",
+                        Font="楷体",
+                        FontSize=26,
+                        Location=new System.Drawing.PointF(158,178)
+                    }
+                }
 
                     };
                     pdfDatas.Add(data);
