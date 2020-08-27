@@ -336,7 +336,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("打印", function () {
-                showEdit('@Url.Action("Print")'+'/' + id, '@Url.Action("Save")', '打印', 800, 800);
+                showEdit('@Url.Action("Print")'+'/' + id, '@Url.Action("Save")', '打印', 800, 600);
             })
             @*contextMenu.addMenuItem("编辑", function () {
                 showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 800, 800);
@@ -370,7 +370,7 @@
             if (datas == "")
                 showError("请选择成绩合格的发展对象");
             else
-                showContent('@Url.Action("PrintSelected")' + '?idList=' + datas, '打印结业证', 800, 800);
+                showContent('@Url.Action("PrintSelected")' + '?idList=' + datas, '打印结业证', 800, 600);
         }
         /**预览选中的发展对象培训结业证 */
         function previewSelected() {
@@ -387,7 +387,7 @@
             if (datas == "")
                 showError("请选择成绩合格的发展对象");
             else
-                showContent('@Url.Action("PreviewSelected")' + '?idList=' + datas, '打印结业证', 800, 800);
+                showContent('@Url.Action("PreviewSelected")' + '?idList=' + datas, '打印结业证', 800, 600);
         }
     </script>
     <script type="text/html" id="optTpl">
