@@ -1,5 +1,6 @@
 ﻿using AspNetCorePdf.PdfProvider.DataModel;
 using DocumentFormat.OpenXml.Wordprocessing;
+using MigraDoc.DocumentObjectModel;
 using PartyMemberManager.PdfProvider.DataModel;
 using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
@@ -16,7 +17,6 @@ namespace AspNetCorePdf.PdfProvider
         private string _createdDocsPath = ".\\PdfProvider\\Created";
         private string _imagesPath = ".\\PdfProvider\\Images";
         private string _resourcesPath = ".\\PdfProvider\\Resources";
-        private double scale = 2.835016835016835;
 
         public Stream CreatePdf(IEnumerable<PdfData> pdfDatas)
         {
@@ -30,9 +30,9 @@ namespace AspNetCorePdf.PdfProvider
             {
                 var page = document.AddPage();
                 //A4 new XSize(595, 842);，从mm转换
-                page.Width = (int)(pdfData.PageSize.Width * scale);
-                page.Height = (int)(pdfData.PageSize.Height * scale);
-                var gfx = XGraphics.FromPdfPage(page);
+                page.Width = new XUnit(pdfData.PageSize.Width, XGraphicsUnit.Millimeter);// (int)(pdfData.PageSize.Width * scale);
+                page.Height = new XUnit(pdfData.PageSize.Height, XGraphicsUnit.Millimeter);// (int)(pdfData.PageSize.Height * scale);
+                var gfx = XGraphics.FromPdfPage(page,XGraphicsUnit.Millimeter);
                 if (!string.IsNullOrEmpty(pdfData.BackgroundImage))
                     AddBackground(gfx, page, $"{_imagesPath}\\{pdfData.BackgroundImage}", 0, 0);
                 //AddTitleAndFooter(page, gfx, pdfData.DocumentTitle, document, pdfData);
@@ -56,11 +56,14 @@ namespace AspNetCorePdf.PdfProvider
             }
 
             XImage xImage = XImage.FromFile(imagePath);
-            double imageScale = xImage.PixelHeight / page.Height;
+            Unit imageWidth = Unit.FromPoint(xImage.PointWidth);
+            Unit imageHeight = Unit.FromPoint(xImage.PointHeight);
+            double imageScale = imageHeight / page.Height;
             //gfx.DrawImage(xImage, xPosition, yPosition, xImage.PixelWidth / imageScale, xImage.PixelHeight / imageScale);
-            XRect xrectSource = new XRect { X = xPosition, Y = yPosition, Width = xImage.PixelWidth, Height = xImage.PixelHeight };
-            XRect xrect = new XRect { X = xPosition, Y = yPosition, Width = xImage.PixelWidth / imageScale, Height = xImage.PixelHeight / imageScale };
-            gfx.DrawImage(xImage, xrect, xrect, XGraphicsUnit.Point);
+            XRect xrectSource = new XRect { X = xPosition, Y = yPosition, Width = imageWidth.Millimeter, Height = imageHeight.Millimeter };
+            XRect xrect = new XRect { X = xPosition, Y = yPosition, Width = imageWidth.Millimeter/ imageScale, Height = imageHeight.Millimeter / imageScale };
+
+            gfx.DrawImage(xImage, xrect, xrect, XGraphicsUnit.Millimeter);
         }
 
         void AddTitleAndFooter(PdfPage page, XGraphics gfx, string title, PdfDocument document, PdfData pdfData)
@@ -95,7 +98,7 @@ namespace AspNetCorePdf.PdfProvider
 
         void AddText(XGraphics gfx, PdfData pdfData)
         {
-            int listItemHeight = 30;
+            int listItemHeight = 15;
 
             for (int i = 0; i < pdfData.DisplayItems.Count; i++)
             {
@@ -103,9 +106,11 @@ namespace AspNetCorePdf.PdfProvider
                 string fontName = displayItem.Font;
                 if (string.IsNullOrEmpty(fontName))
                     fontName = "宋体";
-                var font = new XFont(displayItem.Font, displayItem.FontSize, XFontStyle.Regular);
+                //将字体的大小由点转换为毫米（为方便，统一使用毫米作为单位）
+                Unit fontSize = new Unit(displayItem.FontSize, UnitType.Point);
+                var font = new XFont(displayItem.Font, fontSize.Millimeter, XFontStyle.Regular);
                 XTextFormatter tf = new XTextFormatter(gfx);
-                XRect rect = new XRect(displayItem.Location.X * scale, displayItem.Location.Y * scale, 900, listItemHeight);
+                XRect rect = new XRect(displayItem.Location.X, displayItem.Location.Y, 400, listItemHeight);
                 //gfx.DrawRectangle(XBrushes.White, rect);
                 var data = $"{displayItem.Text}";
                 tf.DrawString(data, font, XBrushes.Black, rect, XStringFormats.TopLeft);
