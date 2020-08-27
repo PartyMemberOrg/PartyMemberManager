@@ -8,91 +8,88 @@
         @*<div class="layui-input-inline" style="width:60px">
             <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,800)" class="layui-btn layui-btn-primary">+添加</a>
         </div>*@
-        <input type="hidden" id="TrainClassTypeId" value="@ViewBag.TrainClassTypeId" />
-        <div style="display:inline-block">
-            <label class="layui-form-label" style="padding:5px">学年/学期:</label>
-            <div class="layui-input-inline" style="width:240px">
-                <select name="YearTermId" asp-items="@ViewBag.YearTermId" class="layui-input" id="YearTermId">
-                    <option value="">-请选择学年/学期-</option>
-                </select>
-            </div>
-        </div>
-        @if (CurrentUser.Roles > Role.学院党委)
-        {
-            <div style="display:inline-block">
-                <label class="layui-form-label" style="padding:5px;width:60px">部门:</label>
-                <div class="layui-input-inline" style="width:200px">
-                    <select name="DepartmentId" asp-items="@ViewBag.DepartmentId" class="layui-input" id="DepartmentId">
-                        <option value="">-请选择部门-</option>
-                    </select>
-                </div>
-            </div>
-        }
-        <div style="display:inline-block">
-            <label class="layui-form-label" style="padding:5px;width:60px">培训班:</label>
-            <div class="layui-input-inline" style="width:240px">
-                <select name="TrainClassId" asp-items="@ViewBag.TrainClassId" class="layui-input" id="TrainClassId">
-                    <option value="">-请选择培训班-</option>
-                </select>
-            </div>
-        </div>
-        <div style="display:inline-block">
-            <label class="layui-form-label" style="padding:5px">是否合格:</label>
-            <div class="layui-input-inline" style="width:80px;">
-                <select name="isPass" class="layui-input" id="isPass">
-                    <option value="">-全部-</option>
-                    <option value="true">合格</option>
-                    <option value="false">不合格</option>
-                </select>
-            </div>
-        </div>
-        <div style="display:inline-block">
-            <label class="layui-form-label" style="padding:5px">是否补考:</label>
-            <div class="layui-input-inline" style="width:80px;">
-                <select name="isBcGrade" class="layui-input" id="isBcGrade">
-                    <option value="">-全部-</option>
-                    <option value="true">补考</option>
-                    <option value="false">非补考</option>
-                </select>
-            </div>
-        </div>
-        <div style="display:inline-block">
-            <label class="layui-form-label" style="padding:5px;width:100px">是否打印证书:</label>
-            <div class="layui-input-inline" style="width:80px;">
-                <select name="isPrint" class="layui-input" id="isPrint">
-                    <option value="">-全部-</option>
-                    <option value="true">已打印</option>
-                    <option value="false">未打印</option>
-                </select>
-            </div>
-        </div>
-        <div style="display:inline-block">
-            <div class="layui-input-inline" style="width:200px">
-                <input name="keyword" type="text" class="layui-input" placeholder="请输入学号/工号/姓名" id="keyword" />
-            </div>
-        </div>
-        <div style="display:inline-block">
-            <div class="layui-input-inline" style="width:80px">
-                <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
-                    <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
-                </a>
-            </div>
-        </div>
-        <div style="display:inline-block">
-            <div class="layui-input-inline" style="width:110px">
-                <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="importExcel()">
-                    <i class="layui-icon layui-icon-loading" style="font-size: 14px; color: #FFFFFF;"></i>导入成绩
-                </a>
-            </div>
-        </div>
-        <div style="display:inline-block">
-            <div class="layui-input-inline" style="width:110px">
-                <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="printSelected()">
-                    <i class="layui-icon layui-icon-loading" style="font-size: 14px; color: #FFFFFF;"></i>打印
-                </a>
-            </div>
+    <input type="hidden" id="TrainClassTypeId" value="@ViewBag.TrainClassTypeId" />
+    <div style="display:inline-block">
+        <label class="layui-form-label" style="padding:5px">学年/学期:</label>
+        <div class="layui-input-inline" style="width:240px">
+            <select name="YearTermId" asp-items="@ViewBag.YearTermId" class="layui-input" id="YearTermId">
+                <option value="">-请选择学年/学期-</option>
+            </select>
         </div>
     </div>
+    @if (CurrentUser.Roles > Role.学院党委)
+    {
+        <div style="display:inline-block">
+            <label class="layui-form-label" style="padding:5px;width:60px">部门:</label>
+            <div class="layui-input-inline" style="width:200px">
+                <select name="DepartmentId" asp-items="@ViewBag.DepartmentId" class="layui-input" id="DepartmentId">
+                    <option value="">-请选择部门-</option>
+                </select>
+            </div>
+        </div>
+    }
+    <div style="display:inline-block">
+        <label class="layui-form-label" style="padding:5px;width:60px">培训班:</label>
+        <div class="layui-input-inline" style="width:240px">
+            <select name="TrainClassId" asp-items="@ViewBag.TrainClassId" class="layui-input" id="TrainClassId">
+                <option value="">-请选择培训班-</option>
+            </select>
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <label class="layui-form-label" style="padding:5px">是否合格:</label>
+        <div class="layui-input-inline" style="width:80px;">
+            <select name="isPass" class="layui-input" id="isPass">
+                <option value="">-全部-</option>
+                <option value="true">-合格-</option>
+                <option value="false">-不合格-</option>
+            </select>
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <label class="layui-form-label" style="padding:5px;width:100px">是否打印证书:</label>
+        <div class="layui-input-inline" style="width:80px;">
+            <select name="isPrint" class="layui-input" id="isPrint">
+                <option value="">-全部-</option>
+                <option value="true">-已打印-</option>
+                <option value="false">-未打印-</option>
+            </select>
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <div class="layui-input-inline" style="width:200px">
+            <input name="keyword" type="text" class="layui-input" placeholder="请输入学号/工号/姓名" id="keyword" />
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <div class="layui-input-inline" style="width:80px">
+            <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
+                <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
+            </a>
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <div class="layui-input-inline" style="width:110px">
+            <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="importExcel()">
+                <i class="layui-icon layui-icon-export" style="font-size: 14px; color: #FFFFFF;"></i>导入成绩
+            </a>
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <div class="layui-input-inline" style="width:80px">
+            <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="printSelected()">
+                <i class="layui-icon layui-icon-print" style="font-size: 14px; color: #FFFFFF;"></i>打印
+            </a>
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <div class="layui-input-inline" style="width:80px">
+            <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="previewSelected()">
+                <i class="layui-icon layui-icon-print" style="font-size: 14px; color: #FFFFFF;"></i>预览
+            </a>
+        </div>
+    </div>
+</div>
 <form id="GradeTable" method="post">
     <table class="layui-hide" id="datatable" lay-filter="datatable"></table>
 </form>
@@ -344,7 +341,7 @@
         function showOperatMenu(event, id,totalGrade,isPass) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("打印", function () {
-                showContent('@Url.Action("Print")' + '?id=' + id, '打印', 800, 800);
+                showContent('@Url.Action("Print")' + '?id=' + id, '打印', 800, 600);
             })
                 contextMenu.addMenuItem("录入补考成绩", function () {
                     showEdit('@Url.Action("BcGrade", "ActivistTrainResults")' + '/' + id, '@Url.Action("BcGrade", "ActivistTrainResults")', '录入补考成绩', 500, 400);
@@ -379,7 +376,24 @@
             if (datas == "")
                 showError("请选择成绩合格的入党积极分子");
             else
-                showContent('@Url.Action("PrintSelected")' + '?idList=' + datas, '打印结业证', 800, 800);
+                showContent('@Url.Action("PrintSelected")' + '?idList=' + datas, '打印结业证', 800, 600);
+        }
+        /**预览选中的积极分子培训结业证 */
+        function previewSelected() {
+            var datas="";
+            layui.use('table', function () {
+                var table = layui.table;
+                var checkData = table.checkStatus('dataGrid').data;
+                    for (i = 0; i < checkData.length; i++) {
+                        if (checkData[i].isPass == true) {
+                            datas+=checkData[i].id+",";
+                        }
+                    }
+            });
+            if (datas == "")
+                showError("请选择成绩合格的入党积极分子");
+            else
+                showContent('@Url.Action("PreviewSelected")' + '?idList=' + datas, '打印结业证', 800, 600);
         }
     </script>
     <script type="text/html" id="optTpl">

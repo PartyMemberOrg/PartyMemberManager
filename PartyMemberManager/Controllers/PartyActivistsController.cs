@@ -470,8 +470,8 @@ namespace PartyMemberManager.Controllers
                         #region 导入入党积极分子
                         DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
                         int rowIndex = 0;
-                        string fieldsTeacher = "姓名,性别,出生年月,民族,所在部门,工号,身份证号,联系电话,提交入党申请时间,备注";
-                        string fieldsStudent = "姓名,学号,身份证号,性别,出生年月,民族,所在学院,所在班级,联系电话,提交入党申请时间,担任职务,备注";
+                        string fieldsTeacher = "姓名,性别,出生年月,民族,所在部门,工号,身份证号,联系电话,提交入党申请时间,确定入党积极分子时间,备注";
+                        string fieldsStudent = "姓名,学号,身份证号,性别,出生年月,民族,所在学院,所在班级,联系电话,提交入党申请时间,担任职务,确定入党积极分子时间,备注";
                         string[] fieldListTeacher = fieldsTeacher.Split(',');
                         string[] fieldListStudent = fieldsStudent.Split(',');
                         bool isTeacher = true;
@@ -518,6 +518,7 @@ namespace PartyMemberManager.Controllers
                                 string idField = "身份证号";
                                 string phoneField = "联系电话";
                                 string timeField = "提交入党申请时间";
+                                string confirmTimeField = "确定入党积极分子时间";
                                 string remarkField = "备注";
                                 string name = row[nameField].ToString();
                                 string sex = row[sexField].ToString();
@@ -528,6 +529,7 @@ namespace PartyMemberManager.Controllers
                                 string id = row[idField].ToString();
                                 string phone = row[phoneField].ToString();
                                 string time = row[timeField].ToString();
+                                string confirmTime= row[confirmTimeField].ToString();
                                 string remark = row[remarkField].ToString();
                                 //跳过姓名为空的记录
                                 if (string.IsNullOrEmpty(name)) continue;
@@ -547,6 +549,11 @@ namespace PartyMemberManager.Controllers
                                 {
                                     throw new PartyMemberException($"第{rowIndex}行数据中的【{timeField}】日期格式不合法");
                                 }
+                                DateTime confirmTimeValue = DateTime.Now;
+                                if (!TryParseDate(confirmTime, out confirmTimeValue))
+                                {
+                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{confirmTimeField}】日期格式不合法");
+                                }
                                 Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                                 Guid nationId = nationData.Id;
                                 //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
@@ -561,8 +568,7 @@ namespace PartyMemberManager.Controllers
                                 partyActivist.IdNumber = id;
                                 partyActivist.Phone = phone;
                                 partyActivist.ApplicationTime = timeValue;
-                                //该字段不允许为空有问题
-                                partyActivist.ActiveApplicationTime = timeValue;
+                                partyActivist.ActiveApplicationTime = confirmTimeValue;
                                 partyActivist.PartyMemberType = PartyMemberType.教师;
                             }
                             else
@@ -574,6 +580,7 @@ namespace PartyMemberManager.Controllers
                                 string idField = "身份证号";
                                 string phoneField = "联系电话";
                                 string timeField = "提交入党申请时间";
+                                string confirmTimeField = "确定入党积极分子时间";
                                 string remarkField = "备注";
                                 string studentNoField = "学号";
                                 string collegeField = "所在学院";
@@ -586,6 +593,7 @@ namespace PartyMemberManager.Controllers
                                 string id = row[idField].ToString();
                                 string phone = row[phoneField].ToString();
                                 string time = row[timeField].ToString();
+                                string confirmTime = row[confirmTimeField].ToString();
                                 string remark = row[remarkField].ToString();
                                 string studentNo = row[studentNoField].ToString();
                                 string college = row[collegeField].ToString();
@@ -609,6 +617,11 @@ namespace PartyMemberManager.Controllers
                                 {
                                     throw new PartyMemberException($"第{rowIndex}行数据中的【{timeField}】日期格式不合法");
                                 }
+                                DateTime confirmTimeValue = DateTime.Now;
+                                if (!TryParseDate(confirmTime, out confirmTimeValue))
+                                {
+                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{confirmTimeField}】日期格式不合法");
+                                }
                                 Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                                 Guid nationId = nationData.Id;
                                 //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
@@ -623,8 +636,7 @@ namespace PartyMemberManager.Controllers
                                 partyActivist.IdNumber = id;
                                 partyActivist.Phone = phone;
                                 partyActivist.ApplicationTime = timeValue;
-                                //该字段不允许为空有问题
-                                partyActivist.ActiveApplicationTime = timeValue;
+                                partyActivist.ActiveApplicationTime = confirmTimeValue;
                                 partyActivist.Class = @class;
                                 partyActivist.Duty = title;
                                 partyActivist.PartyMemberType = PartyMemberType.学生;

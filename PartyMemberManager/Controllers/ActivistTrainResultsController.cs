@@ -25,14 +25,22 @@ using System.IO;
 using System.Data;
 using ExcelCore;
 using Newtonsoft.Json;
+using AspNetCorePdf.PdfProvider.DataModel;
+using AspNetCorePdf.PdfProvider;
+using Microsoft.VisualBasic;
+using PartyMemberManager.PdfProvider.DataModel;
 
 namespace PartyMemberManager.Controllers
 {
     public class ActivistTrainResultsController : PartyMemberDataControllerBase<ActivistTrainResult>
     {
+        private readonly IPdfSharpService _pdfService;
+        private readonly IMigraDocService _migraDocService;
 
-        public ActivistTrainResultsController(ILogger<ActivistTrainResultsController> logger, PMContext context, IHttpContextAccessor accessor) : base(logger, context, accessor)
+        public ActivistTrainResultsController(ILogger<ActivistTrainResultsController> logger, PMContext context, IHttpContextAccessor accessor, IPdfSharpService pdfService, IMigraDocService migraDocService) : base(logger, context, accessor)
         {
+            _pdfService = pdfService;
+            _migraDocService = migraDocService;
         }
 
         // GET: ActivistTrainResults
@@ -426,6 +434,9 @@ namespace PartyMemberManager.Controllers
             foreach (Guid id in ids)
             {
                 ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.FindAsync(id);
+                //如果成绩和补考成绩均不合格，不能打印，也不生成证书编号
+                if (!activistTrainResult.IsPass)
+                    continue;
                 PartyActivist partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);
                 YearTerm yearTerm = await _context.YearTerms.FindAsync(partyActivist.YearTermId);
                 TrainClass trainClass = await _context.TrainClasses.FindAsync(partyActivist.TrainClassId);
@@ -433,7 +444,23 @@ namespace PartyMemberManager.Controllers
                 TrainClassType trainClassType = await _context.TrainClassTypes.FindAsync(trainClass.TrainClassTypeId);
                 DateTime dateTime = DateTime.Today;
                 //编号可能需要在录入成绩后生成，暂时生成1号结业证编号
-                string no = string.Format("{0:yyyy}{1:00}{2:00}{0:MM}{3:000}", trainClass.StartTime.Value, trainClassType.Code, department.Code, 1);
+                string no = null;
+                if (string.IsNullOrEmpty(activistTrainResult.CertificateNumber))
+                {
+                    ActivistTrainResult activistTrainResultLast = await _context.ActivistTrainResults.Include(p => p.PartyActivist).Where(p => p.PartyActivist.TrainClassId == trainClass.Id && p.CertificateOrder > 0).OrderByDescending(p => p.CertificateOrder).FirstOrDefaultAsync();
+                    int certificateOrder = 1;
+                    if (activistTrainResultLast != null)
+                        certificateOrder = activistTrainResultLast.CertificateOrder.Value + 1;
+                    no = string.Format("{0:yyyy}{1:00}{2:00}{0:MM}{3:000}", trainClass.StartTime.Value, trainClassType.Code, department.Code, certificateOrder);
+                    //更新证书编号
+                    activistTrainResult.CertificateOrder = certificateOrder;
+                    activistTrainResult.CertificateNumber = no;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    no = activistTrainResult.CertificateNumber;
+                }
                 PartyActivistPrintViewModel model = new PartyActivistPrintViewModel
                 {
                     No = no,
@@ -447,35 +474,108 @@ namespace PartyMemberManager.Controllers
                 };
                 datas.Add(model);
             }
-
             return datas;
         }
 
         public async Task<IActionResult> Print(Guid id)
         {
-            PartyActivistPrintViewModel model = await GetReportData(id);
-            List<PartyActivistPrintViewModel> partyActivistPrintViewModels = new List<PartyActivistPrintViewModel>();
-            partyActivistPrintViewModels.Add(model);
-            string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
-            WebReport webReport = new WebReport();
-            webReport.Report.Load(reportFile);
-            webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
-            webReport.Report.Prepare();
-            return View(webReport);
+            try
+            {
+                //PartyActivistPrintViewModel model = await GetReportData(id);
+                //List<PartyActivistPrintViewModel> partyActivistPrintViewModels = new List<PartyActivistPrintViewModel>();
+                //partyActivistPrintViewModels.Add(model);
+                //string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
+                //WebReport webReport = new WebReport();
+                //webReport.Report.Load(reportFile);
+                //webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
+                //webReport.Report.Prepare();
+                //return View(webReport);
+                var stream = await PrintPdf(new Guid[] { id });
+                return File(stream, "application/pdf");
+            }
+            catch (PartyMemberException ex)
+            {
+                return View("PrintError", ex);
+            }
+            catch (Exception ex)
+            {
+                return View("PrintError", ex);
+            }
         }
 
         public async Task<IActionResult> PrintSelected(string idList)
         {
-            Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
+            try
+            {
+                Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
+                //List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
+                //string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
+                //WebReport webReport = new WebReport();
+                //webReport.Report.Load(reportFile);
+                //webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
+                //webReport.Report.Prepare();
+                //return View("Print",webReport);
+                var stream = await PrintPdf(ids);
+                //return File(stream, "application/pdf","入党积极分子结业证.pdf");
+                FileStreamResult fileStreamResult = File(stream, "application/pdf");
+                //fileStreamResult.FileDownloadName = "入党积极分子结业证.pdf";
+                return fileStreamResult;
+            }
+            catch (PartyMemberException ex)
+            {
+                return View("PrintError", ex);
+            }
+            catch (Exception ex)
+            {
+                return View("PrintError", ex);
+            }
+        }
+
+        public async Task<IActionResult> PreviewSelected(string idList)
+        {
+            try
+            {
+                Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
+                var stream = await PrintPdf(ids,true);
+                FileStreamResult fileStreamResult = File(stream, "application/pdf");
+                return fileStreamResult;
+            }
+            catch (PartyMemberException ex)
+            {
+                return View("PrintError", ex);
+            }
+            catch (Exception ex)
+            {
+                return View("PrintError", ex);
+            }
+        }
+
+        /// <summary>
+        /// 打印PDF格式
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <param name="isFillBlank">//如果套打，则只打印空</param>
+        /// <returns></returns>
+        public async Task<Stream> PrintPdf(Guid[] ids, bool isFillBlank = false)
+        {
             List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
             string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
             WebReport webReport = new WebReport();
             webReport.Report.Load(reportFile);
             webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
             webReport.Report.Prepare();
-            return View("Print", webReport);
+            return View("Print",webReport);
         }
 
+                    };
+                    pdfDatas.Add(data);
+
+                }
+            }
+            var stream = _pdfService.CreatePdf(pdfDatas);
+            //var stream = _migraDocService.CreateMigraDocPdf(pdfDatas);
+            return stream;
+        }
         /// <summary>
         /// 导入入党积极分子培训成绩
         /// </summary>
