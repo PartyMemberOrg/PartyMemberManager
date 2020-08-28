@@ -419,7 +419,8 @@ namespace PartyMemberManager.Controllers
                 {
                     no = potentialTrainResult.CertificateNumber;
                 }
-                potentialTrainResult.IsPrint = true;
+                //现在只有发展对象表中有isPrint
+                potentialMember.IsPrint = true;
                 await _context.SaveChangesAsync();
                 PotentialMemberPrintViewModel model = new PotentialMemberPrintViewModel
                 {

@@ -460,7 +460,8 @@ namespace PartyMemberManager.Controllers
                 {
                     no = activistTrainResult.CertificateNumber;
                 }
-                activistTrainResult.IsPrint = true;
+                //现在只有入党积极分子表中有isPrint
+                partyActivist.IsPrint = true;
                 await _context.SaveChangesAsync();
                 PartyActivistPrintViewModel model = new PartyActivistPrintViewModel
                 {
