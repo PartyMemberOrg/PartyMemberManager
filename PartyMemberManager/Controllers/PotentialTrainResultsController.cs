@@ -414,12 +414,13 @@ namespace PartyMemberManager.Controllers
                     //更新证书编号
                     potentialTrainResult.CertificateOrder = certificateOrder;
                     potentialTrainResult.CertificateNumber = no;
-                    await _context.SaveChangesAsync();
                 }
                 else
                 {
                     no = potentialTrainResult.CertificateNumber;
                 }
+                potentialTrainResult.IsPrint = true;
+                await _context.SaveChangesAsync();
                 PotentialMemberPrintViewModel model = new PotentialMemberPrintViewModel
                 {
                     No = no,
@@ -477,7 +478,7 @@ namespace PartyMemberManager.Controllers
             try
             {
                 Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
-                var stream = await PrintPdf(ids,true);
+                var stream = await PrintPdf(ids, true);
                 FileStreamResult fileStreamResult = File(stream, "application/pdf");
                 return fileStreamResult;
             }

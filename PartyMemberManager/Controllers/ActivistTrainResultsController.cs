@@ -94,7 +94,7 @@ namespace PartyMemberManager.Controllers
                 {
                     if (isBcGrade == "true")
                         filter = filter.And(d => d.BcGrade != null);
-                    else if(isBcGrade == "false")
+                    else if (isBcGrade == "false")
                         filter = filter.And(d => d.BcGrade == null);
                 }
                 if (!string.IsNullOrEmpty(isPrint))
@@ -351,7 +351,7 @@ namespace PartyMemberManager.Controllers
                         var psProp = activistTrainResult.PartyActivist.TrainClass.PsGradeProportion;
                         var csProp = activistTrainResult.PartyActivist.TrainClass.CsGradeProportion;
                         if (activistTrainResult != null && partyActivist.IsPrint == false)
-                        {   
+                        {
                             decimal psGrade = 0;
                             decimal csGrade = 0;
                             if (decimal.TryParse(subItem[1], out psGrade))
@@ -455,12 +455,13 @@ namespace PartyMemberManager.Controllers
                     //更新证书编号
                     activistTrainResult.CertificateOrder = certificateOrder;
                     activistTrainResult.CertificateNumber = no;
-                    await _context.SaveChangesAsync();
                 }
                 else
                 {
                     no = activistTrainResult.CertificateNumber;
                 }
+                activistTrainResult.IsPrint = true;
+                await _context.SaveChangesAsync();
                 PartyActivistPrintViewModel model = new PartyActivistPrintViewModel
                 {
                     No = no,
@@ -536,7 +537,7 @@ namespace PartyMemberManager.Controllers
             try
             {
                 Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
-                var stream = await PrintPdf(ids,true);
+                var stream = await PrintPdf(ids, true);
                 FileStreamResult fileStreamResult = File(stream, "application/pdf");
                 return fileStreamResult;
             }
