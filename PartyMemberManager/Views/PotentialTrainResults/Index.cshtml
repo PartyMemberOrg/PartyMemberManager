@@ -254,7 +254,7 @@
                         trainClassId: $("#trainClass").val()
                     }
                     , done: function (res, curr, count) {
-                        fillPatientList(res,curr,count);showHideScrollBars(res.data.length);
+                        showHideScrollBars(res.data.length);
                     }
                 });
             });

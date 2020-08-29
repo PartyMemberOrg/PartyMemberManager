@@ -14,6 +14,12 @@ using PartyMemberManager.Framework.Models.JsonModels;
 using Microsoft.AspNetCore.Http;
 using PartyMemberManager.Dal;
 using PartyMemberManager.Dal.Entities;
+using PartyMemberManager.Models;
+using System.IO;
+using System.Data;
+using ExcelCore;
+using PartyMemberManager.Core.Enums;
+using Newtonsoft.Json;
 
 namespace PartyMemberManager.Controllers
 {
@@ -57,7 +63,7 @@ namespace PartyMemberManager.Controllers
                 }
                 if (keyword != null)
                 {
-                    filter = filter.And(d => d.Name.Contains(keyword) || d.Department.Contains(keyword)|| d.Post.Contains(keyword));
+                    filter = filter.And(d => d.Name.Contains(keyword) || d.Department.Contains(keyword) || d.Post.Contains(keyword));
                 }
                 var data = await _context.Set<ProvinceCadreTrain>().Include(d => d.ProvinceTrainClass).Include(d => d.Nation)
                     .Where(filter)
@@ -295,6 +301,143 @@ namespace PartyMemberManager.Controllers
             return Json(jsonResult);
         }
 
+        /// <summary>
+        /// 导入省级干部培训名单
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Import()
+        {
+            ProvinceCadreTrainImportViewModel model = new ProvinceCadreTrainImportViewModel
+            {
+                Year = DateTime.Today.Year,
+            };
+            ViewBag.ProvinceTrainClasses = new SelectList(_context.ProvinceTrainClasses.OrderBy(d => d.Ordinal), "Id", "Name");
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Import(ProvinceCadreTrainImportViewModel model)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "数据保存成功"
+            };
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    IFormFile file = model.File;
+                    if (file != null)
+                    {
+                        ProvinceTrainClass provinceTrainClass = await _context.ProvinceTrainClasses.FindAsync(model.ProvinceTrainClassId);
+                        Stream stream = file.OpenReadStream();
+                        var filePath = Path.GetTempFileName();
+                        var fileStream = System.IO.File.Create(filePath);
+                        await file.CopyToAsync(fileStream);
+                        await fileStream.FlushAsync();
+                        fileStream.Close();
+                        #region 省级干部培训
+                        DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
+                        int rowIndex = 0;
+                        string fieldsStudent = "序号,姓名,身份证,性别,民族,所在单位,职务,联系电话,备注";
+                        string[] fieldList = fieldsStudent.Split(',');
+                        foreach (string field in fieldList)
+                        {
+                            if (!table.Columns.Contains(field))
+                                throw new PartyMemberException($"缺少【{field}】列");
+                        }
+                        foreach (DataRow row in table.Rows)
+                        {
+                            rowIndex++;
+                            ProvinceCadreTrain provinceCadreTrain = new ProvinceCadreTrain
+                            {
+                                Id = Guid.NewGuid(),
+                                CreateTime = DateTime.Now,
+                                Ordinal = rowIndex,
+                                OperatorId = CurrentUser.Id,
+                                ProvinceTrainClassId = provinceTrainClass.Id,
+                            };
+                            string nameField = "姓名";
+                            string sexField = "性别";
+                            string nationField = "民族";
+                            string idField = "身份证";
+                            string phoneField = "联系电话";
+                            string remarkField = "备注";
+                            string departmentField = "所在单位";
+                            string titleField = "职务";
+                            string name = row[nameField].ToString();
+                            string sex = row[sexField].ToString();
+                            string nation = row[nationField].ToString();
+                            string id = row[idField].ToString();
+                            string phone = row[phoneField].ToString();
+                            string remark = row[remarkField].ToString();
+                            string title = row[titleField].ToString();
+                            string department = row[departmentField].ToString();
+                            //跳过姓名为空的记录
+                            if (string.IsNullOrEmpty(name)) continue;
+                            Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
+                            Guid nationId = nationData.Id;
+                            provinceCadreTrain.Name = name;
+                            provinceCadreTrain.Sex = Sex.Parse<Sex>(sex);
+                            provinceCadreTrain.NationId = nationId;
+                            provinceCadreTrain.IdNumber = id;
+                            provinceCadreTrain.Phone = phone;
+                            provinceCadreTrain.Post = title;
+                            provinceCadreTrain.Department = department;
+
+                            _context.ProvinceCadreTrains.Add(provinceCadreTrain);
+                            await _context.SaveChangesAsync();
+                        }
+                        #endregion
+                    }
+                    else
+                    {
+                        jsonResult.Code = -1;
+                        jsonResult.Message = "请选择文件";
+                    }
+                }
+                else
+                {
+                    foreach (string key in ModelState.Keys)
+                    {
+                        if (ModelState[key].Errors.Count > 0)
+                            jsonResult.Errors.Add(new ModelError
+                            {
+                                Key = key,
+                                Message = ModelState[key].Errors[0].ErrorMessage
+                            });
+                    }
+                    jsonResult.Code = -1;
+                    jsonResult.Message = "数据错误";
+                }
+
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "入党积极分子导入错误";
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (JsonReaderException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "JSON文件内容格式错误";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
 
         private bool ProvinceCadreTrainExists(Guid id)
         {

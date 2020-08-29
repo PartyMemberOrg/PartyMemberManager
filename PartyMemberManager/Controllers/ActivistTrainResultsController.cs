@@ -462,6 +462,7 @@ namespace PartyMemberManager.Controllers
                 }
                 //现在只有入党积极分子表中有isPrint
                 partyActivist.IsPrint = true;
+                partyActivist.PrintTime = DateTime.Now;
                 await _context.SaveChangesAsync();
                 PartyActivistPrintViewModel model = new PartyActivistPrintViewModel
                 {

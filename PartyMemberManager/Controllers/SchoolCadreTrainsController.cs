@@ -14,6 +14,11 @@ using PartyMemberManager.Framework.Models.JsonModels;
 using Microsoft.AspNetCore.Http;
 using PartyMemberManager.Dal;
 using PartyMemberManager.Dal.Entities;
+using System.IO;
+using System.Data;
+using ExcelCore;
+using Newtonsoft.Json;
+using PartyMemberManager.Models;
 
 namespace PartyMemberManager.Controllers
 {
@@ -238,6 +243,149 @@ namespace PartyMemberManager.Controllers
             return Json(jsonResult);
         }
 
+        /// <summary>
+        /// 导入省级干部培训名单
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Import()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Import(SchoolCadreTranImportViewModel model)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "数据保存成功"
+            };
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    IFormFile file = model.File;
+                    if (file != null)
+                    {
+                        Stream stream = file.OpenReadStream();
+                        var filePath = Path.GetTempFileName();
+                        var fileStream = System.IO.File.Create(filePath);
+                        await file.CopyToAsync(fileStream);
+                        await fileStream.FlushAsync();
+                        fileStream.Close();
+                        #region 领导干部培训名单
+                        DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
+                        int rowIndex = 0;
+                        string fieldsStudent = "序号,姓名,培训班次,组织单位,培训单位,年度,培训时间,时长,地点,备注";
+                        string[] fieldList = fieldsStudent.Split(',');
+                        foreach (string field in fieldList)
+                        {
+                            if (!table.Columns.Contains(field))
+                                throw new PartyMemberException($"缺少【{field}】列");
+                        }
+                        foreach (DataRow row in table.Rows)
+                        {
+                            rowIndex++;
+                            SchoolCadreTrain schoolCadreTrain = new SchoolCadreTrain
+                            {
+                                Id = Guid.NewGuid(),
+                                CreateTime = DateTime.Now,
+                                Ordinal = rowIndex,
+                                OperatorId = CurrentUser.Id
+                            };
+                            string nameField = "姓名";
+                            string trainClassNameField = "培训班次";
+                            string organizerField = "组织单位";
+                            string trainOrganizationalField = "培训单位";
+                            string yearField = "年度";
+                            string trainTimeField = "培训时间";
+                            string trainDurationField = "时长";
+                            string trainAddressField = "地点";
+                            string remarkField = "备注";
+
+                            string name = row[nameField].ToString();
+                            string trainClassName = row[trainClassNameField].ToString();
+                            string organizer = row[organizerField].ToString();
+                            string trainOrganizational = row[trainOrganizationalField].ToString();
+                            string year = row[yearField].ToString();
+                            string trainTime = row[trainTimeField].ToString();
+                            string trainDuration = row[trainDurationField].ToString();
+                            string trainAddress = row[trainAddressField].ToString();
+                            string remark = row[remarkField].ToString();
+                            //跳过姓名为空的记录
+                            if (string.IsNullOrEmpty(name)) continue;
+                            schoolCadreTrain.Name = name;
+                            schoolCadreTrain.ClassHour = 0;
+                            schoolCadreTrain.Organizer = organizer;
+                            schoolCadreTrain.TrainAddress = trainAddress;
+                            schoolCadreTrain.TrainClassName = trainClassName;
+                            int trainDurationValue = 0;
+                            if (int.TryParse(trainDuration, out trainDurationValue))
+                                schoolCadreTrain.TrainDuration = trainDurationValue;
+                            else
+                                schoolCadreTrain.TrainDuration = 0;
+                            trainTime = trainTime.Replace(".", "-").Replace("/", "-");
+                            DateTime trainTimeValue = DateTime.Now;
+                            if (!TryParseDate(trainTime, out trainTimeValue))
+                            {
+                                throw new PartyMemberException($"第{rowIndex}行数据中的【{trainTimeField}】日期格式不合法");
+                            }
+                            schoolCadreTrain.TrainOrganizational = trainOrganizational;
+                            schoolCadreTrain.TrainTime = trainTimeValue;
+                            schoolCadreTrain.Year = year;
+
+                            _context.SchoolCadreTrains.Add(schoolCadreTrain);
+                            await _context.SaveChangesAsync();
+                        }
+                        #endregion
+                    }
+                    else
+                    {
+                        jsonResult.Code = -1;
+                        jsonResult.Message = "请选择文件";
+                    }
+                }
+                else
+                {
+                    foreach (string key in ModelState.Keys)
+                    {
+                        if (ModelState[key].Errors.Count > 0)
+                            jsonResult.Errors.Add(new ModelError
+                            {
+                                Key = key,
+                                Message = ModelState[key].Errors[0].ErrorMessage
+                            });
+                    }
+                    jsonResult.Code = -1;
+                    jsonResult.Message = "数据错误";
+                }
+
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "入党积极分子导入错误";
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (JsonReaderException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "JSON文件内容格式错误";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
 
         private bool SchoolCadreTrainExists(Guid id)
         {

@@ -535,6 +535,7 @@ namespace PartyMemberManager.Controllers
                                 if (string.IsNullOrEmpty(name)) continue;
                                 birthday = birthday.Replace(".", "-").Replace("/", "-");
                                 time = time.Replace(".", "-").Replace("/", "-");
+                                confirmTime = confirmTime.Replace(".", "-").Replace("/", "-");
                                 DateTime birthdayValue = DateTime.Now;
                                 if (!birthday.Contains("-") && birthday.Length == 6)
                                     birthday = birthday + "01";
@@ -603,6 +604,7 @@ namespace PartyMemberManager.Controllers
                                 if (string.IsNullOrEmpty(name)) continue;
                                 birthday = birthday.Replace(".", "-").Replace("/", "-");
                                 time = time.Replace(".", "-").Replace("/", "-");
+                                confirmTime = confirmTime.Replace(".", "-").Replace("/", "-");
                                 DateTime birthdayValue = DateTime.Now;
                                 if (!birthday.Contains("-") && birthday.Length == 6)
                                     birthday = birthday + "01";

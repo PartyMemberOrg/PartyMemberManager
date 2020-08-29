@@ -1,0 +1,100 @@
+﻿@model ProvinceCadreTrainImportViewModel
+
+<form action="@Url.Action("Import")" method="post" enctype="multipart/form-data" style="margin-top:20px;">
+    <div class="form-group">
+        <div class="row">
+            <div class="@LabelDivDefaultClass">
+                <label asp-for="Year" asp-required="false" class="control-label"></label>
+            </div>
+            <div class="@InputDivDefaultClass">
+                <input asp-for="Year" type="number" min="2000" max="9999" class="form-control" />
+                <span asp-validation-for="Year" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="@LabelDivDefaultClass">
+                <label asp-for="ProvinceTrainClassId" asp-required="true" class="control-label"></label>
+            </div>
+            <div class="@InputDivDefaultClass">
+                <select asp-for="ProvinceTrainClassId" asp-items="@ViewBag.ProvinceTrainClasses" class="form-control">
+                    <option value="">-请培训班-</option>
+                </select>
+                <span asp-validation-for="ProvinceTrainClassId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="@LabelDivDefaultClass">
+                <label asp-for="File" asp-required="true" class="control-label"></label>
+            </div>
+            <div class="@InputDivDefaultClass">
+                <input asp-for="File" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="form-control" />
+                <span asp-validation-for="File" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div style="margin-left:20px;margin-top:10px;">
+    <div>下载模板：</div>
+    <div style="margin-left:20px;">
+        <a href="@Url.Action("ExcelTemplates","Download",new { fileName="省一级干部培训学员信息.xlsx"})" style="display:block">省一级干部培训学员信息</a>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#Year',
+                type: 'year',
+                trigger: 'click',
+                done: function (value, date, endDate) {
+                    filterTrainClass();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //$("#TrainClassTypeId").change(function () {
+            //    filterTrainClass();
+            //});
+            $("#Year").change(function () {
+                filterTrainClass();
+            });
+            filterTrainClass();
+        });
+        /**过滤培训班 */
+        function filterTrainClass() {
+            var url = '@Url.Action("GetProvinceTrainClassDatas")';
+            var year = $("#Year").val();
+            var where = { year:year };
+            $.ajax({
+                url: url,
+                data: where,
+                dataType: "json",
+                type: "POST",
+                error: function () { },
+                success: function (data) {
+                    if (data.code == 0) {
+                        var options = "<option value=''>-请选择培训班-</option>";
+                        for (var i = 0; i < data.datas.length; i++) {
+                            options+="<option value='" + data.datas[i].id + "'>" + data.datas[i].name+"</option>";
+                        }
+                        $("#ProvinceTrainClassId").html(options);
+                    }
+                    else {
+                        showError(data.mssage);
+                    }
+                },
+                complete: function () { }
+            });
+
+        }
+    </script>
+}

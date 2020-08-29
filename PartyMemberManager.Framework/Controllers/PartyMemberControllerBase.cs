@@ -186,6 +186,49 @@ namespace PartyMemberManager.Framework.Controllers
             }
             return Json(jsonResult);
         }
+
+        /// <summary>
+        /// 根据年份返回培训班
+        /// </summary>
+        /// <param name="year"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetProvinceTrainClassDatas(string year)
+        {
+            JsonResultModel<ProvinceTrainClass> jsonResult = new JsonResultModel<ProvinceTrainClass>
+            {
+                Code = 0,
+                Message = "",
+                Datas = new List<ProvinceTrainClass>()
+            };
+
+            try
+            {
+                var filter = PredicateBuilder.True<ProvinceTrainClass>();
+                if (year != null)
+                {
+                    filter = filter.And(d => d.Year == year);
+                }
+                var data = await _context.Set<ProvinceTrainClass>()
+                    .Where(filter).Where(d => d.Enabled == true)
+                    .OrderByDescending(d => d.Ordinal).ToListAsync();
+                if (data == null)
+                    throw new PartyMemberException("未找到数据");
+                jsonResult.Datas = data;
+            }
+
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
         /// <summary>
         /// 转换日期
         /// </summary>

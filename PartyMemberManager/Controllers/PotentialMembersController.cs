@@ -341,7 +341,7 @@ namespace PartyMemberManager.Controllers
                         }
                         if (!activistTrainResult.PartyActivist.IsPrint)
                         {
-                            var noName = "【" + activistTrainResult.PartyActivist.Name + "-" + activistTrainResult.PartyActivist.JobNo + "】" + "还不是合格的入党积极分子";
+                            var noName = "【" + activistTrainResult.PartyActivist.Name + "-" + activistTrainResult.PartyActivist.JobNo + "】" + "尚未打印结业证，还不是合格的入党积极分子";
                             throw new PartyMemberException(noName);
                         }
                         var partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);

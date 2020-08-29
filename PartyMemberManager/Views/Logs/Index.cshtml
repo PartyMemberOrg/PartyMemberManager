@@ -7,7 +7,7 @@
 <partial name="_PartialIndexToolbar" model="Model" />
 
 <div class="panel offset-top padding-8">
-    <table class="layui-table" lay-data="{url:'@Url.Action("GetDatasWithFilter","Logs")', where: {DateRange: '@Model.DateRange',LogLevel: '@Model.LogLevel',CategoryName: '@(Model.CategoryName)',Message: '@Model.Message',IsPost: true}, page:true,limits: [10, 20, 50], done: function (res, curr, count) {fillPatientList(res,curr,count);showHideScrollBars(res.data.length);}, id:'table_logs'}">
+    <table class="layui-table" lay-data="{url:'@Url.Action("GetDatasWithFilter","Logs")', where: {DateRange: '@Model.DateRange',LogLevel: '@Model.LogLevel',CategoryName: '@(Model.CategoryName)',Message: '@Model.Message',IsPost: true}, page:true,limits: [10, 20, 50], done: function (res, curr, count) {showHideScrollBars(res.data.length);}, id:'table_logs'}">
         <thead>
             <tr>
                 <th lay-data="{ field: 'logLevel', title: '日志级别', width: '74', minWidth: 50, align: 'center', templet: '#optPatientArchiveNameTpl' }">日志级别</th>

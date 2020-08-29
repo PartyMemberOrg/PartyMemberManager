@@ -30,7 +30,7 @@
     <div style="display:inline-block">
         <div class="layui-input-inline" style="width:120px">
             <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="importExcel()">
-                <i class="layui-icon layui-icon-loading" style="font-size: 14px; color: #FFFFFF;"></i>导入名单
+                <i class="layui-icon layui-icon-export" style="font-size: 14px; color: #FFFFFF;"></i>导入名单
             </a>
         </div>
     </div>
@@ -137,7 +137,7 @@
                         keyword: $("#keyword").val()
                     }
                     , done: function (res, curr, count) {
-                        fillPatientList(res,curr,count);showHideScrollBars(res.data.length);
+                        showHideScrollBars(res.data.length);
                     }
                 });
             });
@@ -168,6 +168,9 @@
                 ItemDown(id);
             })
             contextMenu.showMenu(event);
+        }
+        function importExcel() {
+            showImport('@Url.Action("Import")', '@Url.Action("Import")', '导入领导干部培训名单', 600, 250, function () { location.reload(); });
         }
     </script>
     <script type="text/html" id="optTpl">

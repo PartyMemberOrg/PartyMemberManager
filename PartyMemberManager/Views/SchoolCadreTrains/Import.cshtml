@@ -1,0 +1,29 @@
+﻿@model ProvinceCadreTrainImportViewModel
+
+<form action="@Url.Action("Import")" method="post" enctype="multipart/form-data" style="margin-top:20px;">
+    <div class="form-group">
+        <div class="row">
+            <div class="@LabelDivDefaultClass">
+                <label asp-for="File" asp-required="true" class="control-label"></label>
+            </div>
+            <div class="@InputDivDefaultClass">
+                <input asp-for="File" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="form-control" />
+                <span asp-validation-for="File" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div style="margin-left:20px;margin-top:10px;">
+    <div>下载模板：</div>
+    <div style="margin-left:20px;">
+        <a href="@Url.Action("ExcelTemplates","Download",new { fileName="领导干部参训导入模板.xlsx"})" style="display:block">领导干部参训导入模板</a>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+        });
+    </script>
+}

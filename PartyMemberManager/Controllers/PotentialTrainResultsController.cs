@@ -421,6 +421,7 @@ namespace PartyMemberManager.Controllers
                 }
                 //现在只有发展对象表中有isPrint
                 potentialMember.IsPrint = true;
+                potentialMember.PrintTime = DateTime.Now;
                 await _context.SaveChangesAsync();
                 PotentialMemberPrintViewModel model = new PotentialMemberPrintViewModel
                 {
