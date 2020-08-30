@@ -3,7 +3,48 @@
 @{
     ViewData["Title"] = "Index";
 }
+<style type="text/css">
+    .content {
+        display: none;
+    }
 
+    .potential .content {
+        display: block;
+        background: transparent;
+        position: relative;
+        width: 22px;
+        height: 22px;
+        margin-left: 48px;
+        margin-top: -22px;
+    }
+
+    .potential .word {
+        text-align: center;
+        margin: auto;
+        position: absolute;
+        display: inline-block;
+        width: 22px;
+        right: -5px;
+        top: 1px;
+        color: yellow;
+        transform-origin: bottom center;
+        transform: rotate(0deg);
+        font-size: 12px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .potential .triangle-topright {
+        width: 0;
+        height: 0;
+        float: right;
+        font-size: xx-small;
+        border-bottom: 22px solid var(--active-color);
+        border-left: 22px solid transparent;
+        position: relative;
+    }
+</style>
 <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
     @*<div class="layui-input-inline" style="width:60px">
             <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,800)" class="layui-btn layui-btn-primary">+添加</a>
@@ -234,11 +275,12 @@
                         { field: 'isPass', title: '是否合格', align: 'center', templet: function (d) { return d.isPass ? "是" : "否" } },
                         { field: 'isPrintDisplay', title: '是否已打印', align: 'center'},
                         { field: 'printTimeDisplay', title: '打印时间', align: 'center', templet: function (d) { return formatDate(d.printTimeDisplay, 'yyyy-MM-dd'); }},
-                        { field: 'id', title: '操作',  align: 'center', templet: '#optTpl' }
+                        { field: 'id', title: '操作', align: 'center', templet: '#optTpl' },
+                        { field: 'status', title: '状态', width: '0', hide: true, align: 'center', templet: 'optStatusTpl' }
                     ]]
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);
-
+                        setColor('.layui-table-main .layui-table');
                     }
                 });
             });
@@ -406,6 +448,23 @@
             else
                 showContent('@Url.Action("PreviewSelected")' + '?idList=' + datas, '打印结业证', 800, 600);
         }
+        /**
+         * 设置表格行颜色
+         * @@param tableClassName
+         */
+        function setColor(tableClassName) {
+            var $table = $(tableClassName);
+            if ($table.length > 0) {
+                //遍历所有行
+                $table.find('tr').each(function () {
+                    var status = $(this).find('td[data-field="status"]').attr('data-content');
+                    if (status == "4" || status == "7" ) {   //给状态为4的数据行设置背景色
+                        //$(this).attr('style', "background:#D3D3D3;");
+                        $(this).find('td').eq(4).addClass('potential');
+                    }
+                })
+            }
+        }
     </script>
     <script type="text/html" id="optTpl">
         <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}','{{d.totalGrade}}','{{d.isPass}}')" style="padding-left:10px;padding-right:10px;">
@@ -423,7 +482,16 @@
     </script>
     <script type="text/html" id="optPartyActivistNameoTpl">
         {{d.nameDisplay}}
+        <div class="content">
+            <div class="triangle-topright">
+                <div class="word">★</div>
+            </div>
+        </div>
     </script>
+    <script type="text/html" id="optStatusTpl">
+        {{=d.status}}
+    </script>
+
     <script>
         function filterTrainClass() {
             var url = '@Url.Action("GetTrainClassDatas")';

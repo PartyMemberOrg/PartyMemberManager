@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PartyMemberManager.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -68,5 +69,11 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("打印时间")]
         [NotMapped]
         public DateTime? PrintTimeDisplay { get => PartyActivist == null ?null:PartyActivist.PrintTime; }
+        /// <summary>
+        /// 积极分子状态(不保存，仅仅用于在客户端显示状态时使用)
+        /// </summary>
+        [DisplayName("积极分子状态")]
+        [NotMapped]
+        public ActivistTrainStatus Status { get; set; }
     }
 }

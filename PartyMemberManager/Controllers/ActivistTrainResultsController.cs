@@ -113,6 +113,7 @@ namespace PartyMemberManager.Controllers
                         .OrderByDescending(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
+                    SetStatus(data);
                     jsonResult.Count = _context.Set<ActivistTrainResult>().Count();
                     jsonResult.Data = data.Data;
                 }
@@ -125,6 +126,7 @@ namespace PartyMemberManager.Controllers
                         .Where(d => d.PartyActivist.DepartmentId == CurrentUser.DepartmentId).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
+                    SetStatus(data);
                     jsonResult.Count = _context.Set<ActivistTrainResult>().Count();
                     jsonResult.Data = data.Data;
                 }
@@ -142,6 +144,25 @@ namespace PartyMemberManager.Controllers
                 jsonResult.Msg = "发生系统错误";
             }
             return Json(jsonResult);
+        }
+        /// <summary>
+        /// 设置积极分子状态
+        /// </summary>
+        /// <param name="data"></param>
+        private void SetStatus(PagedDataViewModel<ActivistTrainResult> data)
+        {
+            //增加状态显示
+            foreach (var dataDetail in data)
+            {
+                if (_context.PotentialMembers.Any(p => p.PartyActivistId == dataDetail.PartyActivistId))
+                    dataDetail.Status = ActivistTrainStatus.成绩合格并列为发展对象;
+                else if (dataDetail.IsPass)
+                    dataDetail.Status = ActivistTrainStatus.成绩合格;
+                else if (dataDetail.IsPrint)
+                    dataDetail.Status = ActivistTrainStatus.成绩合格并打印;
+                else
+                    dataDetail.Status = ActivistTrainStatus.成绩不合格;
+            }
         }
 
         // GET: ActivistTrainResults/Details/5
