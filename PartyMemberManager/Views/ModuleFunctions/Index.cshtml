@@ -34,12 +34,12 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>
+                        <td style="min-width:15%">
                             @Html.DisplayFor(modelItem => item.Name)
                         </td>
                         @foreach (Role role in Enum.GetValues(typeof(Role)))
                         {
-                            <td>
+                            <td style="min-width:15%">
                                 <input type="checkbox" name="moduleRoles[]" title="@role" lay-skin="primary" value="@(item.Id),@((int)role)" @((item.Roles & role) == role ? "checked" : "")>
                             </td>
                         }

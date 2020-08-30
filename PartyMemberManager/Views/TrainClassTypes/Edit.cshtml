@@ -11,3 +11,13 @@
         </form>
     </div>
 </div>
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/lib/layui/layui.js"></script>
+    <script>
+        layui.use('form', function () {
+            var form = layui.form;
+        });
+    </script>
+}
