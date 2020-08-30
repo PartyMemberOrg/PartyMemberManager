@@ -598,7 +598,7 @@ namespace PartyMemberManager.Controllers
                         Location=new System.Drawing.PointF(65,22)
                     },
                     new DisplayItem{
-                        Text=$@" {name} 同志：",
+                        Text=$@"{name} 同志：",
                         Font="黑体",
                         FontSize=18,
                         Location=new System.Drawing.PointF(27,95)
@@ -606,32 +606,32 @@ namespace PartyMemberManager.Controllers
                     new DisplayItem{
                         Text=$@"参加了 {potentialMemberPrintViewModel.StartYear} 至 {potentialMemberPrintViewModel.EndYear} 学年",
                         Font="黑体",
-                        FontSize=18,
-                        Location=new System.Drawing.PointF(40,108)
+                        FontSize=18.5f,
+                        Location=new System.Drawing.PointF(38,109)
                     },
                     new DisplayItem{
                         Text=$@"第 {potentialMemberPrintViewModel.Term} 期发展对象培训班学习，",
                         Font="黑体",
-                        FontSize=18,
+                        FontSize=18.5f,
                         Location=new System.Drawing.PointF(27,123)
                     },
                     new DisplayItem{
                         Text=$@"培训考核成绩合格，准予结业。",
                         Font="黑体",
-                        FontSize=18,
-                        Location=new System.Drawing.PointF(27,138)
+                        FontSize=18.5f,
+                        Location=new System.Drawing.PointF(27,137)
                     },
                     new DisplayItem{
                         Text=$@"中共兰州财经大学委员会党校",
                         Font="楷体",
-                        FontSize=16,
-                        Location=new System.Drawing.PointF(42,161)
+                        FontSize=15.8f,
+                        Location=new System.Drawing.PointF(45,163)
                     },
                     new DisplayItem{
                         Text=$@"{potentialMemberPrintViewModel.Year}年{potentialMemberPrintViewModel.Month}月{potentialMemberPrintViewModel.Day}日",
                         Font="楷体",
                         FontSize=16,
-                        Location=new System.Drawing.PointF(55,172)
+                        Location=new System.Drawing.PointF(56,171)
                     }
                 }
 

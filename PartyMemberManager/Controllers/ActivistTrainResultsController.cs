@@ -653,173 +653,7 @@ namespace PartyMemberManager.Controllers
 
                     };
 
-                    string name = partyActivistPrintViewModel.Name;
-                    if (name.Length <= 30)
-                    {
-                        DisplayItem displayItem = null;
-                        switch (name.Length)
-                        {
-                            case 2:
-                                //打印姓名
-                                displayItem = new DisplayItem
-                                {
-                                    Text = partyActivistPrintViewModel.Name,
-                                    Font = "楷体",
-                                    FontSize = 27,
-                                    Location = new System.Drawing.PointF(35, 92)
-                                };
-                                data.DisplayItems.Add(displayItem);
-                                break;
-                            case 3:
-                                //6个字以内，往左移动
-                                //打印姓名
-                                displayItem = new DisplayItem
-                                {
-                                    Text = partyActivistPrintViewModel.Name,
-                                    Font = "楷体",
-                                    FontSize = 27,
-                                    Location = new System.Drawing.PointF(32, 92)
-                                };
-                                data.DisplayItems.Add(displayItem);
-                                break;
-                            case 4:
-                                //6个字以内，往左移动
-                                //打印姓名
-                                displayItem = new DisplayItem
-                                {
-                                    Text = partyActivistPrintViewModel.Name,
-                                    Font = "楷体",
-                                    FontSize = 25,
-                                    Location = new System.Drawing.PointF(26, 92)
-                                };
-                                data.DisplayItems.Add(displayItem);
-                                break;
-                            case 5:
-                                //6个字以内，往左移动
-                                //打印姓名
-                                displayItem = new DisplayItem
-                                {
-                                    Text = partyActivistPrintViewModel.Name,
-                                    Font = "楷体",
-                                    FontSize = 23,
-                                    Location = new System.Drawing.PointF(20, 93)
-                                };
-                                data.DisplayItems.Add(displayItem);
-                                break;
-                            case 6:
-                                //6各字以上缩小字体
-                                //打印姓名
-                                displayItem = new DisplayItem
-                                {
-                                    Text = partyActivistPrintViewModel.Name,
-                                    Font = "楷体",
-                                    FontSize = 20,
-                                    Location = new System.Drawing.PointF(20, 94)
-                                };
-                                data.DisplayItems.Add(displayItem);
-                                break;
-                            case 7:
-                                //打印姓名
-                                string nameLine1 = name.Substring(0, 4);
-                                string nameLine2 = name.Substring(4);
-                                displayItem = new DisplayItem
-                                {
-                                    Text = nameLine1,
-                                    Font = "楷体",
-                                    FontSize = 25,
-                                    Location = new System.Drawing.PointF(26, 88)
-                                };
-                                data.DisplayItems.Add(displayItem);
-                                displayItem = new DisplayItem
-                                {
-                                    Text = nameLine2,
-                                    Font = "楷体",
-                                    FontSize = 25,
-                                    Location = new System.Drawing.PointF(26, 96)
-                                };
-                                data.DisplayItems.Add(displayItem);
-                                break;
-                            case 8:
-                                //打印姓名
-                                string nameLine3 = name.Substring(0, 4);
-                                string nameLine4 = name.Substring(4);
-                                displayItem = new DisplayItem
-                                {
-                                    Text = nameLine3,
-                                    Font = "楷体",
-                                    FontSize = 25,
-                                    Location = new System.Drawing.PointF(26, 88)
-                                };
-                                data.DisplayItems.Add(displayItem);
-                                displayItem = new DisplayItem
-                                {
-                                    Text = nameLine4,
-                                    Font = "楷体",
-                                    FontSize = 25,
-                                    Location = new System.Drawing.PointF(26, 96)
-                                };
-                                data.DisplayItems.Add(displayItem);
-                                break;
-                            case 9:
-                                //打印姓名
-                                string nameLine5 = name.Substring(0, 5);
-                                string nameLine6 = name.Substring(4);
-                                displayItem = new DisplayItem
-                                {
-                                    Text = nameLine5,
-                                    Font = "楷体",
-                                    FontSize = 23,
-                                    Location = new System.Drawing.PointF(20, 88)
-                                };
-                                data.DisplayItems.Add(displayItem);
-                                displayItem = new DisplayItem
-                                {
-                                    Text = nameLine6,
-                                    Font = "楷体",
-                                    FontSize = 23,
-                                    Location = new System.Drawing.PointF(20, 96)
-                                };
-                                data.DisplayItems.Add(displayItem);
-                                break;
-                            case 10:
-                                //打印姓名
-                                string nameLine7 = name.Substring(0, 5);
-                                string nameLine8 = name.Substring(4);
-                                displayItem = new DisplayItem
-                                {
-                                    Text = nameLine7,
-                                    Font = "楷体",
-                                    FontSize = 23,
-                                    Location = new System.Drawing.PointF(20, 88)
-                                };
-                                data.DisplayItems.Add(displayItem);
-                                displayItem = new DisplayItem
-                                {
-                                    Text = nameLine8,
-                                    Font = "楷体",
-                                    FontSize = 23,
-                                    Location = new System.Drawing.PointF(20, 96)
-                                };
-                                data.DisplayItems.Add(displayItem);
-                                break;
-                            case 11:
-                            case 12:
-                            case 13:
-                            case 14:
-                            case 18:
-                            case 19:
-                            case 20:
-                            case 21:
-                            case 22:
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        //换成4行
-                    }
+                    PrintName(partyActivistPrintViewModel, data);
 
                     pdfDatas.Add(data);
                 }
@@ -847,16 +681,16 @@ namespace PartyMemberManager.Controllers
                         Location=new System.Drawing.PointF(196,22)
                     },
                     new DisplayItem{
-                        Text=$@" {name} 同志参加了 {partyActivistPrintViewModel.StartYear} 至 {partyActivistPrintViewModel.EndYear} 学年第 {partyActivistPrintViewModel.Term} 期入党",
+                        Text=$@"同志参加了 {partyActivistPrintViewModel.StartYear} 至 {partyActivistPrintViewModel.EndYear} 学年第 {partyActivistPrintViewModel.Term} 期入党",
                         Font="楷体",
-                        FontSize=27,
-                        Location=new System.Drawing.PointF(32,93)
+                        FontSize=28f,
+                        Location=new System.Drawing.PointF(61f,91)
                     },
                     new DisplayItem{
                         Text=$@"积极分子培训班学习，培训考核成绩合格，准予结业。",
                         Font="楷体",
-                        FontSize=27,
-                        Location=new System.Drawing.PointF(32,117)
+                        FontSize=28f,
+                        Location=new System.Drawing.PointF(28,117)
                     },
                     new DisplayItem{
                         Text=$@"党校校长：",
@@ -867,18 +701,19 @@ namespace PartyMemberManager.Controllers
                     new DisplayItem{
                         Text=$@"中共兰州财经大学委员会党校",
                         Font="楷体",
-                        FontSize=25,
-                        Location=new System.Drawing.PointF(145,162)
+                        FontSize=25.7f,
+                        Location=new System.Drawing.PointF(142,163)
                     },
                     new DisplayItem{
                         Text=$@"{partyActivistPrintViewModel.Year}年{partyActivistPrintViewModel.Month}月{partyActivistPrintViewModel.Day}日",
                         Font="楷体",
                         FontSize=26,
-                        Location=new System.Drawing.PointF(158,178)
+                        Location=new System.Drawing.PointF(159,178)
                     }
                 }
 
                     };
+                    PrintName(partyActivistPrintViewModel, data);
                     pdfDatas.Add(data);
 
                 }
@@ -887,6 +722,270 @@ namespace PartyMemberManager.Controllers
             //var stream = _migraDocService.CreateMigraDocPdf(pdfDatas);
             return stream;
         }
+        /// <summary>
+        /// 打印姓名，主要考虑姓名字数太多时如何打印
+        /// </summary>
+        /// <param name="partyActivistPrintViewModel"></param>
+        /// <param name="data"></param>
+        private static void PrintName(PartyActivistPrintViewModel partyActivistPrintViewModel, PdfData data)
+        {
+            string name = partyActivistPrintViewModel.Name;
+            if (name.Length <= 30)
+            {
+                DisplayItem displayItem = null;
+                switch (name.Length)
+                {
+                    case 2:
+                        //打印姓名
+                        displayItem = new DisplayItem
+                        {
+                            Text = partyActivistPrintViewModel.Name,
+                            Font = "楷体",
+                            FontSize = 28,
+                            Location = new System.Drawing.PointF(35, 92)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        break;
+                    case 3:
+                        //6个字以内，往左移动
+                        //打印姓名
+                        displayItem = new DisplayItem
+                        {
+                            Text = partyActivistPrintViewModel.Name,
+                            Font = "楷体",
+                            FontSize = 28,
+                            Location = new System.Drawing.PointF(30, 92)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        break;
+                    case 4:
+                        //6个字以内，往左移动
+                        //打印姓名
+                        displayItem = new DisplayItem
+                        {
+                            Text = partyActivistPrintViewModel.Name,
+                            Font = "楷体",
+                            FontSize = 25,
+                            Location = new System.Drawing.PointF(26, 92)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        break;
+                    case 5:
+                        //6个字以内，往左移动
+                        //打印姓名
+                        displayItem = new DisplayItem
+                        {
+                            Text = partyActivistPrintViewModel.Name,
+                            Font = "楷体",
+                            FontSize = 23,
+                            Location = new System.Drawing.PointF(20, 93)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        break;
+                    case 6:
+                        //6各字以上缩小字体
+                        //打印姓名
+                        displayItem = new DisplayItem
+                        {
+                            Text = partyActivistPrintViewModel.Name,
+                            Font = "楷体",
+                            FontSize = 20,
+                            Location = new System.Drawing.PointF(20, 93)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        break;
+                    case 7:
+                        //打印姓名
+                        string nameLine1 = name.Substring(0, 4);
+                        string nameLine2 = name.Substring(4);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine1,
+                            Font = "楷体",
+                            FontSize = 25,
+                            Location = new System.Drawing.PointF(26, 88)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine2,
+                            Font = "楷体",
+                            FontSize = 25,
+                            Location = new System.Drawing.PointF(26, 96)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        break;
+                    case 8:
+                        //打印姓名
+                        string nameLine3 = name.Substring(0, 4);
+                        string nameLine4 = name.Substring(4);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine3,
+                            Font = "楷体",
+                            FontSize = 25,
+                            Location = new System.Drawing.PointF(26, 88)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine4,
+                            Font = "楷体",
+                            FontSize = 25,
+                            Location = new System.Drawing.PointF(26, 96)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        break;
+                    case 9:
+                        //打印姓名
+                        string nameLine5 = name.Substring(0, 5);
+                        string nameLine6 = name.Substring(5);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine5,
+                            Font = "楷体",
+                            FontSize = 23,
+                            Location = new System.Drawing.PointF(20, 88)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine6,
+                            Font = "楷体",
+                            FontSize = 23,
+                            Location = new System.Drawing.PointF(20, 96)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        break;
+                    case 10:
+                        //打印姓名
+                        string nameLine7 = name.Substring(0, 5);
+                        string nameLine8 = name.Substring(5);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine7,
+                            Font = "楷体",
+                            FontSize = 23,
+                            Location = new System.Drawing.PointF(20, 88)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine8,
+                            Font = "楷体",
+                            FontSize = 23,
+                            Location = new System.Drawing.PointF(20, 96)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        break;
+                    case 11:
+                        //打印姓名
+                        string nameLine9 = name.Substring(0, 6);
+                        string nameLine10 = name.Substring(6);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine9,
+                            Font = "楷体",
+                            FontSize = 20,
+                            Location = new System.Drawing.PointF(20, 88)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine10,
+                            Font = "楷体",
+                            FontSize = 20,
+                            Location = new System.Drawing.PointF(20, 96)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        break;
+                    case 12:
+                        //打印姓名
+                        string nameLine11 = name.Substring(0, 6);
+                        string nameLine12 = name.Substring(6);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine11,
+                            Font = "楷体",
+                            FontSize = 20,
+                            Location = new System.Drawing.PointF(20, 88)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine12,
+                            Font = "楷体",
+                            FontSize = 20,
+                            Location = new System.Drawing.PointF(20, 96)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        break;
+                    case 13:
+                    case 14:
+                        //打印姓名
+                        string nameLine13 = name.Substring(0, 6);
+                        string nameLine14 = name.Substring(6);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine13,
+                            Font = "楷体",
+                            FontSize = 16,
+                            Location = new System.Drawing.PointF(20, 88)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine14,
+                            Font = "楷体",
+                            FontSize = 16,
+                            Location = new System.Drawing.PointF(20, 96)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        break;
+                    case 18:
+                    case 19:
+                    case 20:
+                    case 21:
+                    case 22:
+                        //打印姓名
+                        string nameLine15 = name.Substring(0, 6);
+                        string nameLine16 = name.Substring(6, 6);
+                        string nameLine17 = name.Substring(12);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine15,
+                            Font = "楷体",
+                            FontSize = 15,
+                            Location = new System.Drawing.PointF(20, 88)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine16,
+                            Font = "楷体",
+                            FontSize = 15,
+                            Location = new System.Drawing.PointF(20, 96)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        displayItem = new DisplayItem
+                        {
+                            Text = nameLine17,
+                            Font = "楷体",
+                            FontSize = 15,
+                            Location = new System.Drawing.PointF(20, 104)
+                        };
+                        data.DisplayItems.Add(displayItem);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                //换成4行
+            }
+        }
+
         /// <summary>
         /// 导入入党积极分子培训成绩
         /// </summary>
