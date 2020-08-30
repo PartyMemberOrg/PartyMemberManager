@@ -3556,18 +3556,25 @@ body .layui-table-tips .layui-layer-content {
         color: #999
     }
 
+/*--menu-back-color: #F4F8FF;
+--menu-back-color-active: #FFFFFF;
+--menu-font-color: #FF0000;
+--menu-font-color-active: #f17878;
+--menu-sub-font-color: rgb(255,160,0);
+--menu-sub-font-color-active: #f17878;*/
+
 .layui-nav {
     position: relative;
-    padding: 0 20px;
-    background-color:red;
-    color: #fff;
+/*    padding: 0 3px;*/
+    background-color: var(--menu-back-color);
+    color: var(--menu-font-color);
     border-radius: 2px;
     font-size: 0;
     box-sizing: border-box
 }
 
     .layui-nav * {
-        font-size: 14px
+        font-size: 16px;
     }
 
     .layui-nav .layui-nav-item {
@@ -3576,14 +3583,14 @@ body .layui-table-tips .layui-layer-content {
         *display: inline;
         *zoom: 1;
         vertical-align: middle;
-        line-height: 60px
+        line-height: 60px;
     }
 
         .layui-nav .layui-nav-item a {
             display: block;
-            padding: 0 20px;
-            color: #fff;
-            color: rgba(255,255,255,.7);
+            padding: 0 10px;
+            color: var(--menu-font-color);
+            /* color: rgba(255,255,255,.7);*/
             transition: all .3s;
             -webkit-transition: all .3s
         }
@@ -3604,7 +3611,7 @@ body .layui-table-tips .layui-layer-content {
 }
 
 .layui-nav .layui-nav-item a:hover, .layui-nav .layui-this a {
-    color: #fff
+    color: var(--menu-font-color);
 }
 
 .layui-nav .layui-this:after {
@@ -3626,7 +3633,7 @@ body .layui-table-tips .layui-layer-content {
     width: 0;
     height: 0;
     border-style: solid dashed dashed;
-    border-color: #fff transparent transparent;
+    border-color: red transparent transparent;
     overflow: hidden;
     cursor: pointer;
     transition: all .2s;
@@ -3636,13 +3643,13 @@ body .layui-table-tips .layui-layer-content {
     right: 3px;
     margin-top: -3px;
     border-width: 6px;
-    border-top-color: rgba(255,255,255,.7)
+    border-top-color: rgba(255,0,0,1)
 }
 
 .layui-nav .layui-nav-mored, .layui-nav-itemed > a .layui-nav-more {
     margin-top: -9px;
     border-style: dashed dashed solid;
-    border-color: transparent transparent #fff
+    border-color: transparent transparent red
 }
 
 .layui-nav-child {
@@ -3658,16 +3665,16 @@ body .layui-table-tips .layui-layer-content {
     background-color: #fff;
     z-index: 100;
     border-radius: 2px;
-    white-space: nowrap
+    white-space: nowrap;
 }
 
 .layui-nav .layui-nav-child a {
-    color: #333
+    color: #333;
 }
 
     .layui-nav .layui-nav-child a:hover {
         background-color: #f2f2f2;
-        color: #000
+        color: var(--menu-sub-font-color);
     }
 
 .layui-nav-child dd {
@@ -3704,7 +3711,7 @@ body .layui-table-tips .layui-layer-content {
         }
 
             .layui-nav-tree .layui-nav-item a:hover {
-                background-color: #4E5465
+                background-color: var(--menu-back-color-active);
             }
 
     .layui-nav-tree .layui-nav-bar {
@@ -3723,7 +3730,7 @@ body .layui-table-tips .layui-layer-content {
         }
 
     .layui-nav-itemed > a, .layui-nav-tree .layui-nav-title a, .layui-nav-tree .layui-nav-title a:hover {
-        color: #fff !important
+        color: var(--menu-font-color) !important;
     }
 
     .layui-nav-tree .layui-nav-child {
@@ -3731,19 +3738,20 @@ body .layui-table-tips .layui-layer-content {
         z-index: 0;
         top: 0;
         border: none;
-        box-shadow: none
+        box-shadow: none;
     }
 
         .layui-nav-tree .layui-nav-child a {
             height: 40px;
             line-height: 40px;
-            color: #fff;
-            color: rgba(255,255,255,.7)
+            color: var(--menu-sub-font-color);
+            padding:0 20px;
+            /*color: rgba(255,255,255,.7)*/
         }
 
             .layui-nav-tree .layui-nav-child, .layui-nav-tree .layui-nav-child a:hover {
                 background: 0 0;
-                color: #fff
+                color: var(--menu-sub-font-color);
             }
 
     .layui-nav-tree .layui-nav-more {
@@ -3753,7 +3761,8 @@ body .layui-table-tips .layui-layer-content {
 .layui-nav-itemed > .layui-nav-child {
     display: block;
     padding: 0;
-    background-color: rgba(0,0,0,.3) !important
+    background-color: var(--menu-back-color);
+    font-size: 14px;
 }
 
     .layui-nav-itemed > .layui-nav-child > .layui-this > .layui-nav-child {
