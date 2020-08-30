@@ -195,7 +195,7 @@ namespace PartyMemberManager.Dal
                 Id = Guid.NewGuid(),
                 CreateTime = DateTime.Now,
                 Name = "入党积极分子成绩",
-                Controller = "TrainResults",
+                Controller = "ActivistTrainResults",
                 Action = null,
                 Ordinal = 204,
                 Roles = Role.学校党委 | Role.学院党委 | Role.系统管理员 | Role.超级管理员
@@ -243,7 +243,7 @@ namespace PartyMemberManager.Dal
                 Id = Guid.NewGuid(),
                 CreateTime = DateTime.Now,
                 Name = "发展对象培训成绩",
-                Controller = "TrainResults",
+                Controller = "PotentialTrainResults",
                 Action = null,
                 Ordinal = 303,
                 Roles = Role.学校党委 | Role.学院党委 | Role.系统管理员 | Role.超级管理员
@@ -255,12 +255,36 @@ namespace PartyMemberManager.Dal
             {
                 Id = Guid.NewGuid(),
                 CreateTime = DateTime.Now,
-                Name = "省一级干部培训",
-                Controller = "CadreTrains",
+                Name = "省级干部培训",
+                Controller = null,
                 Action = null,
                 Ordinal = 4,
                 Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员
             };
+            childModule = new Module
+            {
+                ParentModuleId = module.Id,
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "省级干部培训班",
+                Controller = "ProvinceTrainClasses",
+                Action = null,
+                Ordinal = 403,
+                Roles = Role.学校党委 | Role.学院党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(childModule);
+            childModule = new Module
+            {
+                ParentModuleId = module.Id,
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "省级干部培训名单",
+                Controller = "ProvinceCadreTrains",
+                Action = null,
+                Ordinal = 405,
+                Roles = Role.学校党委 | Role.学院党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(childModule);
             context.Modules.Add(module);
 
             module = new Module
@@ -268,7 +292,7 @@ namespace PartyMemberManager.Dal
                 Id = Guid.NewGuid(),
                 CreateTime = DateTime.Now,
                 Name = "领导干部培训",
-                Controller = "CadreTrains",
+                Controller = "SchoolCadreTrains",
                 Action = null,
                 Ordinal = 5,
                 Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员

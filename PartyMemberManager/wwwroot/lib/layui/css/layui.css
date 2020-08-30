@@ -3,6 +3,12 @@
     /*»ù´¡ÑÕÉ«*/
     --main-color: #FF0000; /*#5FB878;*/
     --active-color: #FF0000; /*#009688;*/
+    --menu-back-color: #F4F8FF;
+    --menu-back-color-active: #FFFFFF;
+    --menu-font-color: #FF0000;
+    --menu-font-color-active: #f17878;
+    --menu-sub-font-color: rgb(255,160,0);
+    --menu-sub-font-color-active: #f17878;
 }
 
 .layui-inline, img {
