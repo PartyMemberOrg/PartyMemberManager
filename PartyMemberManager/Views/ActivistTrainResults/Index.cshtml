@@ -270,26 +270,27 @@
 
         function saveGrade() {
             var forGrade = $("#GradeTable").serializeArray();
+            var forGradeSelected = $.grep(forGrade, function (item) { return item.name != "layTableCheckbox"});
             var dataList = new Array();
             try {
-                if (forGrade.length > 0) {
+                if (forGradeSelected.length > 0) {
                     var mId = '';
                     var psGrade = 0;
                     var csGrade = 0;
-                    for (var i = 0; i < forGrade.length - 1; i = i + 6) {
-                        var noName = "【" + forGrade[i+1].value + "-" + forGrade[i+2].value + "】";
-                        if (forGrade[i + 3] != null) {
-                            var psGrade = parseFloat(forGrade[i + 3].value);
+                    for (var i = 0; i < forGradeSelected.length-1; i = i + 6) {
+                        var noName = "【" + forGradeSelected[i + 1].value + "-" + forGradeSelected[i + 2].value + "】";
+                        if (forGradeSelected[i + 3] != null) {
+                            var psGrade = parseFloat(forGradeSelected[i + 3].value);
                             if (psGrade < 0 || psGrade > 100)
                                 throw new Error(noName + "平时成绩不合法");
                         }
-                        if (forGrade[i + 4] != null) {
-                            var csGrade = parseFloat(forGrade[i + 4].value);
+                        if (forGradeSelected[i + 4] != null) {
+                            var csGrade = parseFloat(forGradeSelected[i + 4].value);
                             if (csGrade < 0 || csGrade > 100)
                                 throw new Error(noName + "考试成绩不合法");
                         }
-                        if (forGrade[i + 5].value == "false") {
-                            var item = forGrade[i].value + "," + forGrade[i + 3].value + "," + forGrade[i + 4].value;
+                        if (forGradeSelected[i + 5].value == "false") {
+                            var item = forGradeSelected[i].value + "," + forGradeSelected[i + 3].value + "," + forGradeSelected[i + 4].value;
                             dataList.push(item);
                         }
                     }
