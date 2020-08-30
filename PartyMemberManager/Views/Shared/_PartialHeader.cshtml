@@ -7,13 +7,13 @@
                 <span style="padding:3px">兰州财经大学入党管理系统</span>
             </a>
             <div class="d-sm-inline-flex flex-sm-row-reverse" style="position:fixed;right:2px">
-                <ul class="layui-nav">
+                <ul class="layui-tab">
                     @if (Model)
                     {
-                        <li class="layui-nav-item" lay-unselect="">
-                            <a href="javascript:;" onmousedown="showProfileMenu(event)">
+                        <li lay-unselect="" style="margin-right:5px">
+                            <a href="javascript:;" onmouseover="showProfileMenu(event)">
                                 <i class="layui-icon layui-icon-username" style="font-size: 14px; color: #FFFFFF;"></i>
-                                <span>@CurrentUser.Name</span>
+                                <span style="color:#fff">@CurrentUser.Name</span>
                             </a>
                             @*<dl class="layui-nav-child">                               
                                 <dd><a href="javascript:editOperator()">个人信息</a></dd>

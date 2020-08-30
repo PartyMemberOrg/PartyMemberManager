@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 <p style="margin-bottom:14px;">
-    <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,600)" class="layui-btn layui-btn-primary">+添加</a>
+    <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',500,400)" class="layui-btn layui-btn-primary">+添加</a>
 </p>
 <table class="layui-hide" id="datatable"></table>
 @Html.AntiForgeryToken()
@@ -96,7 +96,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 600, 600);
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 500, 400);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);
