@@ -71,4 +71,17 @@ namespace PartyMemberManager.Core.Enums
         [Display(Name = "禁止权限")]
         Deny = 1
     }
+
+    /// <summary>
+    /// 入党积分分子状态
+    /// </summary>
+    public enum ActivistTrainStatus
+    {
+        成绩不合格=0,
+        成绩合格=1,
+        已打印=2,
+        已列为发展对象=4,
+        成绩合格并打印=成绩合格+已打印,
+        成绩合格并列为发展对象=成绩合格+已打印+已列为发展对象
+    }
 }
