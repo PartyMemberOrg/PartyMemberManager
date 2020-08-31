@@ -33,8 +33,9 @@ namespace AspNetCorePdf.PdfProvider
                 page.Width = new XUnit(pdfData.PageSize.Width, XGraphicsUnit.Millimeter);// (int)(pdfData.PageSize.Width * scale);
                 page.Height = new XUnit(pdfData.PageSize.Height, XGraphicsUnit.Millimeter);// (int)(pdfData.PageSize.Height * scale);
                 var gfx = XGraphics.FromPdfPage(page,XGraphicsUnit.Millimeter);
-                if (!string.IsNullOrEmpty(pdfData.BackgroundImage))
-                    AddBackground(gfx, page, $"{_imagesPath}\\{pdfData.BackgroundImage}", 0, 0);
+                //暂时不打印背景
+                //if (!string.IsNullOrEmpty(pdfData.BackgroundImage))
+                //    AddBackground(gfx, page, $"{_imagesPath}\\{pdfData.BackgroundImage}", 0, 0);
                 //AddTitleAndFooter(page, gfx, pdfData.DocumentTitle, document, pdfData);
                 //AddDescription(gfx, pdfData);
                 AddText(gfx, pdfData);
