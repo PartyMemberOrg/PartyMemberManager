@@ -321,9 +321,11 @@
                         success: function (data) {
                             layer.msg(data.message);
                             tablefilter();
-                    }
-                });
+                        }
+                    });
                 }
+                else
+                    showError("您未选择数据或选择的数据不能修改");
             }
             catch (error) {
                 showError(error.message);

@@ -305,6 +305,7 @@
                     , done: function (res, curr, count) {
                         //fillPatientList(res, curr, count);
                         showHideScrollBars(res.data.length);
+                        setColor('.layui-table-main .layui-table');
                     }
                 });
             });
@@ -338,7 +339,7 @@
                     }
                 }
                 if (dataList.length > 0) {
-                   $.ajax({
+                    $.ajax({
                         type: 'post',
                         url: '@Url.Action("SaveGradeData")',
                         traditional: true,
@@ -350,6 +351,8 @@
                         }
                     });
                 }
+                else
+                    showError("您未选择数据或选择的数据不能修改");
             }
             catch (error) {
                 showError(error.message);
