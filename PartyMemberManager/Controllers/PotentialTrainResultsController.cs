@@ -420,8 +420,8 @@ namespace PartyMemberManager.Controllers
                     no = potentialTrainResult.CertificateNumber;
                 }
                 //现在只有发展对象表中有isPrint
-                potentialMember.IsPrint = true;
-                potentialMember.PrintTime = DateTime.Now;
+                //potentialMember.IsPrint = true;
+                //potentialMember.PrintTime = DateTime.Now;
                 await _context.SaveChangesAsync();
                 PotentialMemberPrintViewModel model = new PotentialMemberPrintViewModel
                 {
@@ -444,7 +444,7 @@ namespace PartyMemberManager.Controllers
         {
             try
             {
-                var stream = await PrintPdf(new Guid[] { id });
+                var stream = await PrintPdf(new Guid[] { id }, false, false);
                 return File(stream, "application/pdf");
             }
             catch (PartyMemberException ex)
@@ -457,12 +457,13 @@ namespace PartyMemberManager.Controllers
             }
         }
 
+        [Route("PotentialTrainResults/PrintSelected/{idList}")]
         public async Task<IActionResult> PrintSelected(string idList)
         {
             try
             {
                 Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
-                var stream = await PrintPdf(ids);
+                var stream = await PrintPdf(ids, false, false);
                 FileStreamResult fileStreamResult = File(stream, "application/pdf");
                 return fileStreamResult;
             }
@@ -475,12 +476,13 @@ namespace PartyMemberManager.Controllers
                 return View("PrintError", ex);
             }
         }
+        [Route("PotentialTrainResults/PreviewSelected/{idList}")]
         public async Task<IActionResult> PreviewSelected(string idList)
         {
             try
             {
                 Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
-                var stream = await PrintPdf(ids, true);
+                var stream = await PrintPdf(ids, false, true);
                 FileStreamResult fileStreamResult = File(stream, "application/pdf");
                 return fileStreamResult;
             }
@@ -500,7 +502,7 @@ namespace PartyMemberManager.Controllers
         /// <param name="ids"></param>
         /// <param name="isFillBlank">如果套打，则只打印空</param>
         /// <returns></returns>
-        public async Task<Stream> PrintPdf(Guid[] ids, bool isFillBlank = false)
+        public async Task<Stream> PrintPdf(Guid[] ids, bool isFillBlank = false, bool isPreview = false)
         {
             List<PotentialMemberPrintViewModel> potentialMemberPrintViewModels = await GetReportDatas(ids);
             if (potentialMemberPrintViewModels.Count == 0)
@@ -518,7 +520,7 @@ namespace PartyMemberManager.Controllers
                         DocumentName = "发展对象培训结业证",
                         CreatedBy = "预备党员管理系统",
                         Description = "预备党员管理系统",
-                        BackgroundImage = "PotentialTrain.png",
+                        BackgroundImage = isFillBlank ? "PotentialTrain.png" : "PotentialTrainEmpty.png",
                         Rotate = 90,
                         DisplayItems = new List<DisplayItem>
                 {
@@ -574,6 +576,11 @@ namespace PartyMemberManager.Controllers
 
                     };
                     pdfDatas.Add(data);
+                    if (isPreview)
+                    {
+                        data.PageSize = new System.Drawing.Size(143, 210);
+                        data.Rotate = 0;
+                    }
                 }
                 else
                 {
@@ -590,7 +597,7 @@ namespace PartyMemberManager.Controllers
                         CreatedBy = "预备党员管理系统",
                         Description = "预备党员管理系统",
                         Rotate = 90,
-                        BackgroundImage = "PotentialTrain.png",
+                        BackgroundImage = isFillBlank ? "PotentialTrain.png" : "PotentialTrainEmpty.png",
                         DisplayItems = new List<DisplayItem>
                 {
                     new DisplayItem{
@@ -639,10 +646,15 @@ namespace PartyMemberManager.Controllers
 
                     };
                     pdfDatas.Add(data);
+                    if (isPreview)
+                    {
+                        data.PageSize = new System.Drawing.Size(143, 210);
+                        data.Rotate = 0;
+                    }
 
                 }
             }
-            var stream = _pdfService.CreatePdf(pdfDatas);
+            var stream = _pdfService.CreatePdf(pdfDatas, isPreview);
             return stream;
         }
 
@@ -809,6 +821,64 @@ namespace PartyMemberManager.Controllers
                 _logger.LogError(ex, ex.Message);
                 jsonResult.Code = -1;
                 jsonResult.Message = "JSON文件内容格式错误";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
+        /// <summary>
+        /// 打印和预览
+        /// </summary>
+        /// <param name="idList"></param>
+        /// <returns></returns>
+        public IActionResult PrintAndPreview(string idList)
+        {
+            return View((object)idList);
+        }
+        /// <summary>
+        /// 更新打印状态
+        /// </summary>
+        /// <param name="idList"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> UpdatePrintStatus(string idList)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "打印状态更新成功"
+            };
+            try
+            {
+                Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
+                foreach (Guid id in ids)
+                {
+                    PotentialTrainResult potentialTrainResult = await _context.PotentialTrainResults.FindAsync(id);
+                    PotentialMember potentialMember = await _context.PotentialMembers.FindAsync(potentialTrainResult.PotentialMemberId);
+                    //如果成绩和补考成绩均不合格，不能打印，也不生成证书编号
+                    if (!potentialTrainResult.IsPass)
+                        continue;
+                    if (potentialMember.IsPrint)
+                        continue;
+                    //现在只有入党积极分子表中有isPrint
+                    potentialMember.IsPrint = true;
+                    potentialMember.PrintTime = DateTime.Now;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "更新打印状态时发生错误";
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
             }
             catch (Exception ex)
             {

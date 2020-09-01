@@ -432,7 +432,7 @@
             if (datas == "")
                 showError("请选择成绩合格的入党积极分子");
             else
-                showPrint('@Url.Action("PrintSelected")' + '?idList=' + datas, '打印结业证', 800, 600, function () { tablefilter(); });
+                showPrint('@Url.Action("PrintAndPreview")' + '?idList=' + datas, '打印结业证', 800, 600, function () { updatePrintStatus(datas);}, function () { tablefilter(); });
         }
         /**预览选中的积极分子培训结业证 */
         function previewSelected() {
@@ -449,8 +449,38 @@
             if (datas == "")
                 showError("请选择成绩合格的入党积极分子");
             else
-                showPrint('@Url.Action("PreviewSelected")' + '?idList=' + datas, '打印结业证', 800, 600, function () { tablefilter(); });
+                showPrint('@Url.Action("PrintAndPreview")' + '?idList=' + datas, '打印结业证', 800, 600, function () { updatePrintStatus(datas); }, function () { tablefilter(); });
         }
+        /**
+         * 更新打印状态
+         * @@param datas
+         */
+        function updatePrintStatus(datas) {
+            var postUrl = '@Url.Action("UpdatePrintStatus")';
+            $.ajax({
+                url: postUrl,
+                data: {idList:datas},
+                type: "post",
+                dataType: "json",
+                success: function (response) {
+                    if (response.code == 0) {
+                    }
+                    else {
+                        layer.msg(response.message, {
+                            icon: 2,
+                            time: 2000
+                        },
+                            function () {
+                                //保存时发生错误
+                            });
+                    }
+                },
+                error: function () {
+                    showError("更新打印状态时发生错误");
+                }
+            });
+        }
+
         /**
          * 设置表格行颜色
          * @@param tableClassName

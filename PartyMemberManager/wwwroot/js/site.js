@@ -420,18 +420,37 @@ function showContent(url, title, width = 600, height = 400) {
 function showPrint(url, title, width = 600, height = 400, callBack) {
     top.layui.use('layer', function () {
         var layer = top.layui.layer;
+        var printed = 0;
         layer.ready(function () {
             var index = layer.load(2);
             layer.open({
                 title: title
                 , area: [width.toString() + 'px', height.toString() + 'px']
                 , type: 2
-                , content: [url, 'no']//第二个参数no，表示不显示iframe滚动条
+                , scrollbar : false
+                , content: [url,'no']//第二个参数no，表示不显示iframe滚动条
                 , btnAlign: 'c'
-                , btn: []
+                , btn: ['打印','关闭']
+                , yes: function (index, layero) {
+                    var body = layer.getChildFrame('body', index);
+                    printed = 1;
+                    $(body).find('#print')[0].contentWindow.print();
+                    //if (callBack != null)
+                    //    callBack();
+                    //layer.close(index);
+                }
+                , btn2: function (index, layero) {
+                    if (printed == 1) {
+                        if (callBack != null)
+                            callBack();
+                    }
+                    layer.close(index);
+                }
                 , cancel: function (index, layero) {
-                    if (callBack != null)
-                        callBack();
+                    if (printed == 1) {
+                        if (callBack != null)
+                            callBack();
+                    }
                     layer.close(index);
                 }
             });

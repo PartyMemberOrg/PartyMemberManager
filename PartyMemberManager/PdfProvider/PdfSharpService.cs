@@ -18,7 +18,7 @@ namespace AspNetCorePdf.PdfProvider
         private string _imagesPath = ".\\PdfProvider\\Images";
         private string _resourcesPath = ".\\PdfProvider\\Resources";
 
-        public Stream CreatePdf(IEnumerable<PdfData> pdfDatas)
+        public Stream CreatePdf(IEnumerable<PdfData> pdfDatas, bool printBackground = false)
         {
             if (GlobalFontSettings.FontResolver == null)
             {
@@ -40,8 +40,11 @@ namespace AspNetCorePdf.PdfProvider
                 page.Height = new XUnit(pdfData.PageSize.Height, XGraphicsUnit.Millimeter);// (int)(pdfData.PageSize.Height * scale);
                 var gfx = XGraphics.FromPdfPage(page, XGraphicsUnit.Millimeter);
                 //暂时不打印背景
-                //if (!string.IsNullOrEmpty(pdfData.BackgroundImage))
-                //    AddBackground(gfx, page, $"{_imagesPath}\\{pdfData.BackgroundImage}", 0, 0);
+                if (printBackground)
+                {
+                    if (!string.IsNullOrEmpty(pdfData.BackgroundImage))
+                        AddBackground(gfx, page, $"{_imagesPath}\\{pdfData.BackgroundImage}", 0, 0);
+                }
                 //AddTitleAndFooter(page, gfx, pdfData.DocumentTitle, document, pdfData);
                 //AddDescription(gfx, pdfData);
                 AddText(gfx, pdfData);
@@ -65,7 +68,11 @@ namespace AspNetCorePdf.PdfProvider
             XImage xImage = XImage.FromFile(imagePath);
             Unit imageWidth = Unit.FromPoint(xImage.PointWidth);
             Unit imageHeight = Unit.FromPoint(xImage.PointHeight);
-            double imageScale = imageHeight / page.Height;
+            double imageHeightScale = imageHeight / page.Height;
+            double imageWightScale = imageWidth / page.Width;
+            double imageScale = imageHeightScale;
+            if (imageWightScale > imageHeightScale)
+                imageScale = imageWightScale;
             //gfx.DrawImage(xImage, xPosition, yPosition, xImage.PixelWidth / imageScale, xImage.PixelHeight / imageScale);
             XRect xrectSource = new XRect { X = xPosition, Y = yPosition, Width = imageWidth.Millimeter, Height = imageHeight.Millimeter };
             XRect xrect = new XRect { X = xPosition, Y = yPosition, Width = imageWidth.Millimeter / imageScale, Height = imageHeight.Millimeter / imageScale };

@@ -482,8 +482,8 @@ namespace PartyMemberManager.Controllers
                     no = activistTrainResult.CertificateNumber;
                 }
                 //现在只有入党积极分子表中有isPrint
-                partyActivist.IsPrint = true;
-                partyActivist.PrintTime = DateTime.Now;
+                //partyActivist.IsPrint = true;
+                //partyActivist.PrintTime = DateTime.Now;
                 await _context.SaveChangesAsync();
                 PartyActivistPrintViewModel model = new PartyActivistPrintViewModel
                 {
@@ -514,7 +514,7 @@ namespace PartyMemberManager.Controllers
                 //webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
                 //webReport.Report.Prepare();
                 //return View(webReport);
-                var stream = await PrintPdf(new Guid[] { id });
+                var stream = await PrintPdf(new Guid[] { id }, false, false);
                 return File(stream, "application/pdf");
             }
             catch (PartyMemberException ex)
@@ -527,22 +527,14 @@ namespace PartyMemberManager.Controllers
             }
         }
 
+        [Route("ActivistTrainResults/PrintSelected/{idList}")]
         public async Task<IActionResult> PrintSelected(string idList)
         {
             try
             {
                 Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
-                //List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
-                //string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
-                //WebReport webReport = new WebReport();
-                //webReport.Report.Load(reportFile);
-                //webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
-                //webReport.Report.Prepare();
-                //return View("Print",webReport);
-                var stream = await PrintPdf(ids);
-                //return File(stream, "application/pdf","入党积极分子结业证.pdf");
+                var stream = await PrintPdf(ids, false, false);
                 FileStreamResult fileStreamResult = File(stream, "application/pdf");
-                //fileStreamResult.FileDownloadName = "入党积极分子结业证.pdf";
                 return fileStreamResult;
             }
             catch (PartyMemberException ex)
@@ -555,12 +547,13 @@ namespace PartyMemberManager.Controllers
             }
         }
 
+        [Route("ActivistTrainResults/PreviewSelected/{idList}")]
         public async Task<IActionResult> PreviewSelected(string idList)
         {
             try
             {
                 Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
-                var stream = await PrintPdf(ids, true);
+                var stream = await PrintPdf(ids, false, true);
                 FileStreamResult fileStreamResult = File(stream, "application/pdf");
                 return fileStreamResult;
             }
@@ -580,7 +573,7 @@ namespace PartyMemberManager.Controllers
         /// <param name="ids"></param>
         /// <param name="isFillBlank">//如果套打，则只打印空</param>
         /// <returns></returns>
-        public async Task<Stream> PrintPdf(Guid[] ids, bool isFillBlank = false)
+        public async Task<Stream> PrintPdf(Guid[] ids, bool isFillBlank = false, bool isPreview = false)
         {
             List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
             if (partyActivistPrintViewModels.Count == 0)
@@ -599,7 +592,7 @@ namespace PartyMemberManager.Controllers
                         CreatedBy = "预备党员管理系统",
                         Description = "预备党员管理系统",
                         Rotate = 90,
-                        BackgroundImage = "ActivistTrain.png",
+                        BackgroundImage = isFillBlank ? "ActivistTrain.png" : "ActivistTrainEmpty.png",
                         DisplayItems = new List<DisplayItem>
                 {
                     new DisplayItem{
@@ -655,6 +648,10 @@ namespace PartyMemberManager.Controllers
                     };
 
                     PrintName(partyActivistPrintViewModel, data);
+                    if (isPreview)
+                    {
+                        data.Rotate = 0;
+                    }
 
                     pdfDatas.Add(data);
                 }
@@ -672,8 +669,8 @@ namespace PartyMemberManager.Controllers
                         DocumentName = "入党积极分子培训结业证",
                         CreatedBy = "预备党员管理系统",
                         Description = "预备党员管理系统",
-                        Rotate=90,
-                        BackgroundImage = "ActivistTrain.png",
+                        Rotate = 90,
+                        BackgroundImage = isFillBlank ? "ActivistTrain.png" : "ActivistTrainEmpty.png",
                         DisplayItems = new List<DisplayItem>
                 {
                     new DisplayItem{
@@ -686,7 +683,7 @@ namespace PartyMemberManager.Controllers
                         Text=$@"同志参加了 {partyActivistPrintViewModel.StartYear} 至 {partyActivistPrintViewModel.EndYear} 学年第 {partyActivistPrintViewModel.Term} 期入党",
                         Font="楷体",
                         FontSize=28f,
-                        Location=new System.Drawing.PointF(61f,91)
+                        Location=new System.Drawing.PointF(61.5f,91)
                     },
                     new DisplayItem{
                         Text=$@"积极分子培训班学习，培训考核成绩合格，准予结业。",
@@ -716,11 +713,15 @@ namespace PartyMemberManager.Controllers
 
                     };
                     PrintName(partyActivistPrintViewModel, data);
+                    if (isPreview)
+                    {
+                        data.Rotate = 0;
+                    }
                     pdfDatas.Add(data);
 
                 }
             }
-            var stream = _pdfService.CreatePdf(pdfDatas);
+            var stream = _pdfService.CreatePdf(pdfDatas, isPreview);
             //var stream = _migraDocService.CreateMigraDocPdf(pdfDatas);
             return stream;
         }
@@ -744,7 +745,7 @@ namespace PartyMemberManager.Controllers
                             Text = partyActivistPrintViewModel.Name,
                             Font = "楷体",
                             FontSize = 28,
-                            Location = new System.Drawing.PointF(35, 92)
+                            Location = new System.Drawing.PointF(35.5f, 92)
                         };
                         data.DisplayItems.Add(displayItem);
                         break;
@@ -756,7 +757,7 @@ namespace PartyMemberManager.Controllers
                             Text = partyActivistPrintViewModel.Name,
                             Font = "楷体",
                             FontSize = 28,
-                            Location = new System.Drawing.PointF(30, 92)
+                            Location = new System.Drawing.PointF(30.5f, 92)
                         };
                         data.DisplayItems.Add(displayItem);
                         break;
@@ -768,7 +769,7 @@ namespace PartyMemberManager.Controllers
                             Text = partyActivistPrintViewModel.Name,
                             Font = "楷体",
                             FontSize = 25,
-                            Location = new System.Drawing.PointF(26, 92)
+                            Location = new System.Drawing.PointF(26.5f, 92)
                         };
                         data.DisplayItems.Add(displayItem);
                         break;
@@ -780,7 +781,7 @@ namespace PartyMemberManager.Controllers
                             Text = partyActivistPrintViewModel.Name,
                             Font = "楷体",
                             FontSize = 23,
-                            Location = new System.Drawing.PointF(20, 93)
+                            Location = new System.Drawing.PointF(20.5f, 93)
                         };
                         data.DisplayItems.Add(displayItem);
                         break;
@@ -792,7 +793,7 @@ namespace PartyMemberManager.Controllers
                             Text = partyActivistPrintViewModel.Name,
                             Font = "楷体",
                             FontSize = 20,
-                            Location = new System.Drawing.PointF(20, 93)
+                            Location = new System.Drawing.PointF(20.5f, 93)
                         };
                         data.DisplayItems.Add(displayItem);
                         break;
@@ -805,7 +806,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine1,
                             Font = "楷体",
                             FontSize = 25,
-                            Location = new System.Drawing.PointF(26, 88)
+                            Location = new System.Drawing.PointF(26.5f, 88)
                         };
                         data.DisplayItems.Add(displayItem);
                         displayItem = new DisplayItem
@@ -813,7 +814,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine2,
                             Font = "楷体",
                             FontSize = 25,
-                            Location = new System.Drawing.PointF(26, 96)
+                            Location = new System.Drawing.PointF(26.5f, 96)
                         };
                         data.DisplayItems.Add(displayItem);
                         break;
@@ -826,7 +827,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine3,
                             Font = "楷体",
                             FontSize = 25,
-                            Location = new System.Drawing.PointF(26, 88)
+                            Location = new System.Drawing.PointF(26.5f, 88)
                         };
                         data.DisplayItems.Add(displayItem);
                         displayItem = new DisplayItem
@@ -834,7 +835,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine4,
                             Font = "楷体",
                             FontSize = 25,
-                            Location = new System.Drawing.PointF(26, 96)
+                            Location = new System.Drawing.PointF(26.5f, 96)
                         };
                         data.DisplayItems.Add(displayItem);
                         break;
@@ -847,7 +848,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine5,
                             Font = "楷体",
                             FontSize = 23,
-                            Location = new System.Drawing.PointF(20, 88)
+                            Location = new System.Drawing.PointF(20.5f, 88)
                         };
                         data.DisplayItems.Add(displayItem);
                         displayItem = new DisplayItem
@@ -855,7 +856,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine6,
                             Font = "楷体",
                             FontSize = 23,
-                            Location = new System.Drawing.PointF(20, 96)
+                            Location = new System.Drawing.PointF(20.5f, 96)
                         };
                         data.DisplayItems.Add(displayItem);
                         break;
@@ -868,7 +869,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine7,
                             Font = "楷体",
                             FontSize = 23,
-                            Location = new System.Drawing.PointF(20, 88)
+                            Location = new System.Drawing.PointF(20.5f, 88)
                         };
                         data.DisplayItems.Add(displayItem);
                         displayItem = new DisplayItem
@@ -876,7 +877,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine8,
                             Font = "楷体",
                             FontSize = 23,
-                            Location = new System.Drawing.PointF(20, 96)
+                            Location = new System.Drawing.PointF(20.5f, 96)
                         };
                         data.DisplayItems.Add(displayItem);
                         break;
@@ -889,7 +890,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine9,
                             Font = "楷体",
                             FontSize = 20,
-                            Location = new System.Drawing.PointF(20, 88)
+                            Location = new System.Drawing.PointF(20.5f, 88)
                         };
                         data.DisplayItems.Add(displayItem);
                         displayItem = new DisplayItem
@@ -897,7 +898,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine10,
                             Font = "楷体",
                             FontSize = 20,
-                            Location = new System.Drawing.PointF(20, 96)
+                            Location = new System.Drawing.PointF(20.5f, 96)
                         };
                         data.DisplayItems.Add(displayItem);
                         break;
@@ -910,7 +911,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine11,
                             Font = "楷体",
                             FontSize = 20,
-                            Location = new System.Drawing.PointF(20, 88)
+                            Location = new System.Drawing.PointF(20.5f, 88)
                         };
                         data.DisplayItems.Add(displayItem);
                         displayItem = new DisplayItem
@@ -918,7 +919,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine12,
                             Font = "楷体",
                             FontSize = 20,
-                            Location = new System.Drawing.PointF(20, 96)
+                            Location = new System.Drawing.PointF(20.5f, 96)
                         };
                         data.DisplayItems.Add(displayItem);
                         break;
@@ -932,7 +933,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine13,
                             Font = "楷体",
                             FontSize = 16,
-                            Location = new System.Drawing.PointF(20, 88)
+                            Location = new System.Drawing.PointF(20.5f, 88)
                         };
                         data.DisplayItems.Add(displayItem);
                         displayItem = new DisplayItem
@@ -940,7 +941,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine14,
                             Font = "楷体",
                             FontSize = 16,
-                            Location = new System.Drawing.PointF(20, 96)
+                            Location = new System.Drawing.PointF(20.5f, 96)
                         };
                         data.DisplayItems.Add(displayItem);
                         break;
@@ -958,7 +959,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine15,
                             Font = "楷体",
                             FontSize = 15,
-                            Location = new System.Drawing.PointF(20, 88)
+                            Location = new System.Drawing.PointF(20.5f, 88)
                         };
                         data.DisplayItems.Add(displayItem);
                         displayItem = new DisplayItem
@@ -966,7 +967,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine16,
                             Font = "楷体",
                             FontSize = 15,
-                            Location = new System.Drawing.PointF(20, 96)
+                            Location = new System.Drawing.PointF(20.5f, 96)
                         };
                         data.DisplayItems.Add(displayItem);
                         displayItem = new DisplayItem
@@ -974,7 +975,7 @@ namespace PartyMemberManager.Controllers
                             Text = nameLine17,
                             Font = "楷体",
                             FontSize = 15,
-                            Location = new System.Drawing.PointF(20, 104)
+                            Location = new System.Drawing.PointF(20.5f, 104)
                         };
                         data.DisplayItems.Add(displayItem);
                         break;
@@ -986,6 +987,55 @@ namespace PartyMemberManager.Controllers
             {
                 //换成4行
             }
+        }
+        /// <summary>
+        /// 更新打印状态
+        /// </summary>
+        /// <param name="idList"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> UpdatePrintStatus(string idList)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "打印状态更新成功"
+            };
+            try
+            {
+                Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
+                foreach (Guid id in ids)
+                {
+                    ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.FindAsync(id);
+                    PartyActivist partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);
+                    //如果成绩和补考成绩均不合格，不能打印，也不生成证书编号
+                    if (!activistTrainResult.IsPass)
+                        continue;
+                    if (partyActivist.IsPrint)
+                        continue;
+                    //现在只有入党积极分子表中有isPrint
+                    partyActivist.IsPrint = true;
+                    partyActivist.PrintTime = DateTime.Now;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "更新打印状态时发生错误";
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
         }
 
         /// <summary>
@@ -1159,6 +1209,15 @@ namespace PartyMemberManager.Controllers
                 jsonResult.Message = "发生系统错误";
             }
             return Json(jsonResult);
+        }
+        /// <summary>
+        /// 打印和预览
+        /// </summary>
+        /// <param name="idList"></param>
+        /// <returns></returns>
+        public IActionResult PrintAndPreview(string idList)
+        {
+            return View((object)idList);
         }
 
         private bool ActivistTrainResultExists(Guid id)

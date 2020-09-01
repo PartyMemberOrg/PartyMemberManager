@@ -81,6 +81,10 @@ namespace PartyMemberManager
             app.UseSession();
             app.UseEndpoints(endpoints =>
             {
+                //endpoints.MapControllerRoute(
+                //    name: "printview",
+                //    pattern: "PotentialTrainResults/PreviewSelected/{idList}",
+                //    defaults: new { controller = "PotentialTrainResults", action = "PreviewSelected" });
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

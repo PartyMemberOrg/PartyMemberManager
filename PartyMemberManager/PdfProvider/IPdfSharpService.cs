@@ -6,6 +6,6 @@ namespace AspNetCorePdf.PdfProvider
 {
     public interface IPdfSharpService
     {
-        Stream CreatePdf(IEnumerable<PdfData> pdfDatas);
+        Stream CreatePdf(IEnumerable<PdfData> pdfDatas, bool printBackground = false);
     }
 }

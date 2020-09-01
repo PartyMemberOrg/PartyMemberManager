@@ -281,7 +281,7 @@ namespace PartyMemberManager.Controllers
                         #region 领导干部培训名单
                         DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
                         int rowIndex = 0;
-                        string fieldsStudent = "序号,姓名,培训班次,组织单位,培训单位,年度,培训时间,时长,地点,备注";
+                        string fieldsStudent = "序号,姓名,培训班名称,组织单位,培训单位,年度,培训时间,结束时间,培训地点,备注";
                         string[] fieldList = fieldsStudent.Split(',');
                         foreach (string field in fieldList)
                         {
@@ -299,13 +299,13 @@ namespace PartyMemberManager.Controllers
                                 OperatorId = CurrentUser.Id
                             };
                             string nameField = "姓名";
-                            string trainClassNameField = "培训班次";
+                            string trainClassNameField = "培训班名称";
                             string organizerField = "组织单位";
                             string trainOrganizationalField = "培训单位";
                             string yearField = "年度";
                             string trainTimeField = "培训时间";
-                            string trainDurationField = "时长";
-                            string trainAddressField = "地点";
+                            string trainEndTimeField = "结束时间";
+                            string trainAddressField = "培训地点";
                             string remarkField = "备注";
 
                             string name = row[nameField].ToString();
@@ -314,7 +314,7 @@ namespace PartyMemberManager.Controllers
                             string trainOrganizational = row[trainOrganizationalField].ToString();
                             string year = row[yearField].ToString();
                             string trainTime = row[trainTimeField].ToString();
-                            string trainDuration = row[trainDurationField].ToString();
+                            string trainEndTime = row[trainEndTimeField].ToString();
                             string trainAddress = row[trainAddressField].ToString();
                             string remark = row[remarkField].ToString();
                             //跳过姓名为空的记录
@@ -324,7 +324,7 @@ namespace PartyMemberManager.Controllers
                             schoolCadreTrain.Organizer = organizer;
                             schoolCadreTrain.TrainAddress = trainAddress;
                             schoolCadreTrain.TrainClassName = trainClassName;
-                            int trainDurationValue = 0;
+                            //int trainDurationValue = 0;
                             //if (int.TryParse(trainDuration, out trainDurationValue))
                                 //schoolCadreTrain.TrainDuration = trainDurationValue;
                             //else
@@ -335,8 +335,15 @@ namespace PartyMemberManager.Controllers
                             {
                                 throw new PartyMemberException($"第{rowIndex}行数据中的【{trainTimeField}】日期格式不合法");
                             }
+                            trainEndTime = trainEndTime.Replace(".", "-").Replace("/", "-");
+                            DateTime trainEndTimeValue = DateTime.Now;
+                            if (!TryParseDate(trainEndTime, out trainEndTimeValue))
+                            {
+                                throw new PartyMemberException($"第{rowIndex}行数据中的【{trainEndTimeField}】日期格式不合法");
+                            }
                             schoolCadreTrain.TrainOrganizational = trainOrganizational;
                             schoolCadreTrain.TrainTime = trainTimeValue;
+                            schoolCadreTrain.EndTrainTime = trainEndTimeValue;
                             schoolCadreTrain.Year = year;
 
                             _context.SchoolCadreTrains.Add(schoolCadreTrain);
