@@ -409,6 +409,36 @@ function showContent(url, title, width = 600, height = 400) {
         });
     });
 }
+/**
+ * 显示打印对话框
+ * @param {String} url - 编辑页面的url
+ * @param {String} title - 编辑窗体标题
+ * @param {Integer} width - 编辑窗口宽度
+ * @param {Integer} height - 编辑窗口高度
+ * @param {Function} callBack - 编辑结束并保存后的回调函数
+ */
+function showPrint(url, title, width = 600, height = 400, callBack) {
+    top.layui.use('layer', function () {
+        var layer = top.layui.layer;
+        layer.ready(function () {
+            var index = layer.load(2);
+            layer.open({
+                title: title
+                , area: [width.toString() + 'px', height.toString() + 'px']
+                , type: 2
+                , content: [url, 'no']//第二个参数no，表示不显示iframe滚动条
+                , btnAlign: 'c'
+                , btn: []
+                , cancel: function (index, layero) {
+                    if (callBack != null)
+                        callBack();
+                    layer.close(index);
+                }
+            });
+            layer.close(index);
+        });
+    });
+}
 
 /**
  * 显示编辑对话框

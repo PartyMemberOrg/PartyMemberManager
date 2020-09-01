@@ -519,31 +519,32 @@ namespace PartyMemberManager.Controllers
                         CreatedBy = "预备党员管理系统",
                         Description = "预备党员管理系统",
                         BackgroundImage = "PotentialTrain.png",
+                        Rotate = 0,
                         DisplayItems = new List<DisplayItem>
                 {
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.No,
                         Font="楷体",
                         FontSize=10,
-                        Location=new System.Drawing.PointF(82,22.3f)
+                        Location=new System.Drawing.PointF(82.5f,20f)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.Name,
                         Font="楷体",
                         FontSize=18,
-                        Location=new System.Drawing.PointF(30,93)
+                        Location=new System.Drawing.PointF(30,93.5f)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.StartYear,
                         Font="楷体",
                         FontSize=18,
-                        Location=new System.Drawing.PointF(60,108)
+                        Location=new System.Drawing.PointF(60,108.5f)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.EndYear,
                         Font="楷体",
                         FontSize=18,
-                        Location=new System.Drawing.PointF(90,108)
+                        Location=new System.Drawing.PointF(90,108.5f)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.Term,
@@ -555,19 +556,19 @@ namespace PartyMemberManager.Controllers
                         Text=potentialMemberPrintViewModel.Year,
                         Font="楷体",
                         FontSize=16,
-                        Location=new System.Drawing.PointF(55,171)
+                        Location=new System.Drawing.PointF(55,173)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.Month,
                         Font="楷体",
                         FontSize=16,
-                        Location=new System.Drawing.PointF(75,171)
+                        Location=new System.Drawing.PointF(74,173)
                     },
                     new DisplayItem{
                         Text=potentialMemberPrintViewModel.Day,
                         Font="楷体",
                         FontSize=16,
-                        Location=new System.Drawing.PointF(84,171)
+                        Location=new System.Drawing.PointF(84,173)
                     }
                 }
 
@@ -588,50 +589,51 @@ namespace PartyMemberManager.Controllers
                         DocumentName = "发展对象培训结业证",
                         CreatedBy = "预备党员管理系统",
                         Description = "预备党员管理系统",
+                        Rotate = 0,
                         BackgroundImage = "PotentialTrain.png",
                         DisplayItems = new List<DisplayItem>
                 {
                     new DisplayItem{
                         Text=$@"党校证字 {potentialMemberPrintViewModel.No} 号",
                         Font="楷体",
-                        FontSize=10,
-                        Location=new System.Drawing.PointF(65,22)
+                        FontSize=10.6f,
+                        Location=new System.Drawing.PointF(64,20)
                     },
                     new DisplayItem{
                         Text=$@"{name} 同志：",
                         Font="黑体",
-                        FontSize=18,
+                        FontSize=16.8f,
                         Location=new System.Drawing.PointF(27,95)
                     },
                     new DisplayItem{
-                        Text=$@"参加了 {potentialMemberPrintViewModel.StartYear} 至 {potentialMemberPrintViewModel.EndYear} 学年",
+                        Text=$@"参加了  {potentialMemberPrintViewModel.StartYear} 至  {potentialMemberPrintViewModel.EndYear} 学年",
                         Font="黑体",
-                        FontSize=18.5f,
-                        Location=new System.Drawing.PointF(38,109)
+                        FontSize=16.8f,
+                        Location=new System.Drawing.PointF(37,109)
                     },
                     new DisplayItem{
-                        Text=$@"第 {potentialMemberPrintViewModel.Term} 期发展对象培训班学习，",
+                        Text=$@"第  {potentialMemberPrintViewModel.Term}   期发展对象培训班学习，",
                         Font="黑体",
-                        FontSize=18.5f,
-                        Location=new System.Drawing.PointF(27,123)
+                        FontSize=16.8f,
+                        Location=new System.Drawing.PointF(25.2f,124)
                     },
                     new DisplayItem{
                         Text=$@"培训考核成绩合格，准予结业。",
                         Font="黑体",
-                        FontSize=18.5f,
-                        Location=new System.Drawing.PointF(27,137)
+                        FontSize=16.8f,
+                        Location=new System.Drawing.PointF(25.2f,138)
                     },
                     new DisplayItem{
                         Text=$@"中共兰州财经大学委员会党校",
                         Font="楷体",
-                        FontSize=15.8f,
-                        Location=new System.Drawing.PointF(45,163)
+                        FontSize=16.4f,
+                        Location=new System.Drawing.PointF(43,164.5f)
                     },
                     new DisplayItem{
                         Text=$@"{potentialMemberPrintViewModel.Year}年{potentialMemberPrintViewModel.Month}月{potentialMemberPrintViewModel.Day}日",
                         Font="楷体",
-                        FontSize=16,
-                        Location=new System.Drawing.PointF(56,171)
+                        FontSize=17.3f,
+                        Location=new System.Drawing.PointF(55,173)
                     }
                 }
 

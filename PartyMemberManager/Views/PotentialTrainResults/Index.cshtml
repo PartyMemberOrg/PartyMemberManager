@@ -238,27 +238,6 @@
                 });
             });
         }
-                        /**过滤数据 */
-        function tablefilter() {
-            //此处Id不要#号
-            var tableId = "dataGrid";
-            layui.use('table', function () {
-                var table = layui.table;
-                table.reload(tableId, {
-                    url: '@Url.Action("GetDatasWithFilter")'
-                    , where: {
-                        departmentId: $("#department").val(),
-                        keyword: $("#keyword").val(),
-                        isPass: $("#isPass").val(),
-                        isPrint: $("#isPrint").val(),
-                        trainClassId: $("#trainClass").val()
-                    }
-                    , done: function (res, curr, count) {
-                        showHideScrollBars(res.data.length);
-                    }
-                });
-            });
-        }
                 /**过滤数据 */
         function tablefilter() {
             //此处Id不要#号
@@ -421,7 +400,7 @@
             if (datas == "")
                 showError("请选择成绩合格的发展对象");
             else
-                showContent('@Url.Action("PrintSelected")' + '?idList=' + datas, '打印结业证', 800, 600);
+                showPrint('@Url.Action("PrintSelected")' + '?idList=' + datas, '打印结业证', 800, 600, function () { tablefilter(); });
         }
         /**预览选中的发展对象培训结业证 */
         function previewSelected() {
@@ -438,7 +417,7 @@
             if (datas == "")
                 showError("请选择成绩合格的发展对象");
             else
-                showContent('@Url.Action("PreviewSelected")' + '?idList=' + datas, '打印结业证', 800, 600);
+                showPrint('@Url.Action("PreviewSelected")' + '?idList=' + datas, '打印结业证', 800, 600, function () { tablefilter(); });
         }
     </script>
     <script type="text/html" id="optTpl">
