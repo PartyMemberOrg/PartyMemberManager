@@ -8,7 +8,7 @@
                 <label asp-for="Year" asp-required="true" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">
-                <input asp-for="Year" class="form-control"  readonly value="@Model.Year"/>
+                <input asp-for="Year" class="form-control" readonly value="@Model.Year" />
                 <span asp-validation-for="Year" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
             </div>
         </div>
@@ -63,8 +63,19 @@
                 <label asp-for="TrainTime" asp-required="true" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">
-                <input id="TrainTime" name="TrainTime"  class="form-control"  readonly value="@Model.TrainTime"/>
+                <input id="TrainTime" name="TrainTime" class="form-control" readonly value="@Model.TrainTime" />
                 <span asp-validation-for="TrainTime" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="@LabelDivDefaultClass">
+                <label asp-for="EndTrainTime" asp-required="true" class="control-label"></label>
+            </div>
+            <div class="@InputDivDefaultClass">
+                <input id="EndTrainTime" name="EndTrainTime" class="form-control" readonly value="@Model.EndTrainTime" />
+                <span asp-validation-for="EndTrainTime" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
             </div>
         </div>
     </div>
@@ -85,7 +96,7 @@
                 <label asp-for="TrainDuration" asp-required="true" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">
-                <input asp-for="TrainDuration"  class="form-control" />
+                <input asp-for="TrainDuration" class="form-control" readonly />
                 <span asp-validation-for="TrainDuration" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
             </div>
         </div>

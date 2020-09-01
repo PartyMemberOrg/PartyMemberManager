@@ -41,7 +41,7 @@ namespace PartyMemberManager.Dal.Entities
         /// 姓名
         /// </summary>
         [DisplayName("姓名")]
-        [StringLength(20, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [StringLength(50, MinimumLength = 2, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Name { get; set; }
 

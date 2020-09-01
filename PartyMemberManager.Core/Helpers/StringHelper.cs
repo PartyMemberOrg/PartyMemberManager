@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PartyMemberManager.Core.Helpers
@@ -104,6 +105,32 @@ namespace PartyMemberManager.Core.Helpers
             string key = "lzufepar";
             string iv = "878541!@";
             return DESDecrypt(data, key, iv);
+        }
+
+        /// <summary>
+        ///  验证身份证号
+        /// </summary>
+        /// <returns></returns>
+        public static bool ValidateIdNumber(string idNumber)
+        {
+            string pattern = @"(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)";
+            if (Regex.IsMatch(idNumber, pattern))
+                return true;
+            else
+                return false;
+        }
+
+        /// <summary>
+        ///  验证学号/工号
+        /// </summary>
+        /// <returns></returns>
+        public static bool ValidateJobNo(string jobNo)
+        {
+            string pattern = @"(^\d{12}$)|(^10741\d{5}$)";
+            if (Regex.IsMatch(jobNo, pattern))
+                return true;
+            else
+                return false;
         }
     }
 }

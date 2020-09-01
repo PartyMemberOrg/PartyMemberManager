@@ -242,6 +242,8 @@ namespace PartyMemberManager.Controllers
                     throw new PartyMemberException("请选择培训班");
                 if (provinceCadreTrain.NationId == Guid.Empty)
                     throw new PartyMemberException("请选择民族");
+                if (!StringHelper.ValidateIdNumber(provinceCadreTrain.IdNumber))
+                    throw new PartyMemberException($"身份证不合法");
                 if (ModelState.IsValid)
                 {
                     ProvinceCadreTrain provinceCadreTrainInDb = await _context.ProvinceCadreTrains.FindAsync(provinceCadreTrain.Id);
@@ -269,6 +271,12 @@ namespace PartyMemberManager.Controllers
                         provinceCadreTrain.CreateTime = DateTime.Now;
                         provinceCadreTrain.OperatorId = CurrentUser.Id;
                         provinceCadreTrain.Ordinal = _context.ProvinceCadreTrains.Count() + 1;
+                        var ProvinceCadreTrainOld = _context.ProvinceCadreTrains.Where(d => d.IdNumber == provinceCadreTrain.IdNumber && d.ProvinceTrainClassId == provinceCadreTrain.ProvinceTrainClassId).FirstOrDefault();
+                        if (ProvinceCadreTrainOld != null)
+                        {
+                            var noName = "【" + ProvinceCadreTrainOld.Name + "-" + ProvinceCadreTrainOld.IdNumber + "】";
+                            throw new PartyMemberException(noName + "已在该培训班，请核对");
+                        }
                         _context.Add(provinceCadreTrain);
                         var provinceTrainClass = await _context.ProvinceTrainClasses.FindAsync(provinceCadreTrain.ProvinceTrainClassId);
                         provinceTrainClass.Total += 1;
@@ -429,6 +437,8 @@ namespace PartyMemberManager.Controllers
                             string department = row[departmentField].ToString();
                             //跳过姓名为空的记录
                             if (string.IsNullOrEmpty(name)) continue;
+                            if (!StringHelper.ValidateIdNumber(id))
+                                throw new PartyMemberException($"第{rowIndex}行数据中的【{idField}】不合法");
                             Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                             Guid nationId = nationData.Id;
                             provinceCadreTrain.Name = name;
@@ -442,6 +452,12 @@ namespace PartyMemberManager.Controllers
                             _context.ProvinceCadreTrains.Add(provinceCadreTrain);
 
                             provinceTrainClass.Total += 1;
+                            var ProvinceCadreTrainOld = _context.ProvinceCadreTrains.Where(d => d.IdNumber == provinceCadreTrain.IdNumber && d.ProvinceTrainClassId == provinceCadreTrain.ProvinceTrainClassId).FirstOrDefault();
+                            if (ProvinceCadreTrainOld != null)
+                            {
+                                var noName = "【" + ProvinceCadreTrainOld.Name + "-" + ProvinceCadreTrainOld.IdNumber + "】";
+                                throw new PartyMemberException(noName + "已在该培训班，请核对");
+                            }
                             _context.Update(provinceTrainClass);
                             await _context.SaveChangesAsync();
                         }

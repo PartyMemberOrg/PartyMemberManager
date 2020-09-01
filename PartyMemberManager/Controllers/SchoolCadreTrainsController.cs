@@ -171,7 +171,7 @@ namespace PartyMemberManager.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("Year,Name,TrainClassName,Organizer,TrainOrganizational,TrainTime,TrainAddress,TrainDuration,ClassHour,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] SchoolCadreTrain schoolCadreTrain)
+        public override async Task<IActionResult> Save([Bind("Year,Name,TrainClassName,Organizer,TrainOrganizational,TrainTime,EndTrainTime,TrainAddress,TrainDuration,ClassHour,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] SchoolCadreTrain schoolCadreTrain)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -191,6 +191,8 @@ namespace PartyMemberManager.Controllers
                         schoolCadreTrainInDb.Organizer = schoolCadreTrain.Organizer;
                         schoolCadreTrainInDb.TrainOrganizational = schoolCadreTrain.TrainOrganizational;
                         schoolCadreTrainInDb.TrainTime = schoolCadreTrain.TrainTime;
+                        schoolCadreTrainInDb.EndTrainTime = schoolCadreTrain.EndTrainTime;
+
                         schoolCadreTrainInDb.TrainAddress = schoolCadreTrain.TrainAddress;
                         schoolCadreTrainInDb.TrainDuration = schoolCadreTrain.TrainDuration;
                         schoolCadreTrainInDb.ClassHour = schoolCadreTrain.ClassHour;

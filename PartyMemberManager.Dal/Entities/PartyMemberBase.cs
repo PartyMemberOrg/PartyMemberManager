@@ -52,7 +52,7 @@ namespace PartyMemberManager.Dal.Entities
         /// 姓名
         /// </summary>
         [DisplayName("姓名")]
-        [StringLength(50, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [StringLength(50, MinimumLength = 2, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Name { get; set; }
 
@@ -60,7 +60,7 @@ namespace PartyMemberManager.Dal.Entities
         /// 学号/工号
         /// </summary>
         [DisplayName("学号/工号")]
-        [StringLength(20, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [StringLength(12, MinimumLength = 10, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string JobNo { get; set; }
 

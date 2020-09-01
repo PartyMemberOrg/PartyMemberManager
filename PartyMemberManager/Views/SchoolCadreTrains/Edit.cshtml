@@ -15,15 +15,16 @@
     <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
     <script src="~/lib/layui/layui.js"></script>
     <script>
-        $(document).ready(function () {
-            $("#TrainDuration").change(function () {
-                computeHour();
-            });
-        });
-        /**计算比例 */
-        function computeHour() {
-            var TrainDuration = parseInt($("#TrainDuration").val());
-            $("#ClassHour").val(TrainDuration * 8);
+        function computeHour(start, end) {
+            if (start != "" && end != "") {
+                start = start.replace(/-/g, "/");
+                var startTime = new Date(start);
+                end = end.replace(/-/g, "/");
+                var endTime = new Date(end);
+                var days = parseInt((endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60 * 24));
+                $("#TrainDuration").val(days);
+                $("#ClassHour").val(days * 8);
+            }
         }
     </script>
     <script>
@@ -41,7 +42,19 @@
             });
             laydate.render({
                 elem: '#TrainTime'
-                , trigger: 'click'
+                , trigger: 'click',
+                done: function (value, date, endDate) {
+                    var end = $("#EndTrainTime").val();
+                    computeHour(value, end);
+                }
+            });
+            laydate.render({
+                elem: '#EndTrainTime'
+                , trigger: 'click',
+                done: function (value, date, endDate) {
+                    var start = $("#TrainTime").val();
+                    computeHour(start, value);
+                }
             });
         });
     </script>
