@@ -26,16 +26,21 @@ namespace AspNetCorePdf.PdfProvider
             }
 
             var document = new PdfDocument();
-            foreach (PdfData  pdfData in pdfDatas)
+            document.Info.Author = "预备党员管理系统";
+            document.PageMode = PdfPageMode.FullScreen;
+            document.Settings.TrimMargins = new TrimMargins { All = new XUnit(0, XGraphicsUnit.Millimeter) };
+            foreach (PdfData pdfData in pdfDatas)
             {
                 var page = document.AddPage();
+                page.Rotate = pdfData.Rotate;
+                page.TrimMargins = new TrimMargins { All = new XUnit(0, XGraphicsUnit.Millimeter) };
                 //A4 new XSize(595, 842);，从mm转换
                 page.Width = new XUnit(pdfData.PageSize.Width, XGraphicsUnit.Millimeter);// (int)(pdfData.PageSize.Width * scale);
                 page.Height = new XUnit(pdfData.PageSize.Height, XGraphicsUnit.Millimeter);// (int)(pdfData.PageSize.Height * scale);
-                var gfx = XGraphics.FromPdfPage(page,XGraphicsUnit.Millimeter);
+                var gfx = XGraphics.FromPdfPage(page, XGraphicsUnit.Millimeter);
                 //暂时不打印背景
-                //if (!string.IsNullOrEmpty(pdfData.BackgroundImage))
-                //    AddBackground(gfx, page, $"{_imagesPath}\\{pdfData.BackgroundImage}", 0, 0);
+                if (!string.IsNullOrEmpty(pdfData.BackgroundImage))
+                    AddBackground(gfx, page, $"{_imagesPath}\\{pdfData.BackgroundImage}", 0, 0);
                 //AddTitleAndFooter(page, gfx, pdfData.DocumentTitle, document, pdfData);
                 //AddDescription(gfx, pdfData);
                 AddText(gfx, pdfData);
@@ -62,7 +67,7 @@ namespace AspNetCorePdf.PdfProvider
             double imageScale = imageHeight / page.Height;
             //gfx.DrawImage(xImage, xPosition, yPosition, xImage.PixelWidth / imageScale, xImage.PixelHeight / imageScale);
             XRect xrectSource = new XRect { X = xPosition, Y = yPosition, Width = imageWidth.Millimeter, Height = imageHeight.Millimeter };
-            XRect xrect = new XRect { X = xPosition, Y = yPosition, Width = imageWidth.Millimeter/ imageScale, Height = imageHeight.Millimeter / imageScale };
+            XRect xrect = new XRect { X = xPosition, Y = yPosition, Width = imageWidth.Millimeter / imageScale, Height = imageHeight.Millimeter / imageScale };
 
             gfx.DrawImage(xImage, xrect, xrect, XGraphicsUnit.Millimeter);
         }

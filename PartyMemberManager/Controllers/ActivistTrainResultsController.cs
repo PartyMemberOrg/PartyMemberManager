@@ -593,11 +593,12 @@ namespace PartyMemberManager.Controllers
                     var data = new PdfData
                     {
                         //A4 new XSize(595, 842);
-                        PageSize = new System.Drawing.Size(287, 211),
+                        PageSize = new System.Drawing.Size(287, 210),
                         DocumentTitle = "入党积极分子培训结业证",
                         DocumentName = "入党积极分子培训结业证",
                         CreatedBy = "预备党员管理系统",
                         Description = "预备党员管理系统",
+                        Rotate = 90,
                         BackgroundImage = "ActivistTrain.png",
                         DisplayItems = new List<DisplayItem>
                 {
@@ -666,11 +667,12 @@ namespace PartyMemberManager.Controllers
                     var data = new PdfData
                     {
                         //A4 new XSize(595, 842);
-                        PageSize = new System.Drawing.Size(287, 211),
+                        PageSize = new System.Drawing.Size(287, 210),
                         DocumentTitle = "入党积极分子培训结业证",
                         DocumentName = "入党积极分子培训结业证",
                         CreatedBy = "预备党员管理系统",
                         Description = "预备党员管理系统",
+                        Rotate=90,
                         BackgroundImage = "ActivistTrain.png",
                         DisplayItems = new List<DisplayItem>
                 {

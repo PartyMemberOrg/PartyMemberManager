@@ -22,5 +22,6 @@ namespace AspNetCorePdf.PdfProvider.DataModel
         public List<DisplayItem>  DisplayItems { get; set; }
         public string DocumentName { get; set; }
         public string BackgroundImage { get; set; }
+        public int Rotate { get; set; }
     }
 }
