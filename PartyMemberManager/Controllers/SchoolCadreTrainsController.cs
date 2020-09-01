@@ -197,15 +197,18 @@ namespace PartyMemberManager.Controllers
                         schoolCadreTrainInDb.TrainDuration = schoolCadreTrain.TrainDuration;
                         schoolCadreTrainInDb.ClassHour = schoolCadreTrain.ClassHour;
                         schoolCadreTrainInDb.Id = schoolCadreTrain.Id;
-                        schoolCadreTrainInDb.CreateTime = schoolCadreTrain.CreateTime;
-                        schoolCadreTrainInDb.OperatorId = schoolCadreTrain.OperatorId;
-                        schoolCadreTrainInDb.Ordinal = schoolCadreTrain.Ordinal;
+                        schoolCadreTrainInDb.CreateTime = DateTime.Now;
+                        schoolCadreTrainInDb.OperatorId = CurrentUser.Id;
+                        schoolCadreTrainInDb.Ordinal = _context.SchoolCadreTrains.Count()+1;
                         schoolCadreTrainInDb.IsDeleted = schoolCadreTrain.IsDeleted;
                         _context.Update(schoolCadreTrainInDb);
                     }
                     else
                     {
                         //schoolCadreTrain.Id = Guid.NewGuid();
+                        schoolCadreTrain.CreateTime = DateTime.Now;
+                        schoolCadreTrain.OperatorId = CurrentUser.Id;
+                        schoolCadreTrain.Ordinal = _context.SchoolCadreTrains.Count() + 1;
                         _context.Add(schoolCadreTrain);
                     }
                     await _context.SaveChangesAsync();

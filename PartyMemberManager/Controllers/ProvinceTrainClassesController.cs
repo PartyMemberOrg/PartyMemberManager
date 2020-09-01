@@ -213,15 +213,18 @@ namespace PartyMemberManager.Controllers
                         provinceTrainClassInDb.Name = provinceTrainClass.Name;
                         provinceTrainClassInDb.Enabled = provinceTrainClass.Enabled;
                         provinceTrainClassInDb.Id = provinceTrainClass.Id;
-                        provinceTrainClassInDb.CreateTime = provinceTrainClass.CreateTime;
-                        provinceTrainClassInDb.OperatorId = provinceTrainClass.OperatorId;
-                        provinceTrainClassInDb.Ordinal = provinceTrainClass.Ordinal;
+                        provinceTrainClassInDb.CreateTime = DateTime.Now;
+                        provinceTrainClassInDb.OperatorId = CurrentUser.Id;
+                        provinceTrainClassInDb.Ordinal = _context.ProvinceTrainClasses.Count()+1;
                         provinceTrainClassInDb.IsDeleted = provinceTrainClass.IsDeleted;
                         _context.Update(provinceTrainClassInDb);
                     }
                     else
                     {
                         //provinceTrainClass.Id = Guid.NewGuid();
+                        provinceTrainClass.CreateTime = DateTime.Now;
+                        provinceTrainClass.OperatorId = CurrentUser.Id;
+                        provinceTrainClass.Ordinal = _context.ProvinceTrainClasses.Count() + 1;
                         _context.Add(provinceTrainClass);
                     }
                     await _context.SaveChangesAsync();
