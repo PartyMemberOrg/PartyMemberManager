@@ -23,7 +23,7 @@ namespace PartyMemberManager.Framework.Controllers
     [Authorize]
     public class PartyMemberControllerBase : Controller
     {
-        private IHttpContextAccessor _accessor;
+        protected IHttpContextAccessor _accessor;
         private Operator currentUser = null;
         public Operator CurrentUser
         {

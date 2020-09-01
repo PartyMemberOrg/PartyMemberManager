@@ -33,10 +33,12 @@ namespace PartyMemberManager.Controllers
 
         private readonly IPdfSharpService _pdfService;
         private readonly IMigraDocService _migraDocService;
+        private readonly string printSessionKey = null;
         public PotentialTrainResultsController(ILogger<PotentialTrainResultsController> logger, PMContext context, IHttpContextAccessor accessor, IPdfSharpService pdfService, IMigraDocService migraDocService) : base(logger, context, accessor)
         {
             _pdfService = pdfService;
             _migraDocService = migraDocService;
+            printSessionKey = $"PotentialTrainResultPrint_{_accessor.HttpContext.Connection.RemoteIpAddress.ToString()}";
         }
 
         // GET: PotentialTrainResults
@@ -457,13 +459,15 @@ namespace PartyMemberManager.Controllers
             }
         }
 
-        [Route("PotentialTrainResults/PrintSelected/{idList}")]
-        public async Task<IActionResult> PrintSelected(string idList)
+        [Route("PotentialTrainResults/PrintSelected/{isFillBlank}/{idList?}")]
+        public async Task<IActionResult> PrintSelected(string idList, bool isFillBlank = false)
         {
             try
             {
+                if (string.IsNullOrEmpty(idList))
+                    idList = HttpContext.Session.GetString(printSessionKey);
                 Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
-                var stream = await PrintPdf(ids, false, false);
+                var stream = await PrintPdf(ids, isFillBlank, false);
                 FileStreamResult fileStreamResult = File(stream, "application/pdf");
                 return fileStreamResult;
             }
@@ -476,13 +480,15 @@ namespace PartyMemberManager.Controllers
                 return View("PrintError", ex);
             }
         }
-        [Route("PotentialTrainResults/PreviewSelected/{idList}")]
-        public async Task<IActionResult> PreviewSelected(string idList)
+        [Route("PotentialTrainResults/PreviewSelected/{isFillBlank}/{idList?}")]
+        public async Task<IActionResult> PreviewSelected(string idList, bool isFillBlank = false)
         {
             try
             {
+                if (string.IsNullOrEmpty(idList))
+                    idList = HttpContext.Session.GetString(printSessionKey);
                 Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
-                var stream = await PrintPdf(ids, false, true);
+                var stream = await PrintPdf(ids, isFillBlank, true);
                 FileStreamResult fileStreamResult = File(stream, "application/pdf");
                 return fileStreamResult;
             }
@@ -835,9 +841,16 @@ namespace PartyMemberManager.Controllers
         /// </summary>
         /// <param name="idList"></param>
         /// <returns></returns>
-        public IActionResult PrintAndPreview(string idList)
+        public IActionResult PrintAndPreview(string idList, bool fillBlank = false)
         {
-            return View((object)idList);
+            //为了解决idList超过260各字符，get请求会报错，采用session解决
+            HttpContext.Session.SetString(printSessionKey, idList);
+            PrintAndPrevieViewModel printAndPrevieViewModel = new PrintAndPrevieViewModel
+            {
+                IsFillBlank = fillBlank,
+                PrintIdList = idList
+            };
+            return View(printAndPrevieViewModel);
         }
         /// <summary>
         /// 更新打印状态

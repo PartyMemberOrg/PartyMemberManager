@@ -46,6 +46,7 @@ namespace PartyMemberManager
                                    o.ExpireTimeSpan = new TimeSpan(8, 0, 0);
                                });
             services.AddControllersWithViews();
+            services.AddDistributedMemoryCache();
             services.AddSession();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IPdfSharpService, PdfSharpService>();

@@ -136,7 +136,7 @@
     <div style="display:inline-block">
         <div class="layui-input-inline" style="width:80px">
             <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="previewSelected()">
-                <i class="layui-icon layui-icon-print" style="font-size: 14px; color: #FFFFFF;"></i>预览
+                <i class="layui-icon layui-icon-print" style="font-size: 14px; color: #FFFFFF;"></i>套打
             </a>
         </div>
     </div>
@@ -432,7 +432,7 @@
             if (datas == "")
                 showError("请选择成绩合格的入党积极分子");
             else
-                showPrint('@Url.Action("PrintAndPreview")' + '?idList=' + datas, '打印结业证', 800, 600, function () { updatePrintStatus(datas);}, function () { tablefilter(); });
+                showPrint('@Url.Action("PrintAndPreview")' + '?fillBlank=false&idList=' + datas, '打印结业证', 800, 600, function () { updatePrintStatus(datas);}, function () { tablefilter(); });
         }
         /**预览选中的积极分子培训结业证 */
         function previewSelected() {
@@ -449,7 +449,7 @@
             if (datas == "")
                 showError("请选择成绩合格的入党积极分子");
             else
-                showPrint('@Url.Action("PrintAndPreview")' + '?idList=' + datas, '打印结业证', 800, 600, function () { updatePrintStatus(datas); }, function () { tablefilter(); });
+                showPrint('@Url.Action("PrintAndPreview")' + '?fillBlank=true&idList=' + datas, '打印结业证', 800, 600, function () { updatePrintStatus(datas); }, function () { tablefilter(); });
         }
         /**
          * 更新打印状态
