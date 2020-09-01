@@ -274,6 +274,13 @@ namespace PartyMemberManager.Controllers
                         var noName = "【" + data.Name + "-" + data.JobNo + "】";
                         throw new PartyMemberException(noName + "已经打印证书，请联系管理员删除");
                     }
+                    var dataPotentialMember = await _context.Set<PotentialMember>().SingleOrDefaultAsync(m => m.PartyActivistId == partyActivitId);
+                    var dataResultPotentialMember = await _context.Set<PotentialTrainResult>().SingleOrDefaultAsync(m => m.PotentialMemberId== dataPotentialMember.Id);
+                    if (dataPotentialMember != null)
+                    {
+                        _context.Set<PotentialTrainResult>().Remove(dataResultPotentialMember);
+                        _context.Set<PotentialMember>().Remove(dataPotentialMember);
+                    }
                     ValidateDeleteObject(data);
                     _context.Set<ActivistTrainResult>().Remove(dataResult);
                     _context.Set<PartyActivist>().Remove(data);
@@ -328,6 +335,11 @@ namespace PartyMemberManager.Controllers
                     throw new PartyMemberException("申请入党时间不能为空");
                 if (partyActivist.ActiveApplicationTime == null)
                     throw new PartyMemberException("确定为入党积极分子时间不能为空");
+                if (!StringHelper.ValidateIdNumber(partyActivist.IdNumber))
+                    throw new PartyMemberException("身份证号不合法");
+                if (!StringHelper.ValidateJobNo(partyActivist.JobNo))
+                    throw new PartyMemberException("学号/工号不合法");
+
                 if (ModelState.IsValid)
                 {
                     PartyActivist partyActivistInDb = await _context.PartyActivists.FindAsync(partyActivist.Id);
@@ -555,6 +567,12 @@ namespace PartyMemberManager.Controllers
                                 {
                                     throw new PartyMemberException($"第{rowIndex}行数据中的【{confirmTimeField}】日期格式不合法");
                                 }
+                                if (!StringHelper.ValidateIdNumber(id))
+                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{idField}】不合法");
+
+                                if (!StringHelper.ValidateJobNo(empNo))
+                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{empNoField}】不合法");
+
                                 Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                                 Guid nationId = nationData.Id;
                                 //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
@@ -624,6 +642,11 @@ namespace PartyMemberManager.Controllers
                                 {
                                     throw new PartyMemberException($"第{rowIndex}行数据中的【{confirmTimeField}】日期格式不合法");
                                 }
+                                if (!StringHelper.ValidateIdNumber(id))
+                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{idField}】不合法");
+
+                                if (!StringHelper.ValidateJobNo(studentNo))
+                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{studentNoField}】不合法");
                                 Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                                 Guid nationId = nationData.Id;
                                 //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
@@ -652,7 +675,12 @@ namespace PartyMemberManager.Controllers
                                 IsDeleted = false,
                                 Ordinal = _context.ActivistTrainResults.Count() + 1
                             };
-
+                            var partyActivistOld = _context.PartyActivists.Where(d => d.JobNo == partyActivist.JobNo && d.TrainClassId == partyActivist.TrainClassId).FirstOrDefault();
+                            if (partyActivistOld != null)
+                            {
+                                var noName = "【" + partyActivistOld.Name + "-" + partyActivistOld.JobNo + "】";
+                                throw new PartyMemberException(noName+"已在该培训班，请核对");
+                            }
                             _context.PartyActivists.Add(partyActivist);
                             _context.ActivistTrainResults.Add(activistTrainResult);
                             await _context.SaveChangesAsync();

@@ -34,6 +34,7 @@ namespace PartyMemberManager.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             var pMContext = _context.ProvinceCadreTrains.Include(p => p.Nation).Include(p => p.ProvinceTrainClass);
+            ViewBag.ProvinceTrainClassId = new SelectList(_context.ProvinceTrainClasses.OrderByDescending(d => d.Ordinal), "Id", "Name");
             return View(await pMContext.ToListAsync());
         }
         /// <summary>
@@ -142,6 +143,48 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
+        [HttpPost, ActionName("Delete")]
+        public override async Task<IActionResult> Delete(Guid? id)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "数据删除成功"
+            };
+
+            try
+            {
+                if (id == null)
+                    throw new PartyMemberException("未传入删除项目的Id");
+                var data = await _context.Set<ProvinceCadreTrain>().Where(DataFilter).SingleOrDefaultAsync(m => m.Id == id);
+                if (data == null)
+                    throw new PartyMemberException("未找到要删除的数据");
+                ValidateDeleteObject(data);
+                var provinceTrainClass = await _context.ProvinceTrainClasses.FindAsync(data.ProvinceTrainClassId);
+                provinceTrainClass.Total -= 1;
+                _context.Update(provinceTrainClass);
+                _context.Set<ProvinceCadreTrain>().Remove(data);
+                await _context.SaveChangesAsync();
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
+        /// <summary>
+        /// 删除数据（通过ajax调用)
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost, ActionName("BatchDelete")]
         public async Task<IActionResult> BatchDelete(string idList)
         {
@@ -163,6 +206,9 @@ namespace PartyMemberManager.Controllers
                     if (data == null)
                         throw new PartyMemberException("未找到要删除的数据");
                     ValidateDeleteObject(data);
+                    var provinceTrainClass = await _context.ProvinceTrainClasses.FindAsync(data.ProvinceTrainClassId);
+                    provinceTrainClass.Total -= 1;
+                    _context.Update(provinceTrainClass);
                     _context.Set<ProvinceCadreTrain>().Remove(data);
                 }
 
@@ -192,6 +238,12 @@ namespace PartyMemberManager.Controllers
             };
             try
             {
+                if (provinceCadreTrain.ProvinceTrainClassId == Guid.Empty)
+                    throw new PartyMemberException("请选择培训班");
+                if (provinceCadreTrain.NationId == Guid.Empty)
+                    throw new PartyMemberException("请选择民族");
+                if (!StringHelper.ValidateIdNumber(provinceCadreTrain.IdNumber))
+                    throw new PartyMemberException($"身份证不合法");
                 if (ModelState.IsValid)
                 {
                     ProvinceCadreTrain provinceCadreTrainInDb = await _context.ProvinceCadreTrains.FindAsync(provinceCadreTrain.Id);
@@ -219,7 +271,16 @@ namespace PartyMemberManager.Controllers
                         provinceCadreTrain.CreateTime = DateTime.Now;
                         provinceCadreTrain.OperatorId = CurrentUser.Id;
                         provinceCadreTrain.Ordinal = _context.ProvinceCadreTrains.Count() + 1;
+                        var ProvinceCadreTrainOld = _context.ProvinceCadreTrains.Where(d => d.IdNumber == provinceCadreTrain.IdNumber && d.ProvinceTrainClassId == provinceCadreTrain.ProvinceTrainClassId).FirstOrDefault();
+                        if (ProvinceCadreTrainOld != null)
+                        {
+                            var noName = "【" + ProvinceCadreTrainOld.Name + "-" + ProvinceCadreTrainOld.IdNumber + "】";
+                            throw new PartyMemberException(noName + "已在该培训班，请核对");
+                        }
                         _context.Add(provinceCadreTrain);
+                        var provinceTrainClass = await _context.ProvinceTrainClasses.FindAsync(provinceCadreTrain.ProvinceTrainClassId);
+                        provinceTrainClass.Total += 1;
+                        _context.Update(provinceTrainClass);
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -376,6 +437,8 @@ namespace PartyMemberManager.Controllers
                             string department = row[departmentField].ToString();
                             //跳过姓名为空的记录
                             if (string.IsNullOrEmpty(name)) continue;
+                            if (!StringHelper.ValidateIdNumber(id))
+                                throw new PartyMemberException($"第{rowIndex}行数据中的【{idField}】不合法");
                             Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                             Guid nationId = nationData.Id;
                             provinceCadreTrain.Name = name;
@@ -387,6 +450,15 @@ namespace PartyMemberManager.Controllers
                             provinceCadreTrain.Department = department;
 
                             _context.ProvinceCadreTrains.Add(provinceCadreTrain);
+
+                            provinceTrainClass.Total += 1;
+                            var ProvinceCadreTrainOld = _context.ProvinceCadreTrains.Where(d => d.IdNumber == provinceCadreTrain.IdNumber && d.ProvinceTrainClassId == provinceCadreTrain.ProvinceTrainClassId).FirstOrDefault();
+                            if (ProvinceCadreTrainOld != null)
+                            {
+                                var noName = "【" + ProvinceCadreTrainOld.Name + "-" + ProvinceCadreTrainOld.IdNumber + "】";
+                                throw new PartyMemberException(noName + "已在该培训班，请核对");
+                            }
+                            _context.Update(provinceTrainClass);
                             await _context.SaveChangesAsync();
                         }
                         #endregion

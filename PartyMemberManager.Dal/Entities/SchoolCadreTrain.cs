@@ -20,13 +20,13 @@ namespace PartyMemberManager.Dal.Entities
         /// 姓名
         /// </summary>
         [DisplayName("姓名")]
-        [StringLength(20, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [StringLength(50, MinimumLength = 2, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Name { get; set; }
         /// <summary>
         /// 培训班次
         /// </summary>
-        [DisplayName("培训班次")]
+        [DisplayName("培训班名称")]
         [StringLength(100, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string TrainClassName { get; set; }
@@ -48,16 +48,23 @@ namespace PartyMemberManager.Dal.Entities
         public string TrainOrganizational { get; set; }
 
         /// <summary>
-        /// 培训时间
+        /// 培训开始时间
         /// </summary>
-        [DisplayName("培训时间")]
+        [DisplayName("培训开始日期")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public DateTime? TrainTime { get; set; }
 
         /// <summary>
+        /// 培训结束时间
+        /// </summary>
+        [DisplayName("培训结束日期")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public DateTime? EndTrainTime { get; set; }
+
+        /// <summary>
         /// 地点
         /// </summary>
-        [DisplayName("地点")]
+        [DisplayName("培训地点")]
         [StringLength(200, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string TrainAddress { get; set; }
@@ -66,9 +73,6 @@ namespace PartyMemberManager.Dal.Entities
         /// 培训时长
         /// </summary>
         [DisplayName("培训时长(天)")]
-        [Range(1,1000, ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-
         public int TrainDuration { get; set; }
 
         /// <summary>
