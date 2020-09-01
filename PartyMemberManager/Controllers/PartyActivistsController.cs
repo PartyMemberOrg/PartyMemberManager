@@ -274,6 +274,13 @@ namespace PartyMemberManager.Controllers
                         var noName = "【" + data.Name + "-" + data.JobNo + "】";
                         throw new PartyMemberException(noName + "已经打印证书，请联系管理员删除");
                     }
+                    var dataPotentialMember = await _context.Set<PotentialMember>().SingleOrDefaultAsync(m => m.PartyActivistId == partyActivitId);
+                    var dataResultPotentialMember = await _context.Set<PotentialTrainResult>().SingleOrDefaultAsync(m => m.PotentialMemberId== dataPotentialMember.Id);
+                    if (dataPotentialMember != null)
+                    {
+                        _context.Set<PotentialTrainResult>().Remove(dataResultPotentialMember);
+                        _context.Set<PotentialMember>().Remove(dataPotentialMember);
+                    }
                     ValidateDeleteObject(data);
                     _context.Set<ActivistTrainResult>().Remove(dataResult);
                     _context.Set<PartyActivist>().Remove(data);
