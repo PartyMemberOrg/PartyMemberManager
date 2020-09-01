@@ -131,6 +131,7 @@ namespace PartyMemberManager.Controllers
         public IActionResult Create()
         {
             ProvinceTrainClass provinceTrainClass = new ProvinceTrainClass();
+            provinceTrainClass.Enabled = true;
             return View(provinceTrainClass);
         }
 
