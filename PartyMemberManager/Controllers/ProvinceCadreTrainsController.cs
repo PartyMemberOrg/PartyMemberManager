@@ -34,7 +34,7 @@ namespace PartyMemberManager.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             var pMContext = _context.ProvinceCadreTrains.Include(p => p.Nation).Include(p => p.ProvinceTrainClass);
-            ViewBag.ProvinceTrainClassId = new SelectList(_context.ProvinceTrainClasses.OrderByDescending(d => d.Ordinal), "Id", "Name");
+            ViewBag.ProvinceTrainClassId = new SelectList(_context.ProvinceTrainClasses.Where(d => d.Enabled == true).OrderByDescending(d => d.Ordinal), "Id", "Name");
             return View(await pMContext.ToListAsync());
         }
         /// <summary>
@@ -115,7 +115,7 @@ namespace PartyMemberManager.Controllers
         {
             ProvinceCadreTrain provinceCadreTrain = new ProvinceCadreTrain();
             ViewData["NationId"] = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
-            ViewData["ProvinceTrainClassId"] = new SelectList(_context.Set<ProvinceTrainClass>(), "Id", "Name");
+            ViewBag.ProvinceTrainClassId = new SelectList(_context.ProvinceTrainClasses.Where(d => d.Enabled == true).OrderByDescending(d => d.Ordinal), "Id", "Name");
             return View(provinceCadreTrain);
         }
 
@@ -134,7 +134,7 @@ namespace PartyMemberManager.Controllers
                 return NotFoundData();
             }
             ViewData["NationId"] = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
-            ViewData["ProvinceTrainClassId"] = new SelectList(_context.Set<ProvinceTrainClass>(), "Id", "Name", provinceCadreTrain.ProvinceTrainClassId);
+            ViewBag.ProvinceTrainClassId = new SelectList(_context.ProvinceTrainClasses.Where(d => d.Enabled == true).OrderByDescending(d => d.Ordinal), "Id", "Name");
             return View(provinceCadreTrain);
         }
         /// <summary>
