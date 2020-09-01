@@ -8,8 +8,8 @@
 }
 else
 {
-    <iframe id="preview" src="~/lib/pdfjs-2.4.456-dist/web/viewer.html?file=@Html.Raw(Url.Action("PreviewSelected",new { isFillBlank=Model.IsFillBlank,idList=@Model}))" height="536" width="800" scrolling="no" frameborder="0">
+    <iframe id="preview" src="~/lib/pdfjs-2.4.456-dist/web/viewer.html?file=@Html.Raw(Url.Action("PreviewSelected",new { isFillBlank=Model.IsFillBlank,idList=@Model.PrintIdList}))" height="536" width="800" scrolling="no" frameborder="0">
     </iframe>
-    <iframe id="print" src="@Url.Action("PrintSelected",new { isFillBlank=Model.IsFillBlank,idList=@Model})" height="0" width="800" scrolling="no" frameborder="0">
+    <iframe id="print" src="@Url.Action("PrintSelected",new { isFillBlank=Model.IsFillBlank,idList=@Model.PrintIdList})" height="0" width="800" scrolling="no" frameborder="0">
     </iframe>
 }

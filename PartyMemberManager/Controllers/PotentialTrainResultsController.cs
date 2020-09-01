@@ -442,23 +442,6 @@ namespace PartyMemberManager.Controllers
             return datas;
         }
 
-        public async Task<IActionResult> Print(Guid id)
-        {
-            try
-            {
-                var stream = await PrintPdf(new Guid[] { id }, false, false);
-                return File(stream, "application/pdf");
-            }
-            catch (PartyMemberException ex)
-            {
-                return View("PrintError", ex);
-            }
-            catch (Exception ex)
-            {
-                return View("PrintError", ex);
-            }
-        }
-
         [Route("PotentialTrainResults/PrintSelected/{isFillBlank}/{idList?}")]
         public async Task<IActionResult> PrintSelected(string idList, bool isFillBlank = false)
         {

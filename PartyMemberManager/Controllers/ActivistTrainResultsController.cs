@@ -503,32 +503,6 @@ namespace PartyMemberManager.Controllers
             return datas;
         }
 
-        public async Task<IActionResult> Print(Guid id)
-        {
-            try
-            {
-                //PartyActivistPrintViewModel model = await GetReportData(id);
-                //List<PartyActivistPrintViewModel> partyActivistPrintViewModels = new List<PartyActivistPrintViewModel>();
-                //partyActivistPrintViewModels.Add(model);
-                //string reportFile = System.IO.Path.Combine(AppContext.BaseDirectory, "Reports", "ActivistTrain.frx");
-                //WebReport webReport = new WebReport();
-                //webReport.Report.Load(reportFile);
-                //webReport.Report.RegisterData(partyActivistPrintViewModels, "Datas");
-                //webReport.Report.Prepare();
-                //return View(webReport);
-                var stream = await PrintPdf(new Guid[] { id }, false, false);
-                return File(stream, "application/pdf");
-            }
-            catch (PartyMemberException ex)
-            {
-                return View("PrintError", ex);
-            }
-            catch (Exception ex)
-            {
-                return View("PrintError", ex);
-            }
-        }
-
         [Route("ActivistTrainResults/PrintSelected/{isFillBlank}/{idList?}")]
         public async Task<IActionResult> PrintSelected(string idList, bool isFillBlank = false)
         {

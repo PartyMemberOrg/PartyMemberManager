@@ -366,7 +366,10 @@
         function showOperatMenu(event, id, totalGrade, isPass) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("打印", function () {
-                showEdit('@Url.Action("Print")'+'/' + id, '@Url.Action("Save")', '打印', 800, 600);
+                if (isPass=="false")
+                    showError("成绩不合格无法打印");
+                else
+                    showPrint('@Url.Action("PrintAndPreview")' + '?fillBlank=false&idList=' + id, '打印结业证', 800, 600, function () { updatePrintStatus(datas);}, function () { tablefilter(); });
             })
                 contextMenu.addMenuItem("录入补考成绩", function () {
                     showEdit('@Url.Action("BcGrade", "PotentialTrainResults")' + '/' + id, '@Url.Action("BcGrade", "PotentialTrainResults")', '录入补考成绩', 500, 400);

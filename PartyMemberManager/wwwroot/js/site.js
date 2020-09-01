@@ -415,9 +415,10 @@ function showContent(url, title, width = 600, height = 400) {
  * @param {String} title - 编辑窗体标题
  * @param {Integer} width - 编辑窗口宽度
  * @param {Integer} height - 编辑窗口高度
- * @param {Function} callBack - 编辑结束并保存后的回调函数
+ * @param {Function} updatePrintStatus - 更新打印状态回调函数
+ * @param {Function} callBack - 关闭回调函数
  */
-function showPrint(url, title, width = 600, height = 400, callBack) {
+function showPrint(url, title, width = 600, height = 400, updatePrintStatusCallBack, callBack) {
     top.layui.use('layer', function () {
         var layer = top.layui.layer;
         var printed = 0;
@@ -435,8 +436,8 @@ function showPrint(url, title, width = 600, height = 400, callBack) {
                     var body = layer.getChildFrame('body', index);
                     printed = 1;
                     $(body).find('#print')[0].contentWindow.print();
-                    //if (callBack != null)
-                    //    callBack();
+                    if (updatePrintStatusCallBack != null)
+                        updatePrintStatusCallBack();
                     //layer.close(index);
                 }
                 , btn2: function (index, layero) {
