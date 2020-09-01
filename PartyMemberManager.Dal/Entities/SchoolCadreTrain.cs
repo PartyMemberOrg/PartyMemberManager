@@ -30,7 +30,7 @@ namespace PartyMemberManager.Dal.Entities
         [StringLength(100, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string TrainClassName { get; set; }
-       
+
         /// <summary>
         /// 组织单位
         /// </summary>
@@ -73,13 +73,13 @@ namespace PartyMemberManager.Dal.Entities
         /// 培训时长
         /// </summary>
         [DisplayName("培训时长(天)")]
-        public int TrainDuration { get; set; }
+        public int TrainDuration { get { return (TrainTime.HasValue && EndTrainTime.HasValue) ? (Convert.ToDateTime(EndTrainTime.Value.ToShortDateString()) - Convert.ToDateTime(TrainTime.Value.ToShortDateString())).Days+1 : 0; } }
 
         /// <summary>
         ///学时
         /// </summary>
         [DisplayName("学时")]
-        public int ClassHour { get; set; }
+        public int ClassHour { get { return (TrainTime.HasValue && EndTrainTime.HasValue) ? ((Convert.ToDateTime(EndTrainTime.Value.ToShortDateString()) - Convert.ToDateTime(TrainTime.Value.ToShortDateString())).Days+1) * 8 : 0; } }
 
 
     }

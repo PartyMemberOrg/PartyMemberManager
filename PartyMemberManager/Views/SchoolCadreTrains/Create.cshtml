@@ -20,7 +20,7 @@
                 var startTime = new Date(start);
                 end = end.replace(/-/g, "/");
                 var endTime = new Date(end);
-                var days = parseInt((endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60 * 24));
+                var days = parseInt((endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60 * 24))+1;
                 $("#TrainDuration").val(days);
                 $("#ClassHour").val(days * 8);
             }

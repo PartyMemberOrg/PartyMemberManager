@@ -513,13 +513,13 @@ namespace PartyMemberManager.Controllers
                     var data = new PdfData
                     {
                         //A4 new XSize(595, 842);
-                        PageSize = new System.Drawing.Size(143, 210),
+                        PageSize = new System.Drawing.Size(210, 210),
                         DocumentTitle = "发展对象培训结业证",
                         DocumentName = "发展对象培训结业证",
                         CreatedBy = "预备党员管理系统",
                         Description = "预备党员管理系统",
                         BackgroundImage = "PotentialTrain.png",
-                        Rotate = 0,
+                        Rotate = 90,
                         DisplayItems = new List<DisplayItem>
                 {
                     new DisplayItem{
@@ -584,12 +584,12 @@ namespace PartyMemberManager.Controllers
                     var data = new PdfData
                     {
                         //A4 new XSize(595, 842);
-                        PageSize = new System.Drawing.Size(143, 210),
+                        PageSize = new System.Drawing.Size(210, 210),
                         DocumentTitle = "发展对象培训结业证",
                         DocumentName = "发展对象培训结业证",
                         CreatedBy = "预备党员管理系统",
                         Description = "预备党员管理系统",
-                        Rotate = 0,
+                        Rotate = 90,
                         BackgroundImage = "PotentialTrain.png",
                         DisplayItems = new List<DisplayItem>
                 {

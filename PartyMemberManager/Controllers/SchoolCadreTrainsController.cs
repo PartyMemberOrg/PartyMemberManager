@@ -171,7 +171,7 @@ namespace PartyMemberManager.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("Year,Name,TrainClassName,Organizer,TrainOrganizational,TrainTime,EndTrainTime,TrainAddress,TrainDuration,ClassHour,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] SchoolCadreTrain schoolCadreTrain)
+        public override async Task<IActionResult> Save([Bind("Year,Name,TrainClassName,Organizer,TrainOrganizational,TrainTime,EndTrainTime,TrainAddress,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] SchoolCadreTrain schoolCadreTrain)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -194,8 +194,8 @@ namespace PartyMemberManager.Controllers
                         schoolCadreTrainInDb.EndTrainTime = schoolCadreTrain.EndTrainTime;
 
                         schoolCadreTrainInDb.TrainAddress = schoolCadreTrain.TrainAddress;
-                        schoolCadreTrainInDb.TrainDuration = schoolCadreTrain.TrainDuration;
-                        schoolCadreTrainInDb.ClassHour = schoolCadreTrain.ClassHour;
+                        //schoolCadreTrainInDb.TrainDuration = schoolCadreTrain.TrainDuration;
+                        //schoolCadreTrainInDb.ClassHour = schoolCadreTrain.ClassHour;
                         schoolCadreTrainInDb.Id = schoolCadreTrain.Id;
                         schoolCadreTrainInDb.CreateTime = DateTime.Now;
                         schoolCadreTrainInDb.OperatorId = CurrentUser.Id;
@@ -320,15 +320,15 @@ namespace PartyMemberManager.Controllers
                             //跳过姓名为空的记录
                             if (string.IsNullOrEmpty(name)) continue;
                             schoolCadreTrain.Name = name;
-                            schoolCadreTrain.ClassHour = 0;
+                            //schoolCadreTrain.ClassHour = 0;
                             schoolCadreTrain.Organizer = organizer;
                             schoolCadreTrain.TrainAddress = trainAddress;
                             schoolCadreTrain.TrainClassName = trainClassName;
                             int trainDurationValue = 0;
-                            if (int.TryParse(trainDuration, out trainDurationValue))
-                                schoolCadreTrain.TrainDuration = trainDurationValue;
-                            else
-                                schoolCadreTrain.TrainDuration = 0;
+                            //if (int.TryParse(trainDuration, out trainDurationValue))
+                                //schoolCadreTrain.TrainDuration = trainDurationValue;
+                            //else
+                                //schoolCadreTrain.TrainDuration = 0;
                             trainTime = trainTime.Replace(".", "-").Replace("/", "-");
                             DateTime trainTimeValue = DateTime.Now;
                             if (!TryParseDate(trainTime, out trainTimeValue))

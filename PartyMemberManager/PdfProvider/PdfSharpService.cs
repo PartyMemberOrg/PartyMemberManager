@@ -33,14 +33,15 @@ namespace AspNetCorePdf.PdfProvider
             {
                 var page = document.AddPage();
                 page.Rotate = pdfData.Rotate;
+                //page.Orientation = PdfSharp.PageOrientation.Landscape;
                 page.TrimMargins = new TrimMargins { All = new XUnit(0, XGraphicsUnit.Millimeter) };
                 //A4 new XSize(595, 842);，从mm转换
                 page.Width = new XUnit(pdfData.PageSize.Width, XGraphicsUnit.Millimeter);// (int)(pdfData.PageSize.Width * scale);
                 page.Height = new XUnit(pdfData.PageSize.Height, XGraphicsUnit.Millimeter);// (int)(pdfData.PageSize.Height * scale);
                 var gfx = XGraphics.FromPdfPage(page, XGraphicsUnit.Millimeter);
                 //暂时不打印背景
-                if (!string.IsNullOrEmpty(pdfData.BackgroundImage))
-                    AddBackground(gfx, page, $"{_imagesPath}\\{pdfData.BackgroundImage}", 0, 0);
+                //if (!string.IsNullOrEmpty(pdfData.BackgroundImage))
+                //    AddBackground(gfx, page, $"{_imagesPath}\\{pdfData.BackgroundImage}", 0, 0);
                 //AddTitleAndFooter(page, gfx, pdfData.DocumentTitle, document, pdfData);
                 //AddDescription(gfx, pdfData);
                 AddText(gfx, pdfData);
