@@ -250,7 +250,7 @@
                                 if (d.isPrint == true) {
                                     return '<input type="number" name="psGrade" class="form-control" style="width:100%;height:26px" readonly value="' + d.psGrade + '">';
                                 } else {
-                                    return '<input type="number" name="psGrade" class="form-control" style="width:100%;height:26px"  value="' + d.psGrade + '">';
+                                    return '<input type="number" min="0" max="100" name="psGrade" class="form-control" style="width:100%;height:26px"  value="' + d.psGrade + '">';
                                 }
                             }
                         },
@@ -259,7 +259,7 @@
                                 if (d.isPrint == true) {
                                     return '<input type="number" name="csGrade" class="form-control" style="width:100%;height:26px" readonly value="' + d.csGrade + '">';
                                 } else {
-                                    return '<input type="number" name="csGrade" class="form-control" style="width:100%;height:26px"  value="' + d.csGrade + '">';
+                                    return '<input type="number" min="0" max="100" name="csGrade" class="form-control" style="width:100%;height:26px"  value="' + d.csGrade + '">';
                                 }
                             }
                         },
@@ -400,7 +400,7 @@
                 if (isPass == "false")
                     showError("成绩不合格无法打印");
                 else
-                    showPrint('@Url.Action("PrintAndPreview")' + '?fillBlank=false&idList=' + id, '打印结业证', 800, 600, function () { updatePrintStatus(datas);}, function () { tablefilter(); });
+                    showPrint('@Url.Action("PrintAndPreview")' + '?fillBlank=false&idList=' + id, '打印结业证', 800, 600, function () { updatePrintStatus(id);}, function () { tablefilter(); });
             })
                 contextMenu.addMenuItem("录入补考成绩", function () {
                     showEdit('@Url.Action("BcGrade", "ActivistTrainResults")' + '/' + id, '@Url.Action("BcGrade", "ActivistTrainResults")', '录入补考成绩', 500, 400);
