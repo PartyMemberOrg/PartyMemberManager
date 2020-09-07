@@ -224,6 +224,13 @@ namespace PartyMemberManager.Controllers
                     var noName = "【" + data.Name + "-" + data.JobNo + "】";
                     throw new PartyMemberException(noName + "已经打印证书，请联系管理员删除");
                 }
+                var dataPotentialMember = await _context.Set<PotentialMember>().SingleOrDefaultAsync(m => m.PartyActivistId == data.Id);
+                if (dataPotentialMember != null)
+                {
+                    var dataResultPotentialMember = await _context.Set<PotentialTrainResult>().SingleOrDefaultAsync(m => m.PotentialMemberId == dataPotentialMember.Id);
+                    _context.Set<PotentialTrainResult>().Remove(dataResultPotentialMember);
+                    _context.Set<PotentialMember>().Remove(dataPotentialMember);
+                }
                 ValidateDeleteObject(data);
                 _context.Set<ActivistTrainResult>().Remove(dataResult);
                 _context.Set<PartyActivist>().Remove(data);
@@ -275,9 +282,9 @@ namespace PartyMemberManager.Controllers
                         throw new PartyMemberException(noName + "已经打印证书，请联系管理员删除");
                     }
                     var dataPotentialMember = await _context.Set<PotentialMember>().SingleOrDefaultAsync(m => m.PartyActivistId == partyActivitId);
-                    var dataResultPotentialMember = await _context.Set<PotentialTrainResult>().SingleOrDefaultAsync(m => m.PotentialMemberId== dataPotentialMember.Id);
                     if (dataPotentialMember != null)
                     {
+                        var dataResultPotentialMember = await _context.Set<PotentialTrainResult>().SingleOrDefaultAsync(m => m.PotentialMemberId == dataPotentialMember.Id);
                         _context.Set<PotentialTrainResult>().Remove(dataResultPotentialMember);
                         _context.Set<PotentialMember>().Remove(dataPotentialMember);
                     }
@@ -541,7 +548,7 @@ namespace PartyMemberManager.Controllers
                                 string id = row[idField].ToString();
                                 string phone = row[phoneField].ToString();
                                 string time = row[timeField].ToString();
-                                string confirmTime= row[confirmTimeField].ToString();
+                                string confirmTime = row[confirmTimeField].ToString();
                                 string remark = row[remarkField].ToString();
                                 //跳过姓名为空的记录
                                 if (string.IsNullOrEmpty(name)) continue;
@@ -679,7 +686,7 @@ namespace PartyMemberManager.Controllers
                             if (partyActivistOld != null)
                             {
                                 var noName = "【" + partyActivistOld.Name + "-" + partyActivistOld.JobNo + "】";
-                                throw new PartyMemberException(noName+"已在该培训班，请核对");
+                                throw new PartyMemberException(noName + "已在该培训班，请核对");
                             }
                             _context.PartyActivists.Add(partyActivist);
                             _context.ActivistTrainResults.Add(activistTrainResult);
