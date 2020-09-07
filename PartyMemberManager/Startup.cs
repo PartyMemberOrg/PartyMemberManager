@@ -31,9 +31,21 @@ namespace PartyMemberManager
         public void ConfigureServices(IServiceCollection services)
         {
             string dataBaseType = Configuration["DataBaseType"];
+            if (dataBaseType.ToLower() == "mysql")
+            {
+                services.AddDbContext<PMContext>(
+                    options => options.UseMySql(Configuration.GetConnectionString("MySql"))
+                );
+            }
+            else
+            {
                 services.AddDbContext<PMContext>(
                     options => options.UseSqlServer(Configuration.GetConnectionString("SqlServer"))
                 );
+            }
+            //services.AddDbContext<PMContext>(
+            //        options => options.UseSqlServer(Configuration.GetConnectionString("SqlServer"))
+            //    );
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, o =>
 
