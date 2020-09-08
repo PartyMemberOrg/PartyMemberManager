@@ -9,8 +9,10 @@
 </p>
 <table class="layui-hide" id="datatable"></table>
 @Html.AntiForgeryToken()
-
+<link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
 @section Scripts{
+    <script src="~/lib/contentmenu/js/index.js"></script>
+    <script src="~/lib/Sortable/Sortable.js"></script>
     <script type="text/javascript">
         var tableObject = null;
         $(document).ready(function () {
@@ -95,10 +97,27 @@
                 $(document).scrollTop(0);
             }
         }
+                /**显示操作菜单 */
+        function showOperatMenu(event, id) {
+            var contextMenu = new ContextMenu();
+            contextMenu.addMenuItem("编辑", function () {
+                showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 600, 600);
+            })
+            contextMenu.addMenuItem("删除", function () {
+                Delete(id);
+            })
+            contextMenu.addMenuItem("上移", function () {
+                ItemUp(id);
+            })
+            contextMenu.addMenuItem("下移", function () {
+                ItemDown(id);
+            })
+            contextMenu.showMenu(event);
+        }
     </script>
     <script type="text/html" id="optTpl">
-        <a href="javascript:showEdit('Operators/Edit/{{d.id}}','Operators/Save','修改账号',600,600)" class="layui-table-link" title="查看">
-            查看
+        <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}')" style="padding-left:10px;padding-right:10px;">
+            <img src="~/images/gridmenu1x.png" />
         </a>
     </script>
     <script type="text/html" id="optDepartmentNameTpl">
