@@ -1,4 +1,6 @@
-﻿using NPOI.SS.UserModel;
+﻿using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System;
 using System.Data;
 using System.IO;
@@ -230,6 +232,61 @@ namespace ExcelCore
             {
                 throw ex;
             }
+        }
+
+        //创建不同版本的文件， excel2003版 或2007+版
+
+        public static IWorkbook BuildWorkbook(DataTable dt, string file)
+        {
+            IWorkbook book;
+            string fileExt = Path.GetExtension(file).ToLower();
+            if (fileExt == ".xlsx")
+            { book = new XSSFWorkbook(); }
+            else if (fileExt == ".xls")
+            { book = new HSSFWorkbook(); }
+            else { book = null; }
+            //var book = new HSSFWorkbook();
+            ISheet sheet1 = book.CreateSheet("Sheet1");
+            ISheet sheet2 = book.CreateSheet("Sheet2");
+            //填充数据
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                if (i < 65536)
+                {
+                    IRow drow = sheet1.CreateRow(i);
+                    for (int j = 0; j < dt.Columns.Count; j++)
+                    {
+                        ICell cell = drow.CreateCell(j, CellType.String);
+                        cell.SetCellValue(dt.Rows[i][j].ToString());
+                    }
+                }
+                if (i >= 65536) //再创建一个sheet
+                {
+                    IRow drow = sheet2.CreateRow(i - 65536);
+                    for (int j = 0; j < dt.Columns.Count; j++)
+                    {
+                        ICell cell = drow.CreateCell(j, CellType.String);
+                        cell.SetCellValue(dt.Rows[i][j].ToString());
+                    }
+                }
+            }
+            //自动列宽
+            for (int i = 0; i <= dt.Columns.Count; i++)
+            {
+                sheet1.AutoSizeColumn(i, true);
+                sheet2.AutoSizeColumn(i, true);
+            }
+            return book;
+        }
+
+        //导出至excel文件
+        public static Stream ExportExcel(DataTable dt, string fileName = "")
+        {
+            ////////生成Excel
+            MemoryStream ms = new MemoryStream();
+            IWorkbook book = BuildWorkbook(dt, fileName);
+            book.Write(ms);
+            return ms;
         }
     }
 }
