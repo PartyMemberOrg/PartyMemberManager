@@ -50,6 +50,19 @@ namespace PartyMemberManager.Dal.Entities
         public string SchoolAreaDisplay { get =>Department==null?"":Department.SchoolArea.ToString(); }
 
         /// <summary>
+        /// 类型学生或者教师
+        /// </summary>
+        [DisplayName("类型")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public PartyMemberType PartyMemberType { get; set; }
+        /// <summary>
+        /// 类型学生或者教师
+        /// </summary>
+        [DisplayName("类型")]
+        [NotMapped]
+        public string PartyMemberTypeDisplay { get => PartyMemberType.ToString(); }
+
+        /// <summary>
         /// 学生总人数
         /// </summary>
         [DisplayName("学生总人数")]

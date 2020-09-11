@@ -255,6 +255,15 @@
                             }
                         },
                         {
+                            field: 'sjGradeTemp', title: '实践成绩', align: 'center', templet: function (d) {
+                                if (d.isPrint == true) {
+                                    return '<input type="number" name="psGrade" class="form-control" style="width:100%;height:26px" readonly value="' + d.sjGrade + '">';
+                                } else {
+                                    return '<input type="number" min="0" max="100" name="psGrade" class="form-control" style="width:100%;height:26px"  value="' + d.sjGrade + '">';
+                                }
+                            }
+                        },
+                        {
                             field: 'csGradeTemp', title: '考试成绩', align: 'center', templet: function (d) {
                                 if (d.isPrint == true) {
                                     return '<input type="number" name="csGrade" class="form-control" style="width:100%;height:26px" readonly value="' + d.csGrade + '">';
@@ -319,8 +328,9 @@
                 if (forGradeSelected.length > 0) {
                     var mId = '';
                     var psGrade = 0;
+                    var sjGrade = 0;
                     var csGrade = 0;
-                    for (var i = 0; i < forGradeSelected.length-1; i = i + 6) {
+                    for (var i = 0; i < forGradeSelected.length-1; i = i + 7) {
                         var noName = "【" + forGradeSelected[i + 1].value + "-" + forGradeSelected[i + 2].value + "】";
                         if (forGradeSelected[i + 3] != null) {
                             var psGrade = parseFloat(forGradeSelected[i + 3].value);
@@ -328,12 +338,17 @@
                                 throw new Error(noName + "平时成绩不合法");
                         }
                         if (forGradeSelected[i + 4] != null) {
-                            var csGrade = parseFloat(forGradeSelected[i + 4].value);
+                            var sjGrade = parseFloat(forGradeSelected[i + 4].value);
+                            if (sjGrade < 0 || sjGrade > 100)
+                                throw new Error(noName + "实践成绩不合法");
+                        }
+                        if (forGradeSelected[i + 5] != null) {
+                            var csGrade = parseFloat(forGradeSelected[i + 5].value);
                             if (csGrade < 0 || csGrade > 100)
                                 throw new Error(noName + "考试成绩不合法");
                         }
-                        if (forGradeSelected[i + 5].value == "false") {
-                            var item = forGradeSelected[i].value + "," + forGradeSelected[i + 3].value + "," + forGradeSelected[i + 4].value;
+                        if (forGradeSelected[i + 6].value == "false") {
+                            var item = forGradeSelected[i].value + "," + forGradeSelected[i + 3].value + "," + forGradeSelected[i + 4].value + "," + forGradeSelected[i + 5].value;
                             dataList.push(item);
                         }
                     }

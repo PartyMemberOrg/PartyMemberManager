@@ -671,7 +671,7 @@ namespace PartyMemberManager.Controllers
                                 partyActivist.ActiveApplicationTime = confirmTimeValue;
                                 partyActivist.Class = @class;
                                 partyActivist.Duty = title;
-                                partyActivist.PartyMemberType = PartyMemberType.学生;
+                                partyActivist.PartyMemberType = PartyMemberType.本科生;
                             }
                             ActivistTrainResult activistTrainResult = new ActivistTrainResult
                             {

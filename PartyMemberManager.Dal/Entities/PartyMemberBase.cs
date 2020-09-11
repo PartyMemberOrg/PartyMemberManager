@@ -60,7 +60,7 @@ namespace PartyMemberManager.Dal.Entities
         /// 学号/工号
         /// </summary>
         [DisplayName("学号/工号")]
-        [StringLength(12, MinimumLength = 10, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [StringLength(13, MinimumLength = 10, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string JobNo { get; set; }
 

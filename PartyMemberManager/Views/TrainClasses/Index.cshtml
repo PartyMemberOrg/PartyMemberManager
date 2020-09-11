@@ -6,7 +6,7 @@
 <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
     <div style="display:inline-block">
         <div class="layui-input-inline" style="width:80px">
-            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',550,460)" class="layui-btn layui-btn-primary">+添加</a>
+            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',550,550)" class="layui-btn layui-btn-primary">+添加</a>
         </div>
     </div>
     <div style="display:inline-block">
@@ -120,6 +120,7 @@
                         { field: 'departmentDisplay', title: '所属部门', align: 'center', templet: '#optDepartmentNameTpl' },
                         { field: 'startTime', title: '开始时间', align: 'center', templet: function (d) { return formatDate(d.startTime, 'yyyy-MM-dd');}},
                         { field: 'psGradeProportion', title: '平时成绩比例', align: 'center' },
+                        { field: 'sjGradeProportion', title: '实践成绩比例', align: 'center' },
                         { field: 'csGradeProportion', title: '考试成绩比例', align: 'center' },
                         { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
                     ]]
@@ -163,7 +164,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 550, 460);
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 550, 550);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);

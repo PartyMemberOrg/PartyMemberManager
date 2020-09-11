@@ -213,7 +213,7 @@ namespace PartyMemberManager.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("YearTermId,Name,TrainClassTypeId,StartTime,PsGradeProportion,CsGradeProportion,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] TrainClass trainClass)
+        public override async Task<IActionResult> Save([Bind("YearTermId,Name,TrainClassTypeId,StartTime,PsGradeProportion,CsGradeProportion,SjGradeProportion,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] TrainClass trainClass)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -234,6 +234,7 @@ namespace PartyMemberManager.Controllers
                         trainClassInDb.StartTime = trainClass.StartTime;
                         trainClassInDb.PsGradeProportion = trainClass.PsGradeProportion;
                         trainClassInDb.CsGradeProportion = trainClass.CsGradeProportion;
+                        trainClassInDb.SjGradeProportion = trainClass.SjGradeProportion;
                         trainClassInDb.Id = trainClass.Id;
                         trainClassInDb.CreateTime = DateTime.Now;
                         trainClassInDb.OperatorId = CurrentUser.Id;

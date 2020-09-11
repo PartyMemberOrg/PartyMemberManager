@@ -15,6 +15,13 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("平时成绩")]
         [Range(0,100.00,  ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public decimal? PsGrade { get; set; }
+
+        /// <summary>
+        /// 实践成绩
+        /// </summary>
+        [DisplayName("实践成绩")]
+        [Range(0, 100.00, ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public decimal? SjGrade { get; set; }
         /// <summary>
         /// 考试成绩
         /// </summary>

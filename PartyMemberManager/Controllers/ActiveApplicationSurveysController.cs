@@ -141,7 +141,7 @@ namespace PartyMemberManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("SchoolArea,YearTermId,Total,TrainTotal,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ActiveApplicationSurvey activeApplicationSurvey)
+        public override async Task<IActionResult> Save([Bind("SchoolArea,YearTermId,Total,PartyMemberType,TrainTotal,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ActiveApplicationSurvey activeApplicationSurvey)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -150,12 +150,15 @@ namespace PartyMemberManager.Controllers
             };
             try
             {
+                if (activeApplicationSurvey.PartyMemberType.ToString() == "0")
+                    throw new PartyMemberException("请选择类型");
                 if (ModelState.IsValid)
                 {
                     ActiveApplicationSurvey activeApplicationSurveyInDb = await _context.ActiveApplicationSurveies.FindAsync(activeApplicationSurvey.Id);
                     if (activeApplicationSurveyInDb != null)
                     {
                         activeApplicationSurveyInDb.YearTermId = activeApplicationSurvey.YearTermId;
+                        activeApplicationSurveyInDb.PartyMemberType = activeApplicationSurvey.PartyMemberType;
                         activeApplicationSurveyInDb.Total = activeApplicationSurvey.Total;
                         activeApplicationSurveyInDb.TrainTotal = activeApplicationSurvey.TrainTotal;
                         activeApplicationSurveyInDb.Proportion = Math.Round((double)(activeApplicationSurvey.TrainTotal) / (double)activeApplicationSurvey.Total,2);
@@ -178,6 +181,9 @@ namespace PartyMemberManager.Controllers
                     }
                     else
                     {
+                        var OldData = await _context.ActiveApplicationSurveies.Where(d=>d.YearTermId==activeApplicationSurvey.YearTermId && d.PartyMemberType==activeApplicationSurvey.PartyMemberType).FirstOrDefaultAsync();
+                        if(OldData !=null)
+                            throw new PartyMemberException("该年度已经添加过该类型的摸底信息");
                         activeApplicationSurvey.Proportion = (double)(activeApplicationSurvey.TrainTotal) / (double)activeApplicationSurvey.Total;
                         if (CurrentUser.Roles == Role.学院党委)
                         {

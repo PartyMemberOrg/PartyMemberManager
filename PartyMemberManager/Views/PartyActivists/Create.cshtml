@@ -25,7 +25,11 @@
             $("#PartyMemberType").change(function () {
                 var partyMemberType = $("#PartyMemberType").val();
                 switch (partyMemberType) {
-                    case "@((int)PartyMemberType.学生)":
+                    case "@((int)PartyMemberType.本科生)":
+                        $("#ClassGroup").show();
+                        $("#DutyGroup").hide();
+                        break;
+                    case "@((int)PartyMemberType.研究生)":
                         $("#ClassGroup").show();
                         $("#DutyGroup").hide();
                         break;

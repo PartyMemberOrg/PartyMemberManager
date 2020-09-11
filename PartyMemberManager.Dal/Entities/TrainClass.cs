@@ -92,6 +92,14 @@ namespace PartyMemberManager.Dal.Entities
         public int PsGradeProportion { get; set; }
 
         /// <summary>
+        /// 实践成绩比例
+        /// </summary>
+        [DisplayName("实践成绩比例")]
+        [Range(0, 100, ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public int SjGradeProportion { get; set; }
+
+        /// <summary>
         /// 考试成绩比例
         /// </summary>
         [DisplayName("考试成绩占比")]

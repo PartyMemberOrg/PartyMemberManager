@@ -366,26 +366,32 @@ namespace PartyMemberManager.Controllers
                 foreach (var item in datas)
                 {
                     var subItem = item.Split(",");
-                    if (subItem.Length == 3)
+                    if (subItem.Length == 4)
                     {
                         Guid id = Guid.Parse(subItem[0]);
                         ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.Include(d => d.PartyActivist.TrainClass).Where(d => d.Id == id).FirstOrDefaultAsync();
                         PartyActivist partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);
                         var psProp = activistTrainResult.PartyActivist.TrainClass.PsGradeProportion;
+                        var sjProp = activistTrainResult.PartyActivist.TrainClass.SjGradeProportion;
                         var csProp = activistTrainResult.PartyActivist.TrainClass.CsGradeProportion;
                         if (activistTrainResult != null && partyActivist.IsPrint == false)
                         {
                             decimal psGrade = 0;
+                            decimal sjGrade = 0;
                             decimal csGrade = 0;
                             if (decimal.TryParse(subItem[1], out psGrade))
                                 activistTrainResult.PsGrade = psGrade;
-                            if (decimal.TryParse(subItem[2], out csGrade))
+                            if (decimal.TryParse(subItem[2], out sjGrade))
+                                activistTrainResult.SjGrade = sjGrade;
+                            if (decimal.TryParse(subItem[3], out csGrade))
                                 activistTrainResult.CsGrade = csGrade;
                             if (psGrade > 100 || psGrade < 0)
                                 throw new PartyMemberException($"【{partyActivist.JobNo}-{partyActivist.Name}】的平时成绩非法");
+                            if (sjGrade > 100 || sjGrade < 0)
+                                throw new PartyMemberException($"【{partyActivist.JobNo}-{partyActivist.Name}】的实践成绩非法");
                             if (csGrade > 100 || csGrade < 0)
                                 throw new PartyMemberException($"【{partyActivist.JobNo}-{partyActivist.Name}】的考试成绩非法");
-                            activistTrainResult.TotalGrade = Math.Round(psProp * psGrade / 100 + csProp * csGrade / 100, 2);
+                            activistTrainResult.TotalGrade = Math.Round(psProp * psGrade / 100+sjProp * sjGrade / 100 + csProp * csGrade / 100, 2);
                             if (activistTrainResult.TotalGrade >= 60)
                                 activistTrainResult.IsPass = true;
                             else
