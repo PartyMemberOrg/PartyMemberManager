@@ -92,7 +92,7 @@ namespace ExcelCore
                                 switch (row.GetCell(j).CellType)
                                 {
                                     case CellType.Numeric:
-                                        switch(row.GetCell(j).CellStyle.DataFormat)
+                                        switch (row.GetCell(j).CellStyle.DataFormat)
                                         {
                                             case 0:
                                                 double doubleValue = row.GetCell(j).NumericCellValue;
@@ -248,21 +248,31 @@ namespace ExcelCore
             //var book = new HSSFWorkbook();
             ISheet sheet1 = book.CreateSheet("Sheet1");
             ISheet sheet2 = book.CreateSheet("Sheet2");
+            IRow drowHead1 = sheet1.CreateRow(0);
+            IRow drowHead2 = sheet2.CreateRow(0);
+            for (int j = 0; j < dt.Columns.Count; j++)
+            {
+                ICell cell1 = drowHead1.CreateCell(j, CellType.String);
+                ICell cell2 = drowHead2.CreateCell(j, CellType.String);
+                cell1.SetCellValue(dt.Columns[j].ColumnName);
+                cell2.SetCellValue(dt.Columns[j].ColumnName);
+            }
+
             //填充数据
             for (int i = 0; i < dt.Rows.Count; i++)
             {
-                if (i < 65536)
+                if (i < 65535)
                 {
-                    IRow drow = sheet1.CreateRow(i);
+                    IRow drow = sheet1.CreateRow(i + 1);
                     for (int j = 0; j < dt.Columns.Count; j++)
                     {
                         ICell cell = drow.CreateCell(j, CellType.String);
                         cell.SetCellValue(dt.Rows[i][j].ToString());
                     }
                 }
-                if (i >= 65536) //再创建一个sheet
+                if (i >= 65535) //再创建一个sheet
                 {
-                    IRow drow = sheet2.CreateRow(i - 65536);
+                    IRow drow = sheet2.CreateRow(i - 65535 + 1);
                     for (int j = 0; j < dt.Columns.Count; j++)
                     {
                         ICell cell = drow.CreateCell(j, CellType.String);
@@ -280,13 +290,45 @@ namespace ExcelCore
         }
 
         //导出至excel文件
-        public static Stream ExportExcel(DataTable dt, string fileName = "")
+        public static byte[] ExportExcel(DataTable dt, string fileName = "")
         {
             ////////生成Excel
-            MemoryStream ms = new MemoryStream();
+            NPOIMemoryStream ms = new NPOIMemoryStream(false);
             IWorkbook book = BuildWorkbook(dt, fileName);
             book.Write(ms);
-            return ms;
+            ms.Flush();
+            ms.Seek(0, SeekOrigin.Begin);
+            ms.AllowColse = true;
+            byte[] datas = ms.GetBuffer();
+            ms.Close();
+            ms = null;
+            return datas;
+        }
+
+        private class NPOIMemoryStream : MemoryStream
+        {
+            /// <summary>
+            /// 获取流是否关闭
+            /// </summary>
+            public bool AllowColse
+            {
+                get;
+                set;
+            }
+
+            public NPOIMemoryStream(bool allowClose = false)
+            {
+                AllowColse = allowClose;
+            }
+
+            public override void Close()
+            {
+                if (AllowColse)
+                {
+                    base.Close();
+                }
+
+            }
         }
     }
 }
