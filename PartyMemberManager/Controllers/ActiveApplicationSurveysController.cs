@@ -181,9 +181,6 @@ namespace PartyMemberManager.Controllers
                     }
                     else
                     {
-                        var OldData = await _context.ActiveApplicationSurveies.Where(d=>d.YearTermId==activeApplicationSurvey.YearTermId && d.PartyMemberType==activeApplicationSurvey.PartyMemberType).FirstOrDefaultAsync();
-                        if(OldData !=null)
-                            throw new PartyMemberException("该年度已经添加过该类型的摸底信息");
                         activeApplicationSurvey.Proportion = (double)(activeApplicationSurvey.TrainTotal) / (double)activeApplicationSurvey.Total;
                         if (CurrentUser.Roles == Role.学院党委)
                         {
@@ -195,6 +192,9 @@ namespace PartyMemberManager.Controllers
                                 throw new PartyMemberException("请选择部门");
                             activeApplicationSurvey.DepartmentId = activeApplicationSurvey.DepartmentId;
                         }
+                        var OldData = await _context.ActiveApplicationSurveies.Where(d => d.YearTermId == activeApplicationSurvey.YearTermId && d.PartyMemberType == activeApplicationSurvey.PartyMemberType && d.DepartmentId==activeApplicationSurvey.DepartmentId).FirstOrDefaultAsync();
+                        if (OldData != null)
+                            throw new PartyMemberException("该年度已经添加过该类型的摸底信息");
                         activeApplicationSurvey.CreateTime = DateTime.Now;
                         activeApplicationSurvey.OperatorId = CurrentUser.Id;
                         activeApplicationSurvey.Ordinal = _context.ActiveApplicationSurveies.Count() + 1;
