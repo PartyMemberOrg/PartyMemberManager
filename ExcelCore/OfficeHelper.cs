@@ -250,12 +250,19 @@ namespace ExcelCore
             ISheet sheet2 = book.CreateSheet("Sheet2");
             IRow drowHead1 = sheet1.CreateRow(0);
             IRow drowHead2 = sheet2.CreateRow(0);
+            ICellStyle style = book.CreateCellStyle();
+            style.BorderBottom = BorderStyle.Thin;
+            style.BorderLeft = BorderStyle.Thin;
+            style.BorderRight = BorderStyle.Thin;
+            style.BorderTop = BorderStyle.Thin;
             for (int j = 0; j < dt.Columns.Count; j++)
             {
                 ICell cell1 = drowHead1.CreateCell(j, CellType.String);
                 ICell cell2 = drowHead2.CreateCell(j, CellType.String);
                 cell1.SetCellValue(dt.Columns[j].ColumnName);
                 cell2.SetCellValue(dt.Columns[j].ColumnName);
+                cell1.CellStyle = style;
+                cell2.CellStyle = style;
             }
 
             //填充数据
@@ -268,6 +275,7 @@ namespace ExcelCore
                     {
                         ICell cell = drow.CreateCell(j, CellType.String);
                         cell.SetCellValue(dt.Rows[i][j].ToString());
+                        cell.CellStyle = style;
                     }
                 }
                 if (i >= 65535) //再创建一个sheet
@@ -277,6 +285,7 @@ namespace ExcelCore
                     {
                         ICell cell = drow.CreateCell(j, CellType.String);
                         cell.SetCellValue(dt.Rows[i][j].ToString());
+                        cell.CellStyle = style;
                     }
                 }
             }
