@@ -26,8 +26,9 @@
         /**计算比例 */
         function valideTotal() {
             var ps = parseInt($("#PsGradeProportion").val());
+            var sj = parseInt($("#SjGradeProportion").val());
             var cs = parseInt($("#CsGradeProportion").val());
-            var scale = ps + cs;
+            var scale = ps + sj+ cs;
             if (scale != 100) {
                 layer.alert("比例综合不等于100");
             }
