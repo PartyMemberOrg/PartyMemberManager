@@ -15,15 +15,15 @@ namespace AspNetCorePdf.PdfProvider
 {
     public class PdfSharpService : IPdfSharpService
     {
-        private string _createdDocsPath = ".\\PdfProvider\\Created";
-        private string _imagesPath = ".\\PdfProvider\\Images";
-        private string _resourcesPath = ".\\PdfProvider\\Resources";
+        private string _createdDocsPath = $".{Path.DirectorySeparatorChar}PdfProvider{Path.DirectorySeparatorChar}Created";
+        private string _imagesPath = $".{Path.DirectorySeparatorChar}PdfProvider{Path.DirectorySeparatorChar}Images";
+        private string _resourcesPath = $".{Path.DirectorySeparatorChar}PdfProvider{Path.DirectorySeparatorChar}Resources";
         public PdfSharpService()
         {
             string basePath = AppContext.BaseDirectory;
-            _createdDocsPath = System.IO.Path.Combine(basePath, "PdfProvider\\Created");
-            _imagesPath = System.IO.Path.Combine(basePath, "PdfProvider\\Images");
-            _resourcesPath = System.IO.Path.Combine(basePath, "PdfProvider\\Resources");
+            _createdDocsPath = System.IO.Path.Combine(basePath, $"PdfProvider{Path.DirectorySeparatorChar}Created");
+            _imagesPath = System.IO.Path.Combine(basePath, $"PdfProvider{Path.DirectorySeparatorChar}Images");
+            _resourcesPath = System.IO.Path.Combine(basePath, $"PdfProvider{Path.DirectorySeparatorChar}Resources");
         }
 
         public Stream CreatePdf(IEnumerable<PdfData> pdfDatas, bool printBackground = false)
@@ -51,7 +51,7 @@ namespace AspNetCorePdf.PdfProvider
                 if (printBackground)
                 {
                     if (!string.IsNullOrEmpty(pdfData.BackgroundImage))
-                        AddBackground(gfx, page, $"{_imagesPath}\\{pdfData.BackgroundImage}", 0, 0);
+                        AddBackground(gfx, page, $"{_imagesPath}{Path.DirectorySeparatorChar}{pdfData.BackgroundImage}", 0, 0);
                 }
                 //AddTitleAndFooter(page, gfx, pdfData.DocumentTitle, document, pdfData);
                 //AddDescription(gfx, pdfData);
