@@ -1,4 +1,6 @@
-﻿using NPOI.SS.UserModel;
+﻿using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System;
 using System.Data;
 using System.IO;
@@ -90,7 +92,7 @@ namespace ExcelCore
                                 switch (row.GetCell(j).CellType)
                                 {
                                     case CellType.Numeric:
-                                        switch(row.GetCell(j).CellStyle.DataFormat)
+                                        switch (row.GetCell(j).CellStyle.DataFormat)
                                         {
                                             case 0:
                                                 double doubleValue = row.GetCell(j).NumericCellValue;
@@ -229,6 +231,103 @@ namespace ExcelCore
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        //创建不同版本的文件， excel2003版 或2007+版
+
+        public static IWorkbook BuildWorkbook(DataTable dt, string file)
+        {
+            IWorkbook book;
+            string fileExt = Path.GetExtension(file).ToLower();
+            if (fileExt == ".xlsx")
+            { book = new XSSFWorkbook(); }
+            else if (fileExt == ".xls")
+            { book = new HSSFWorkbook(); }
+            else { book = null; }
+            //var book = new HSSFWorkbook();
+            ISheet sheet1 = book.CreateSheet("Sheet1");
+            ISheet sheet2 = book.CreateSheet("Sheet2");
+            IRow drowHead1 = sheet1.CreateRow(0);
+            IRow drowHead2 = sheet2.CreateRow(0);
+            for (int j = 0; j < dt.Columns.Count; j++)
+            {
+                ICell cell1 = drowHead1.CreateCell(j, CellType.String);
+                ICell cell2 = drowHead2.CreateCell(j, CellType.String);
+                cell1.SetCellValue(dt.Columns[j].ColumnName);
+                cell2.SetCellValue(dt.Columns[j].ColumnName);
+            }
+
+            //填充数据
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                if (i < 65535)
+                {
+                    IRow drow = sheet1.CreateRow(i + 1);
+                    for (int j = 0; j < dt.Columns.Count; j++)
+                    {
+                        ICell cell = drow.CreateCell(j, CellType.String);
+                        cell.SetCellValue(dt.Rows[i][j].ToString());
+                    }
+                }
+                if (i >= 65535) //再创建一个sheet
+                {
+                    IRow drow = sheet2.CreateRow(i - 65535 + 1);
+                    for (int j = 0; j < dt.Columns.Count; j++)
+                    {
+                        ICell cell = drow.CreateCell(j, CellType.String);
+                        cell.SetCellValue(dt.Rows[i][j].ToString());
+                    }
+                }
+            }
+            //自动列宽
+            for (int i = 0; i <= dt.Columns.Count; i++)
+            {
+                sheet1.AutoSizeColumn(i, true);
+                sheet2.AutoSizeColumn(i, true);
+            }
+            return book;
+        }
+
+        //导出至excel文件
+        public static byte[] ExportExcel(DataTable dt, string fileName = "")
+        {
+            ////////生成Excel
+            NPOIMemoryStream ms = new NPOIMemoryStream(false);
+            IWorkbook book = BuildWorkbook(dt, fileName);
+            book.Write(ms);
+            ms.Flush();
+            ms.Seek(0, SeekOrigin.Begin);
+            ms.AllowColse = true;
+            byte[] datas = ms.GetBuffer();
+            ms.Close();
+            ms = null;
+            return datas;
+        }
+
+        private class NPOIMemoryStream : MemoryStream
+        {
+            /// <summary>
+            /// 获取流是否关闭
+            /// </summary>
+            public bool AllowColse
+            {
+                get;
+                set;
+            }
+
+            public NPOIMemoryStream(bool allowClose = false)
+            {
+                AllowColse = allowClose;
+            }
+
+            public override void Close()
+            {
+                if (AllowColse)
+                {
+                    base.Close();
+                }
+
             }
         }
     }

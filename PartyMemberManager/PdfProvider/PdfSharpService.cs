@@ -9,6 +9,7 @@ using PdfSharp.Pdf;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace AspNetCorePdf.PdfProvider
 {
@@ -17,6 +18,13 @@ namespace AspNetCorePdf.PdfProvider
         private string _createdDocsPath = ".\\PdfProvider\\Created";
         private string _imagesPath = ".\\PdfProvider\\Images";
         private string _resourcesPath = ".\\PdfProvider\\Resources";
+        public PdfSharpService()
+        {
+            string basePath = AppContext.BaseDirectory;
+            _createdDocsPath = System.IO.Path.Combine(basePath, "PdfProvider\\Created");
+            _imagesPath = System.IO.Path.Combine(basePath, "PdfProvider\\Images");
+            _resourcesPath = System.IO.Path.Combine(basePath, "PdfProvider\\Resources");
+        }
 
         public Stream CreatePdf(IEnumerable<PdfData> pdfDatas, bool printBackground = false)
         {

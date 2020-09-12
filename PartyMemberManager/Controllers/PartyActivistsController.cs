@@ -21,6 +21,7 @@ using System.Data;
 using ExcelCore;
 using PartyMemberManager.Models;
 using PartyMemberManager.Models.PrintViewModel;
+using NPOI.SS.Formula.Functions;
 
 namespace PartyMemberManager.Controllers
 {
@@ -493,9 +494,7 @@ namespace PartyMemberManager.Controllers
                         string fieldsStudent = "姓名,学号,身份证号,性别,出生年月,民族,所在学院,所在班级,联系电话,提交入党申请时间,担任职务,确定入党积极分子时间,备注";
                         string[] fieldListTeacher = fieldsTeacher.Split(',');
                         string[] fieldListStudent = fieldsStudent.Split(',');
-                        bool isTeacher = true;
-                        if (table.Columns.Contains("学号"))
-                            isTeacher = false;
+                        bool isTeacher = model.PartyMemberType == PartyMemberType.教师;
                         if (isTeacher)
                         {
                             foreach (string field in fieldListTeacher)
@@ -671,7 +670,7 @@ namespace PartyMemberManager.Controllers
                                 partyActivist.ActiveApplicationTime = confirmTimeValue;
                                 partyActivist.Class = @class;
                                 partyActivist.Duty = title;
-                                partyActivist.PartyMemberType = PartyMemberType.本科生;
+                                partyActivist.PartyMemberType = model.PartyMemberType;
                             }
                             ActivistTrainResult activistTrainResult = new ActivistTrainResult
                             {
@@ -740,6 +739,67 @@ namespace PartyMemberManager.Controllers
                 jsonResult.Message = "发生系统错误";
             }
             return Json(jsonResult);
+        }
+
+        /// <summary>
+        /// 导出所有学生数据
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> Export()
+        {
+            string fileName = "入党积极分子导出名单.xlsx";
+            //string fieldsStudent = "姓名,学号,身份证号,性别,出生年月,民族,所在学院,所在班级,联系电话,提交入党申请时间,担任职务,确定入党积极分子时间,备注";
+            DataTable table = new DataTable();
+            table.Columns.Add("学年学期", typeof(string));
+            table.Columns.Add("培训班", typeof(string));
+            table.Columns.Add("类型", typeof(string));
+            table.Columns.Add("学号", typeof(string));
+            table.Columns.Add("姓名", typeof(string));
+            table.Columns.Add("身份证号", typeof(string));
+            table.Columns.Add("性别", typeof(string));
+            table.Columns.Add("出生年月", typeof(string));
+            table.Columns.Add("民族", typeof(string));
+            table.Columns.Add("所在学院", typeof(string));
+            table.Columns.Add("所在班级", typeof(string));
+            table.Columns.Add("联系电话", typeof(string));
+            table.Columns.Add("提交入党申请时间", typeof(string));
+            table.Columns.Add("担任职务", typeof(string));
+            table.Columns.Add("确定入党积极分子时间", typeof(string));
+            table.Columns.Add("备注", typeof(string));
+            table.Columns.Add("平时成绩", typeof(string));
+            table.Columns.Add("实践成绩", typeof(string));
+            table.Columns.Add("考试成绩", typeof(string));
+            table.Columns.Add("补考成绩", typeof(string));
+            table.Columns.Add("总评成绩", typeof(string));
+            foreach (PartyActivist partyActivist in await _context.PartyActivists.Include(p => p.Nation).Include(p => p.Department).Include(p => p.YearTerm).Include(p => p.TrainClass).ToListAsync())
+            {
+                ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.FirstOrDefaultAsync(a => a.PartyActivistId == partyActivist.Id);
+                DataRow row = table.NewRow();
+                row["学年学期"] = partyActivist.YearTermDisplay;
+                row["培训班"] = partyActivist.TrainClassDisplay;
+                row["类型"] = partyActivist.PartyMemberTypeDisplay;
+                row["学号"] = partyActivist.JobNo;
+                row["姓名"] = partyActivist.Name;
+                row["身份证号"] = partyActivist.IdNumber;
+                row["性别"] = partyActivist.Sex;
+                row["出生年月"] = string.Format("{0:yyyy-MM}", partyActivist.BirthDate);
+                row["民族"] = partyActivist.NationDisplay;
+                row["所在学院"] = partyActivist.DepartmentDisplay;
+                row["所在班级"] = partyActivist.Class;
+                row["联系电话"] = partyActivist.Phone;
+                row["提交入党申请时间"] = string.Format("{0:yyyy-MM-dd}", partyActivist.ApplicationTime);
+                row["担任职务"] = partyActivist.Duty;
+                row["确定入党积极分子时间"] = string.Format("{0:yyyy-MM-dd}", partyActivist.ActiveApplicationTime);
+                row["备注"] = "";
+                row["平时成绩"] = string.Format("{0:#.#}", activistTrainResult.PsGrade);
+                row["实践成绩"] = string.Format("{0:#.#}", activistTrainResult.SjGrade);
+                row["考试成绩"] = string.Format("{0:#.#}", activistTrainResult.CsGrade);
+                row["补考成绩"] = string.Format("{0:#.#}", activistTrainResult.BcGrade);
+                row["总评成绩"] = string.Format("{0:#.#}", activistTrainResult.TotalGrade);
+                table.Rows.Add(row);
+            }
+            byte[] datas = OfficeHelper.ExportExcel(table, fileName);
+            return File(datas, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
         private bool PartyActivistExists(Guid id)
         {

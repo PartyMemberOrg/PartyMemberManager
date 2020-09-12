@@ -41,6 +41,12 @@ namespace PartyMemberManager.Models
         [Required]
         public Guid TrainClassId { get; set; }
         /// <summary>
+        /// 类型学生或者教师
+        /// </summary>
+        [DisplayName("类型")]
+        [Required]
+        public PartyMemberType PartyMemberType { get; set; }
+        /// <summary>
         /// 文件
         /// </summary>
         [DisplayName("文件")]

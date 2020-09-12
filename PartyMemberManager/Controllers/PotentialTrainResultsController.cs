@@ -706,7 +706,7 @@ namespace PartyMemberManager.Controllers
                         #region 导入成绩
                         DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
                         int rowIndex = 0;
-                        string fieldsTeacher = "工号/学号,平时成绩,考试成绩";
+                        string fieldsTeacher = "工号/学号,平时成绩,实践成绩,考试成绩";
                         string[] fieldListTeacher = fieldsTeacher.Split(',');
                         foreach (string field in fieldListTeacher)
                         {
@@ -718,17 +718,24 @@ namespace PartyMemberManager.Controllers
                             rowIndex++;
                             string empNoField = "工号/学号";
                             string psScoreField = "平时成绩";
+                            string sjScoreField = "实践成绩";
                             string csScoreField = "考试成绩";
                             string psScore = row[psScoreField].ToString();
+                            string sjScore = row[sjScoreField].ToString();
                             string csScore = row[csScoreField].ToString();
                             string empNo = row[empNoField].ToString();
                             //跳过工号/学号为空的记录
                             if (string.IsNullOrEmpty(empNoField)) continue;
                             decimal psScoreValue = 0;
+                            decimal sjScoreValue = 0;
                             decimal csScoreValue = 0;
                             if (!decimal.TryParse(psScore, out psScoreValue))
                             {
                                 throw new PartyMemberException($"第{rowIndex}行数据中的【{psScoreField}】数据不合法");
+                            }
+                            if (!decimal.TryParse(sjScore, out sjScoreValue))
+                            {
+                                throw new PartyMemberException($"第{rowIndex}行数据中的【{sjScoreField}】数据不合法");
                             }
                             if (!decimal.TryParse(csScore, out csScoreValue))
                             {
@@ -737,6 +744,10 @@ namespace PartyMemberManager.Controllers
                             if (psScoreValue < 0 || psScoreValue > 100)
                             {
                                 throw new PartyMemberException($"第{rowIndex}行数据中的【{psScoreField}】数据不合法");
+                            }
+                            if (sjScoreValue < 0 || sjScoreValue > 100)
+                            {
+                                throw new PartyMemberException($"第{rowIndex}行数据中的【{sjScoreField}】数据不合法");
                             }
                             if (csScoreValue < 0 || csScoreValue > 100)
                             {
@@ -747,6 +758,7 @@ namespace PartyMemberManager.Controllers
                                 throw new PartyMemberException($"第{rowIndex}行数据中的【{empNo}】未找到，请核对工号/学号是否正确");
                             PotentialTrainResult potentialTrainResult = await _context.PotentialTrainResults.Where(p => p.PotentialMemberId == potentialMember.Id).FirstOrDefaultAsync();
                             var psProp = trainClass.PsGradeProportion;
+                            var sjProp = trainClass.SjGradeProportion;
                             var csProp = trainClass.CsGradeProportion;
                             if (potentialTrainResult == null)
                             {
@@ -759,8 +771,9 @@ namespace PartyMemberManager.Controllers
                                     IsDeleted = false,
                                     Ordinal = _context.ActivistTrainResults.Count() + 1,
                                     PsGrade = psScoreValue,
+                                    SjGrade = sjScoreValue,
                                     CsGrade = csScoreValue,
-                                    TotalGrade = Math.Round(psProp * psScoreValue / 100 + csProp * csScoreValue / 100, 2)
+                                    TotalGrade = Math.Round(psProp * psScoreValue / 100 + sjProp * sjScoreValue / 100 + csProp * csScoreValue / 100, 2)
                                 };
                                 _context.PotentialTrainResults.Add(potentialTrainResult);
                             }
