@@ -4,6 +4,7 @@
     while (exception != null)
     {
         <h3>错误类型:@(exception.GetType().Name)，错误信息:@(exception.Message)</h3>
+        <h5>@exception.StackTrace</h5>
         exception = exception.InnerException;
     }
 }

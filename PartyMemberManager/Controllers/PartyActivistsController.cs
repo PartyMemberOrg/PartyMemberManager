@@ -838,7 +838,9 @@ namespace PartyMemberManager.Controllers
                     table.Rows.Add(row);
                 }
                 byte[] datas = OfficeHelper.ExportExcel(table, fileName);
-                return File(datas, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+                FileContentResult fileContentResult= File(datas, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+                HttpContext.Response.Headers.Add("Content-Length", datas.Length.ToString());
+                return fileContentResult;
             }
             catch (Exception ex)
             {
