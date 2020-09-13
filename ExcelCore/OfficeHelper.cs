@@ -4,6 +4,10 @@ using NPOI.XSSF.UserModel;
 using System;
 using System.Data;
 using System.IO;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System.Data.Common;
 
 namespace ExcelCore
 {
@@ -91,7 +95,7 @@ namespace ExcelCore
                             {
                                 switch (row.GetCell(j).CellType)
                                 {
-                                    case CellType.Numeric:
+                                    case NPOI.SS.UserModel.CellType.Numeric:
                                         switch (row.GetCell(j).CellStyle.DataFormat)
                                         {
                                             case 0:
@@ -205,7 +209,7 @@ namespace ExcelCore
                             ICell cell = row.GetCell(j);
                             if (cell != null)
                             {
-                                if (cell.CellType == CellType.Numeric)
+                                if (cell.CellType == NPOI.SS.UserModel.CellType.Numeric)
                                 {
                                     //判断是否日期类型
                                     if (DateUtil.IsCellDateFormatted(cell))
@@ -257,7 +261,7 @@ namespace ExcelCore
             style.BorderTop = BorderStyle.Thin;
             for (int j = 0; j < dt.Columns.Count; j++)
             {
-                ICell cell1 = drowHead1.CreateCell(j, CellType.String);
+                ICell cell1 = drowHead1.CreateCell(j, NPOI.SS.UserModel.CellType.String);
                 //ICell cell2 = drowHead2.CreateCell(j, CellType.String);
                 cell1.SetCellValue(dt.Columns[j].ColumnName);
                 //cell2.SetCellValue(dt.Columns[j].ColumnName);
@@ -273,7 +277,7 @@ namespace ExcelCore
                     IRow drow = sheet1.CreateRow(i + 1);
                     for (int j = 0; j < dt.Columns.Count; j++)
                     {
-                        ICell cell = drow.CreateCell(j, CellType.String);
+                        ICell cell = drow.CreateCell(j, NPOI.SS.UserModel.CellType.String);
                         cell.SetCellValue(dt.Rows[i][j].ToString());
                         cell.CellStyle = style;
                     }
@@ -314,6 +318,48 @@ namespace ExcelCore
             ms.Close();
             ms = null;
             return datas;
+        }
+
+        public static Stream ExportExcelByOpenXml(DataTable datatable)
+        {
+            MemoryStream ms = new MemoryStream();
+            var spreadsheetDocument = SpreadsheetDocument.Create(ms, SpreadsheetDocumentType.Workbook);
+            var workbookpart = spreadsheetDocument.AddWorkbookPart();
+            workbookpart.Workbook = new Workbook();
+            WorksheetPart worksheetPart = workbookpart.AddNewPart<WorksheetPart>();
+            worksheetPart.Worksheet = new Worksheet(new SheetData());
+            Sheets sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
+            Sheet sheet = new Sheet() { Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Sheet1" };
+            sheets.Append(sheet);
+            var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+            Row rowHead = new Row();
+            foreach (DataColumn column in datatable.Columns)
+            {
+                Cell dataCell = new Cell();
+                dataCell.CellValue = new DocumentFormat.OpenXml.Spreadsheet.CellValue($"{column.ColumnName}");
+                dataCell.DataType = new EnumValue<CellValues>(CellValues.String);
+                rowHead.AppendChild(dataCell);
+            }
+            sheetData.Append(rowHead);
+            foreach (DataRow dataRow in datatable.Rows)
+            {
+                Row row = new Row();
+                foreach(DataColumn column in datatable.Columns)
+                {
+                    Cell dataCell = new Cell();
+                    dataCell.CellValue = new DocumentFormat.OpenXml.Spreadsheet.CellValue($"{dataRow[column]}");
+                    dataCell.DataType = new EnumValue<CellValues>(CellValues.String);
+                    row.AppendChild(dataCell);
+                }
+                sheetData.Append(row);
+            }
+
+
+            workbookpart.Workbook.Save();
+            spreadsheetDocument.Close();
+            ms.Flush();
+            ms.Seek(0, SeekOrigin.Begin);
+            return ms;
         }
 
         private class NPOIMemoryStream : MemoryStream

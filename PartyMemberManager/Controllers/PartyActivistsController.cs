@@ -837,10 +837,8 @@ namespace PartyMemberManager.Controllers
                     row["总评成绩"] = string.Format("{0:#.#}", activistTrainResult.TotalGrade);
                     table.Rows.Add(row);
                 }
-                byte[] datas = OfficeHelper.ExportExcel(table, fileName);
-                FileContentResult fileContentResult= File(datas, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
-                HttpContext.Response.Headers.Add("Content-Length", datas.Length.ToString());
-                return fileContentResult;
+                Stream datas = OfficeHelper.ExportExcelByOpenXml(table);
+                return File(datas, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
             catch (Exception ex)
             {

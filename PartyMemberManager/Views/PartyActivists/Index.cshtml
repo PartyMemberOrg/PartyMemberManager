@@ -64,13 +64,13 @@
             </a>
         </div>
     </div>
-    @*<div style="display:inline-block">
+    <div style="display:inline-block">
         <div class="layui-input-inline" style="width:110px">
             <a class="layui-btn layui-btn-primary" id="export" href="javascript:;" onclick="exportExcel()">
                 <i class="layui-icon layui-icon-export" style="font-size: 14px; color: #FFFFFF;"></i>导出全部
             </a>
         </div>
-    </div>*@
+    </div>
 </div>
 <table class="layui-hide" id="datatable"></table>
 <div style="margin-top: 10px">
@@ -251,12 +251,12 @@
             var trainClassId= $("#TrainClassId").val();
             var partyMemberType= $("#PartyMemberType").val();
             var keyword = $("#keyword").val();
-            var url = "@Url.Action("Export",new { yearTermId= "__yearTermId__", departmentId= "__departmentId__", trainClassId= "__trainClassId__", partyMemberType= "__partyMemberType__", keyword= "__keyword__" })";
-            url.replace("__yearTermId__", yearTermId);
-            url.replace("__departmentId__", departmentId);
-            url.replace("__trainClassId__", trainClassId);
-            url.replace("__partyMemberType__", partyMemberType);
-            url.replace("__keyword__", keyword);
+            var url = "@Html.Raw(Url.Action("Export",new { yearTermId= "__yearTermId__", departmentId= "__departmentId__", trainClassId= "__trainClassId__", partyMemberType= "__partyMemberType__", keyword= "__keyword__" }))";
+            url =url.replace("__yearTermId__", yearTermId);
+            url =url.replace("__departmentId__", departmentId);
+            url =url.replace("__trainClassId__", trainClassId);
+            url =url.replace("__partyMemberType__", partyMemberType);
+            url =url.replace("__keyword__", keyword);
             location.href = url;
         }
     </script>
