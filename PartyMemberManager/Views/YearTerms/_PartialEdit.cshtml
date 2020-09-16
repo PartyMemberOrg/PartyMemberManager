@@ -26,7 +26,7 @@
                     </div>
                     <div>
                         <select asp-for="Term" asp-items="@Html.GetEnumSelectList(typeof(Term))" class="form-control" style="width:165px;">
-                            <optipn>-请选择学期-</optipn>
+                            <option>-请选择学期-</option>
                         </select>
                         <span asp-validation-for="Term" class="text-danger"></span>
                     </div>

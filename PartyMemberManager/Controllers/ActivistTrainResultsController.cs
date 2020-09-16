@@ -116,7 +116,7 @@ namespace PartyMemberManager.Controllers
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     SetStatus(data);
-                    jsonResult.Count = _context.Set<ActivistTrainResult>().Count();
+                    jsonResult.Count = _context.Set<ActivistTrainResult>().Where(filter).Count();
                     jsonResult.Data = data.Data;
                 }
                 else
@@ -129,7 +129,9 @@ namespace PartyMemberManager.Controllers
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
                     SetStatus(data);
-                    jsonResult.Count = _context.Set<ActivistTrainResult>().Count();
+                    jsonResult.Count = _context.Set<ActivistTrainResult>().Include(d => d.PartyActivist).Include(d => d.PartyActivist.TrainClass).Include(d => d.PartyActivist.YearTerm)
+                        .Where(filter).Where(d => d.PartyActivist.YearTerm.Enabled == true)
+                        .Where(d => d.PartyActivist.DepartmentId == CurrentUser.DepartmentId).Count();
                     jsonResult.Data = data.Data;
                 }
             }
@@ -1057,10 +1059,10 @@ namespace PartyMemberManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Import(ActivistTrainResultImportViewModel model)
         {
-            JsonResultNoData jsonResult = new JsonResultNoData
+            JsonResultImport jsonResult = new JsonResultImport
             {
                 Code = 0,
-                Message = "数据保存成功"
+                Message = "数据导入成功"
             };
             try
             {
@@ -1078,7 +1080,10 @@ namespace PartyMemberManager.Controllers
                         fileStream.Close();
                         #region 导入成绩
                         DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
+                        DataTable tableErrorData = table.Clone();
+                        DataColumn columnErrorMessage = tableErrorData.Columns.Add("错误提示", typeof(string));
                         int rowIndex = 0;
+                        int successCount = 0;
                         string fieldsTeacher = "工号/学号,平时成绩,实践成绩,考试成绩";
                         string[] fieldListTeacher = fieldsTeacher.Split(',');
                         foreach (string field in fieldListTeacher)
@@ -1089,80 +1094,112 @@ namespace PartyMemberManager.Controllers
                         foreach (DataRow row in table.Rows)
                         {
                             rowIndex++;
-                            string empNoField = "工号/学号";
-                            string psScoreField = "平时成绩";
-                            string sjScoreField = "实践成绩";
-                            string csScoreField = "考试成绩";
-                            string psScore = row[psScoreField].ToString();
-                            string sjScore = row[sjScoreField].ToString();
-                            string csScore = row[csScoreField].ToString();
-                            string empNo = row[empNoField].ToString();
-                            //跳过工号/学号为空的记录
-                            if (string.IsNullOrEmpty(empNoField)) continue;
-                            decimal psScoreValue = 0;
-                            decimal sjScoreValue = 0;
-                            decimal csScoreValue = 0;
-                            if (!decimal.TryParse(psScore, out psScoreValue))
+                            try
                             {
-                                throw new PartyMemberException($"第{rowIndex}行数据中的【{psScoreField}】数据不合法");
-                            }
-                            if (!decimal.TryParse(sjScore, out sjScoreValue))
-                            {
-                                throw new PartyMemberException($"第{rowIndex}行数据中的【{sjScoreField}】数据不合法");
-                            }
-                            if (!decimal.TryParse(csScore, out csScoreValue))
-                            {
-                                throw new PartyMemberException($"第{rowIndex}行数据中的【{csScoreField}】数据不合法");
-                            }
-                            if (psScoreValue < 0 || psScoreValue > 100)
-                            {
-                                throw new PartyMemberException($"第{rowIndex}行数据中的【{psScoreField}】数据不合法");
-                            }
-                            if (sjScoreValue < 0 || sjScoreValue > 100)
-                            {
-                                throw new PartyMemberException($"第{rowIndex}行数据中的【{sjScoreField}】数据不合法");
-                            }
-                            if (csScoreValue < 0 || csScoreValue > 100)
-                            {
-                                throw new PartyMemberException($"第{rowIndex}行数据中的【{csScoreField}】数据不合法");
-                            }
-                            PartyActivist partyActivist = await _context.PartyActivists.Where(p => p.TrainClassId == model.TrainClassId && p.JobNo == empNo).FirstOrDefaultAsync();
-                            if (partyActivist == null)
-                                throw new PartyMemberException($"第{rowIndex}行数据中的【{empNo}】未找到，请核对工号/学号是否正确");
-                            ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.Where(p => p.PartyActivistId == partyActivist.Id).FirstOrDefaultAsync();
-                            var psProp = trainClass.PsGradeProportion;
-                            var sjProp = trainClass.SjGradeProportion;
-                            var csProp = trainClass.CsGradeProportion;
-                            if (activistTrainResult == null)
-                            {
-                                activistTrainResult = new ActivistTrainResult
+                                string empNoField = "工号/学号";
+                                string psScoreField = "平时成绩";
+                                string sjScoreField = "实践成绩";
+                                string csScoreField = "考试成绩";
+                                string psScore = row[psScoreField].ToString();
+                                string sjScore = row[sjScoreField].ToString();
+                                string csScore = row[csScoreField].ToString();
+                                string empNo = row[empNoField].ToString();
+                                //跳过工号/学号为空的记录
+                                if (string.IsNullOrEmpty(empNoField)) continue;
+                                decimal psScoreValue = 0;
+                                decimal sjScoreValue = 0;
+                                decimal csScoreValue = 0;
+                                if (!decimal.TryParse(psScore, out psScoreValue))
                                 {
-                                    Id = Guid.NewGuid(),
-                                    PartyActivistId = partyActivist.Id,
-                                    CreateTime = DateTime.Now,
-                                    OperatorId = CurrentUser.Id,
-                                    IsDeleted = false,
-                                    Ordinal = _context.ActivistTrainResults.Count() + 1,
-                                    PsGrade = psScoreValue,
-                                    SjGrade=sjScoreValue,
-                                    CsGrade = csScoreValue,
-                                    TotalGrade = Math.Round(psProp * psScoreValue / 100 + sjProp * sjScoreValue / 100 + csProp * csScoreValue / 100, 2)
-                                };
-                                _context.ActivistTrainResults.Add(activistTrainResult);
+                                    throw new ImportDataErrorException($"第{rowIndex}行数据中的【{psScoreField}】数据不合法");
+                                }
+                                if (!decimal.TryParse(sjScore, out sjScoreValue))
+                                {
+                                    throw new ImportDataErrorException($"第{rowIndex}行数据中的【{sjScoreField}】数据不合法");
+                                }
+                                if (!decimal.TryParse(csScore, out csScoreValue))
+                                {
+                                    throw new ImportDataErrorException($"第{rowIndex}行数据中的【{csScoreField}】数据不合法");
+                                }
+                                if (psScoreValue < 0 || psScoreValue > 100)
+                                {
+                                    throw new ImportDataErrorException($"第{rowIndex}行数据中的【{psScoreField}】数据不合法");
+                                }
+                                if (sjScoreValue < 0 || sjScoreValue > 100)
+                                {
+                                    throw new ImportDataErrorException($"第{rowIndex}行数据中的【{sjScoreField}】数据不合法");
+                                }
+                                if (csScoreValue < 0 || csScoreValue > 100)
+                                {
+                                    throw new ImportDataErrorException($"第{rowIndex}行数据中的【{csScoreField}】数据不合法");
+                                }
+                                PartyActivist partyActivist = await _context.PartyActivists.Where(p => p.TrainClassId == model.TrainClassId && p.JobNo == empNo).FirstOrDefaultAsync();
+                                if (partyActivist == null)
+                                    throw new ImportDataErrorException($"第{rowIndex}行数据中的【{empNo}】未找到，请核对工号/学号是否正确");
+                                ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.Where(p => p.PartyActivistId == partyActivist.Id).FirstOrDefaultAsync();
+                                var psProp = trainClass.PsGradeProportion;
+                                var sjProp = trainClass.SjGradeProportion;
+                                var csProp = trainClass.CsGradeProportion;
+                                if (activistTrainResult == null)
+                                {
+                                    activistTrainResult = new ActivistTrainResult
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        PartyActivistId = partyActivist.Id,
+                                        CreateTime = DateTime.Now,
+                                        OperatorId = CurrentUser.Id,
+                                        IsDeleted = false,
+                                        Ordinal = _context.ActivistTrainResults.Count() + 1,
+                                        PsGrade = psScoreValue,
+                                        SjGrade = sjScoreValue,
+                                        CsGrade = csScoreValue,
+                                        TotalGrade = Math.Round(psProp * psScoreValue / 100 + sjProp * sjScoreValue / 100 + csProp * csScoreValue / 100, 2)
+                                    };
+                                    _context.ActivistTrainResults.Add(activistTrainResult);
+                                }
+                                else
+                                {
+                                    activistTrainResult.PsGrade = psScoreValue;
+                                    activistTrainResult.CsGrade = csScoreValue;
+                                    activistTrainResult.TotalGrade = Math.Round(psProp * psScoreValue / 100 + csProp * csScoreValue / 100, 2);
+                                }
+                                if (activistTrainResult.TotalGrade >= 60)
+                                    activistTrainResult.IsPass = true;
+                                else
+                                    activistTrainResult.IsPass = false;
+                                successCount++;
+                                await _context.SaveChangesAsync();
                             }
-                            else
+                            catch (ImportDataErrorException ex)
                             {
-                                activistTrainResult.PsGrade = psScoreValue;
-                                activistTrainResult.CsGrade = csScoreValue;
-                                activistTrainResult.TotalGrade = Math.Round(psProp * psScoreValue / 100 + csProp * csScoreValue / 100, 2);
+                                //捕获到数据错误时，继续导入，将错误信息反馈给用户
+                                DataRow rowErrorData = tableErrorData.NewRow();
+                                foreach (DataColumn column in table.Columns)
+                                    rowErrorData[column.ColumnName] = row[column.ColumnName];
+                                rowErrorData[columnErrorMessage] = ex.Message;
+                                tableErrorData.Rows.Add(rowErrorData);
                             }
-                            if (activistTrainResult.TotalGrade >= 60)
-                                activistTrainResult.IsPass = true;
-                            else
-                                activistTrainResult.IsPass = false;
-                            await _context.SaveChangesAsync();
+
                         }
                         #endregion
+                        if (tableErrorData.Rows.Count > 0)
+                        {
+                            string basePath = GetErrorImportDataFilePath();
+                            string fileName = $"入党积极分子成绩错误数据_{CurrentUser.LoginName}.xlsx";
+                            string fileWithPath = $"{basePath}{Path.DirectorySeparatorChar}{fileName}";
+                            Stream streamOutExcel = OfficeHelper.ExportExcelByOpenXml(tableErrorData);
+                            FileStream outExcelFile = new FileStream(fileWithPath, FileMode.Create, System.IO.FileAccess.Write);
+                            byte[] bytes = new byte[streamOutExcel.Length];
+                            streamOutExcel.Read(bytes, 0, (int)streamOutExcel.Length);
+                            outExcelFile.Write(bytes, 0, bytes.Length);
+                            outExcelFile.Close();
+                            streamOutExcel.Close();
+                            jsonResult.ErrorDataFile = $"ActivistTrainResults/GetErrorImportData?fileName={fileName}";
+                            jsonResult.FailCount = tableErrorData.Rows.Count;
+                            jsonResult.SuccessCount = successCount;
+                            jsonResult.Code = -2;
+                            jsonResult.Message = "部分数据导入错误";
+                        }
                     }
                     else
                     {
@@ -1190,7 +1227,7 @@ namespace PartyMemberManager.Controllers
             {
                 _logger.LogError(ex, ex.Message);
                 jsonResult.Code = -1;
-                jsonResult.Message = "入党积极分子导入错误";
+                jsonResult.Message = "入党积极分子成绩导入错误";
             }
             catch (PartyMemberException ex)
             {
@@ -1211,6 +1248,33 @@ namespace PartyMemberManager.Controllers
             }
             return Json(jsonResult);
         }
+        /// <summary>
+        /// 返回导入错误文件的存放路径
+        /// </summary>
+        /// <returns></returns>
+        private static string GetErrorImportDataFilePath()
+        {
+            string basePath = AppContext.BaseDirectory;
+            if (!basePath.EndsWith(Path.DirectorySeparatorChar))
+                basePath += Path.DirectorySeparatorChar;
+            basePath += $"ErrorImportData";
+            if (!Directory.Exists(basePath))
+                Directory.CreateDirectory(basePath);
+            return basePath;
+        }
+        /// <summary>
+        /// 返回错误导入数据
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult GetErrorImportData(string fileName)
+        {
+            string basePath = GetErrorImportDataFilePath();
+            string fileWithPath = $"{basePath}{Path.DirectorySeparatorChar}{fileName}";
+            FileStream outExcelFile = new FileStream(fileWithPath, FileMode.Open);
+            return File(outExcelFile, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "入党积极分子成绩导入失败数据.xlsx");
+        }
+
+
         /// <summary>
         /// 打印和预览
         /// </summary>

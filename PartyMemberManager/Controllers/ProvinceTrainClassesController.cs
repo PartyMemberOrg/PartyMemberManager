@@ -91,7 +91,7 @@ namespace PartyMemberManager.Controllers
                     .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
                 if (data == null)
                     throw new PartyMemberException("未找到数据");
-                jsonResult.Count = _context.Set<ProvinceTrainClass>().Count();
+                jsonResult.Count = _context.Set<ProvinceTrainClass>().Where(filter).Count();
                 jsonResult.Data = data.Data;
             }
 

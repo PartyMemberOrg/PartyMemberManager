@@ -38,7 +38,7 @@
     </div>
     <div class="rightContent" id="rightContent">
         <main role="main" class="pb-3">
-            <iframe id="mainframe" name="mainframe" frameborder="0" style="overflow:visible" scrolling="no" src="@Url.Action("RightIndex","Home")"></iframe>
+            <iframe id="mainframe" name="mainframe" frameborder="0" style="overflow:visible" scrolling="auto" src="@Url.Action("RightIndex","Home")"></iframe>
         </main>
     </div>
 </div>
@@ -52,7 +52,7 @@
         $(document).ready(function () {
             var iframeHeight = function () {
                 var _height = $(window).height() - 90;
-                var _width = $(window).width() - 220;
+                var _width = $(window).width() - 205;
                 $('#mainframe').height(_height);
                 $('#mainframe').width(_width);
             }

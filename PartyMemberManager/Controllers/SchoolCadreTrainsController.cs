@@ -41,7 +41,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(string year,  string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(string year, string keyword, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<SchoolCadreTrain> jsonResult = new JsonResultDatasModel<SchoolCadreTrain>
             {
@@ -65,7 +65,7 @@ namespace PartyMemberManager.Controllers
                     .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
                 if (data == null)
                     throw new PartyMemberException("未找到数据");
-                jsonResult.Count = _context.Set<SchoolCadreTrain>().Count();
+                jsonResult.Count = _context.Set<SchoolCadreTrain>().Where(filter).Count();
                 jsonResult.Data = data.Data;
             }
 
@@ -199,7 +199,7 @@ namespace PartyMemberManager.Controllers
                         schoolCadreTrainInDb.Id = schoolCadreTrain.Id;
                         schoolCadreTrainInDb.CreateTime = DateTime.Now;
                         schoolCadreTrainInDb.OperatorId = CurrentUser.Id;
-                        schoolCadreTrainInDb.Ordinal = _context.SchoolCadreTrains.Count()+1;
+                        schoolCadreTrainInDb.Ordinal = _context.SchoolCadreTrains.Count() + 1;
                         schoolCadreTrainInDb.IsDeleted = schoolCadreTrain.IsDeleted;
                         _context.Update(schoolCadreTrainInDb);
                     }
@@ -260,10 +260,10 @@ namespace PartyMemberManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Import(SchoolCadreTranImportViewModel model)
         {
-            JsonResultNoData jsonResult = new JsonResultNoData
+            JsonResultImport jsonResult = new JsonResultImport
             {
                 Code = 0,
-                Message = "数据保存成功"
+                Message = "数据导入成功"
             };
             try
             {
@@ -280,7 +280,10 @@ namespace PartyMemberManager.Controllers
                         fileStream.Close();
                         #region 领导干部培训名单
                         DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
+                        DataTable tableErrorData = table.Clone();
+                        DataColumn columnErrorMessage = tableErrorData.Columns.Add("错误提示", typeof(string));
                         int rowIndex = 0;
+                        int successCount = 0;
                         string fieldsStudent = "序号,姓名,培训班名称,组织单位,培训单位,年度,培训时间,结束时间,培训地点,备注";
                         string[] fieldList = fieldsStudent.Split(',');
                         foreach (string field in fieldList)
@@ -291,65 +294,98 @@ namespace PartyMemberManager.Controllers
                         foreach (DataRow row in table.Rows)
                         {
                             rowIndex++;
-                            SchoolCadreTrain schoolCadreTrain = new SchoolCadreTrain
+                            try
                             {
-                                Id = Guid.NewGuid(),
-                                CreateTime = DateTime.Now,
-                                Ordinal = rowIndex,
-                                OperatorId = CurrentUser.Id
-                            };
-                            string nameField = "姓名";
-                            string trainClassNameField = "培训班名称";
-                            string organizerField = "组织单位";
-                            string trainOrganizationalField = "培训单位";
-                            string yearField = "年度";
-                            string trainTimeField = "培训时间";
-                            string trainEndTimeField = "结束时间";
-                            string trainAddressField = "培训地点";
-                            string remarkField = "备注";
+                                SchoolCadreTrain schoolCadreTrain = new SchoolCadreTrain
+                                {
+                                    Id = Guid.NewGuid(),
+                                    CreateTime = DateTime.Now,
+                                    Ordinal = rowIndex,
+                                    OperatorId = CurrentUser.Id
+                                };
+                                string nameField = "姓名";
+                                string trainClassNameField = "培训班名称";
+                                string organizerField = "组织单位";
+                                string trainOrganizationalField = "培训单位";
+                                string yearField = "年度";
+                                string trainTimeField = "培训时间";
+                                string trainEndTimeField = "结束时间";
+                                string trainAddressField = "培训地点";
+                                string remarkField = "备注";
 
-                            string name = row[nameField].ToString();
-                            string trainClassName = row[trainClassNameField].ToString();
-                            string organizer = row[organizerField].ToString();
-                            string trainOrganizational = row[trainOrganizationalField].ToString();
-                            string year = row[yearField].ToString();
-                            string trainTime = row[trainTimeField].ToString();
-                            string trainEndTime = row[trainEndTimeField].ToString();
-                            string trainAddress = row[trainAddressField].ToString();
-                            string remark = row[remarkField].ToString();
-                            //跳过姓名为空的记录
-                            if (string.IsNullOrEmpty(name)) continue;
-                            schoolCadreTrain.Name = name;
-                            //schoolCadreTrain.ClassHour = 0;
-                            schoolCadreTrain.Organizer = organizer;
-                            schoolCadreTrain.TrainAddress = trainAddress;
-                            schoolCadreTrain.TrainClassName = trainClassName;
-                            //int trainDurationValue = 0;
-                            //if (int.TryParse(trainDuration, out trainDurationValue))
+                                string name = row[nameField].ToString();
+                                string trainClassName = row[trainClassNameField].ToString();
+                                string organizer = row[organizerField].ToString();
+                                string trainOrganizational = row[trainOrganizationalField].ToString();
+                                string year = row[yearField].ToString();
+                                string trainTime = row[trainTimeField].ToString();
+                                string trainEndTime = row[trainEndTimeField].ToString();
+                                string trainAddress = row[trainAddressField].ToString();
+                                string remark = row[remarkField].ToString();
+                                //跳过姓名为空的记录
+                                if (string.IsNullOrEmpty(name)) continue;
+                                schoolCadreTrain.Name = name;
+                                //schoolCadreTrain.ClassHour = 0;
+                                schoolCadreTrain.Organizer = organizer;
+                                schoolCadreTrain.TrainAddress = trainAddress;
+                                schoolCadreTrain.TrainClassName = trainClassName;
+                                //int trainDurationValue = 0;
+                                //if (int.TryParse(trainDuration, out trainDurationValue))
                                 //schoolCadreTrain.TrainDuration = trainDurationValue;
-                            //else
+                                //else
                                 //schoolCadreTrain.TrainDuration = 0;
-                            trainTime = trainTime.Replace(".", "-").Replace("/", "-");
-                            DateTime trainTimeValue = DateTime.Now;
-                            if (!TryParseDate(trainTime, out trainTimeValue))
-                            {
-                                throw new PartyMemberException($"第{rowIndex}行数据中的【{trainTimeField}】日期格式不合法");
-                            }
-                            trainEndTime = trainEndTime.Replace(".", "-").Replace("/", "-");
-                            DateTime trainEndTimeValue = DateTime.Now;
-                            if (!TryParseDate(trainEndTime, out trainEndTimeValue))
-                            {
-                                throw new PartyMemberException($"第{rowIndex}行数据中的【{trainEndTimeField}】日期格式不合法");
-                            }
-                            schoolCadreTrain.TrainOrganizational = trainOrganizational;
-                            schoolCadreTrain.TrainTime = trainTimeValue;
-                            schoolCadreTrain.EndTrainTime = trainEndTimeValue;
-                            schoolCadreTrain.Year = year;
+                                trainTime = trainTime.Replace(".", "-").Replace("/", "-");
+                                DateTime trainTimeValue = DateTime.Now;
+                                if (!TryParseDate(trainTime, out trainTimeValue))
+                                {
+                                    throw new ImportDataErrorException($"第{rowIndex}行数据中的【{trainTimeField}】日期格式不合法");
+                                }
+                                trainEndTime = trainEndTime.Replace(".", "-").Replace("/", "-");
+                                DateTime trainEndTimeValue = DateTime.Now;
+                                if (!TryParseDate(trainEndTime, out trainEndTimeValue))
+                                {
+                                    throw new ImportDataErrorException($"第{rowIndex}行数据中的【{trainEndTimeField}】日期格式不合法");
+                                }
+                                schoolCadreTrain.TrainOrganizational = trainOrganizational;
+                                schoolCadreTrain.TrainTime = trainTimeValue;
+                                schoolCadreTrain.EndTrainTime = trainEndTimeValue;
+                                schoolCadreTrain.Year = year;
 
-                            _context.SchoolCadreTrains.Add(schoolCadreTrain);
-                            await _context.SaveChangesAsync();
+                                _context.SchoolCadreTrains.Add(schoolCadreTrain);
+                                successCount++;
+                                await _context.SaveChangesAsync();
+                            }
+                            catch (ImportDataErrorException ex)
+                            {
+                                //捕获到数据错误时，继续导入，将错误信息反馈给用户
+                                DataRow rowErrorData = tableErrorData.NewRow();
+                                foreach (DataColumn column in table.Columns)
+                                    rowErrorData[column.ColumnName] = row[column.ColumnName];
+                                rowErrorData[columnErrorMessage] = ex.Message;
+                                tableErrorData.Rows.Add(rowErrorData);
+                            }
+
+
                         }
                         #endregion
+                        if (tableErrorData.Rows.Count > 0)
+                        {
+                            string basePath = GetErrorImportDataFilePath();
+                            string fileName = $"学校干部培训名单错误数据_{CurrentUser.LoginName}.xlsx";
+                            string fileWithPath = $"{basePath}{Path.DirectorySeparatorChar}{fileName}";
+                            Stream streamOutExcel = OfficeHelper.ExportExcelByOpenXml(tableErrorData);
+                            FileStream outExcelFile = new FileStream(fileWithPath, FileMode.Create, System.IO.FileAccess.Write);
+                            byte[] bytes = new byte[streamOutExcel.Length];
+                            streamOutExcel.Read(bytes, 0, (int)streamOutExcel.Length);
+                            outExcelFile.Write(bytes, 0, bytes.Length);
+                            outExcelFile.Close();
+                            streamOutExcel.Close();
+                            jsonResult.ErrorDataFile = $"SchoolCareTrains/GetErrorImportData?fileName={fileName}";
+                            jsonResult.FailCount = tableErrorData.Rows.Count;
+                            jsonResult.SuccessCount = successCount;
+                            jsonResult.Code = -2;
+                            jsonResult.Message = "部分数据导入错误";
+                        }
                     }
                     else
                     {
@@ -377,7 +413,7 @@ namespace PartyMemberManager.Controllers
             {
                 _logger.LogError(ex, ex.Message);
                 jsonResult.Code = -1;
-                jsonResult.Message = "入党积极分子导入错误";
+                jsonResult.Message = "学校干部培训名单导入错误";
             }
             catch (PartyMemberException ex)
             {
@@ -397,6 +433,31 @@ namespace PartyMemberManager.Controllers
                 jsonResult.Message = "发生系统错误";
             }
             return Json(jsonResult);
+        }
+        /// <summary>
+        /// 返回导入错误文件的存放路径
+        /// </summary>
+        /// <returns></returns>
+        private static string GetErrorImportDataFilePath()
+        {
+            string basePath = AppContext.BaseDirectory;
+            if (!basePath.EndsWith(Path.DirectorySeparatorChar))
+                basePath += Path.DirectorySeparatorChar;
+            basePath += $"ErrorImportData";
+            if (!Directory.Exists(basePath))
+                Directory.CreateDirectory(basePath);
+            return basePath;
+        }
+        /// <summary>
+        /// 返回错误导入数据
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult GetErrorImportData(string fileName)
+        {
+            string basePath = GetErrorImportDataFilePath();
+            string fileWithPath = $"{basePath}{Path.DirectorySeparatorChar}{fileName}";
+            FileStream outExcelFile = new FileStream(fileWithPath, FileMode.Open);
+            return File(outExcelFile, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "学校干部培训名单导入失败数据.xlsx");
         }
 
         private bool SchoolCadreTrainExists(Guid id)

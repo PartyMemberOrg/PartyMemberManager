@@ -103,7 +103,7 @@ function showEdit(url, postUrl, title, width = 600, height = 400, callBack) {
                                     location.reload();
                             }
                             else {
-                                displayErrorMessage($(body).find('form'),response);
+                                displayErrorMessage($(body).find('form'), response);
                                 layer.msg(response.message, {
                                     icon: 2,
                                     time: 2000
@@ -135,7 +135,7 @@ function showEdit(url, postUrl, title, width = 600, height = 400, callBack) {
  * @param {Integer} height - 编辑窗口高度
  * @param {Function} callBack - 编辑结束并保存后的回调函数
  */
-function showEditDelete(url, postUrl,deleteUrl, title, width = 600, height = 400, callBack) {
+function showEditDelete(url, postUrl, deleteUrl, title, width = 600, height = 400, callBack) {
     top.layui.use('layer', function () {
         var layer = top.layui.layer;
         layer.ready(function () {
@@ -146,7 +146,7 @@ function showEditDelete(url, postUrl,deleteUrl, title, width = 600, height = 400
                 , type: 2
                 , content: [url, 'no']//第二个参数no，表示不显示iframe滚动条
                 , btnAlign: 'c'
-                , btn: ['保存','删除']
+                , btn: ['保存', '删除']
                 , yes: function (index, layero) {
                     var body = layer.getChildFrame('body', index);
                     var valid = $(body).find('form').valid();
@@ -302,7 +302,7 @@ function save(postUrl, callBack) {
                     location.reload();
             }
             else {
-                displayErrorMessage($(document).find('form'),response);
+                displayErrorMessage($(document).find('form'), response);
                 showError(response.message, function () {
                     //保存时发生错误
                 });
@@ -319,7 +319,7 @@ function save(postUrl, callBack) {
  * @param {any} form
  * @param {any} response
  */
-function displayErrorMessage(form,response) {
+function displayErrorMessage(form, response) {
     //如果保存时发生错误，便利遍历错误信息
     form.find("[data-valmsg-for]").html("");
     form.find("[data-valmsg-for]").removeClass("field-validation-error");
@@ -428,10 +428,10 @@ function showPrint(url, title, width = 600, height = 400, updatePrintStatusCallB
                 title: title
                 , area: [width.toString() + 'px', height.toString() + 'px']
                 , type: 2
-                , scrollbar : false
-                , content: [url,'no']//第二个参数no，表示不显示iframe滚动条
+                , scrollbar: false
+                , content: [url, 'no']//第二个参数no，表示不显示iframe滚动条
                 , btnAlign: 'c'
-                , btn: ['打印','关闭']
+                , btn: ['打印', '关闭']
                 , yes: function (index, layero) {
                     var body = layer.getChildFrame('body', index);
                     printed = 1;
@@ -500,6 +500,18 @@ function showImport(url, postUrl, title, width = 600, height = 400, callBack) {
                                 clearError($(body).find('form'));
                                 layer.close(index);
                                 showMessage("数据导入成功");
+                                //如果有回调函数，则执行回调函数,否则直接刷新页面
+                                if (callBack != null)
+                                    callBack(data);
+                                else
+                                    location.reload();
+                            }
+                            else if (response.code == -2) {
+                                //部分导入成功
+                                window.open(response.errorDataFile, "_blank")
+                                clearError($(body).find('form'));
+                                layer.close(index);
+                                showMessage("成功导入" + response.successCount + "条，失败" + response.failCount + "条");
                                 //如果有回调函数，则执行回调函数,否则直接刷新页面
                                 if (callBack != null)
                                     callBack(data);

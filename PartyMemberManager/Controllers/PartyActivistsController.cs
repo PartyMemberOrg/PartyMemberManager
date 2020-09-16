@@ -96,7 +96,7 @@ namespace PartyMemberManager.Controllers
                         .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
-                    jsonResult.Count = _context.Set<PartyActivist>().Count();
+                    jsonResult.Count = _context.Set<PartyActivist>().Where(filter).Count();
                     jsonResult.Data = data.Data;
                 }
                 else
@@ -109,7 +109,7 @@ namespace PartyMemberManager.Controllers
                         .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
                     if (data == null)
                         throw new PartyMemberException("未找到数据");
-                    jsonResult.Count = _context.Set<PartyActivist>().Count();
+                    jsonResult.Count = _context.Set<PartyActivist>().Where(filter).Count();
                     jsonResult.Data = data.Data;
                 }
             }
@@ -468,10 +468,10 @@ namespace PartyMemberManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Import(PartyActivistImportViewModel model)
         {
-            JsonResultNoData jsonResult = new JsonResultNoData
+            JsonResultImport jsonResult = new JsonResultImport
             {
                 Code = 0,
-                Message = "数据保存成功"
+                Message = "数据导入成功"
             };
             try
             {
@@ -489,7 +489,10 @@ namespace PartyMemberManager.Controllers
                         fileStream.Close();
                         #region 导入入党积极分子
                         DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
+                        DataTable tableErrorData = table.Clone();
+                        DataColumn columnErrorMessage = tableErrorData.Columns.Add("错误提示", typeof(string));
                         int rowIndex = 0;
+                        int successCount = 0;
                         string fieldsTeacher = "姓名,性别,出生年月,民族,所在部门,工号,身份证号,联系电话,提交入党申请时间,确定入党积极分子时间,备注";
                         string fieldsStudent = "姓名,学号,身份证号,性别,出生年月,民族,所在学院,所在班级,联系电话,提交入党申请时间,担任职务,确定入党积极分子时间,备注";
                         string[] fieldListTeacher = fieldsTeacher.Split(',');
@@ -514,184 +517,214 @@ namespace PartyMemberManager.Controllers
                         foreach (DataRow row in table.Rows)
                         {
                             rowIndex++;
-                            PartyActivist partyActivist = new PartyActivist
+                            try
                             {
-                                Id = Guid.NewGuid(),
-                                CreateTime = DateTime.Now,
-                                Ordinal = rowIndex,
-                                OperatorId = CurrentUser.Id,
-                                TrainClassId = trainClass.Id,
-                                YearTermId = trainClass.YearTermId
-                                //Year=trainClass.Year,
-                                //Term=trainClass.Term,
-                            };
-                            if (isTeacher)
-                            {
-                                string nameField = "姓名";
-                                string sexField = "性别";
-                                string birthdayField = "出生年月";
-                                string nationField = "民族";
-                                string departmentField = "所在部门";
-                                string empNoField = "工号";
-                                string idField = "身份证号";
-                                string phoneField = "联系电话";
-                                string timeField = "提交入党申请时间";
-                                string confirmTimeField = "确定入党积极分子时间";
-                                string remarkField = "备注";
-                                string name = row[nameField].ToString();
-                                string sex = row[sexField].ToString();
-                                string birthday = row[birthdayField].ToString();
-                                string nation = row[nationField].ToString();
-                                string department = row[departmentField].ToString();
-                                string empNo = row[empNoField].ToString();
-                                string id = row[idField].ToString();
-                                string phone = row[phoneField].ToString();
-                                string time = row[timeField].ToString();
-                                string confirmTime = row[confirmTimeField].ToString();
-                                string remark = row[remarkField].ToString();
-                                //跳过姓名为空的记录
-                                if (string.IsNullOrEmpty(name)) continue;
-                                birthday = birthday.Replace(".", "-").Replace("/", "-");
-                                time = time.Replace(".", "-").Replace("/", "-");
-                                confirmTime = confirmTime.Replace(".", "-").Replace("/", "-");
-                                DateTime birthdayValue = DateTime.Now;
-                                if (!birthday.Contains("-") && birthday.Length == 6)
-                                    birthday = birthday + "01";
-                                else if (birthday.Contains("-") && birthday.IndexOf('-') == birthday.LastIndexOf('-'))
-                                    birthday = birthday + "-01";
-                                if (!TryParseYearMonth(birthday, out birthdayValue))
+                                PartyActivist partyActivist = new PartyActivist
                                 {
-                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{birthdayField}】年月格式不合法");
-                                }
-                                DateTime timeValue = DateTime.Now;
-                                if (!TryParseDate(time, out timeValue))
+                                    Id = Guid.NewGuid(),
+                                    CreateTime = DateTime.Now,
+                                    Ordinal = rowIndex,
+                                    OperatorId = CurrentUser.Id,
+                                    TrainClassId = trainClass.Id,
+                                    YearTermId = trainClass.YearTermId
+                                    //Year=trainClass.Year,
+                                    //Term=trainClass.Term,
+                                };
+                                if (isTeacher)
                                 {
-                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{timeField}】日期格式不合法");
-                                }
-                                DateTime confirmTimeValue = DateTime.Now;
-                                if (!TryParseDate(confirmTime, out confirmTimeValue))
-                                {
-                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{confirmTimeField}】日期格式不合法");
-                                }
-                                if (!StringHelper.ValidateIdNumber(id))
-                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{idField}】不合法");
+                                    string nameField = "姓名";
+                                    string sexField = "性别";
+                                    string birthdayField = "出生年月";
+                                    string nationField = "民族";
+                                    string departmentField = "所在部门";
+                                    string empNoField = "工号";
+                                    string idField = "身份证号";
+                                    string phoneField = "联系电话";
+                                    string timeField = "提交入党申请时间";
+                                    string confirmTimeField = "确定入党积极分子时间";
+                                    string remarkField = "备注";
+                                    string name = row[nameField].ToString();
+                                    string sex = row[sexField].ToString();
+                                    string birthday = row[birthdayField].ToString();
+                                    string nation = row[nationField].ToString();
+                                    string department = row[departmentField].ToString();
+                                    string empNo = row[empNoField].ToString();
+                                    string id = row[idField].ToString();
+                                    string phone = row[phoneField].ToString();
+                                    string time = row[timeField].ToString();
+                                    string confirmTime = row[confirmTimeField].ToString();
+                                    string remark = row[remarkField].ToString();
+                                    //跳过姓名为空的记录
+                                    if (string.IsNullOrEmpty(name)) continue;
+                                    birthday = birthday.Replace(".", "-").Replace("/", "-");
+                                    time = time.Replace(".", "-").Replace("/", "-");
+                                    confirmTime = confirmTime.Replace(".", "-").Replace("/", "-");
+                                    DateTime birthdayValue = DateTime.Now;
+                                    if (!birthday.Contains("-") && birthday.Length == 6)
+                                        birthday = birthday + "01";
+                                    else if (birthday.Contains("-") && birthday.IndexOf('-') == birthday.LastIndexOf('-'))
+                                        birthday = birthday + "-01";
+                                    if (!TryParseYearMonth(birthday, out birthdayValue))
+                                    {
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{birthdayField}】年月格式不合法");
+                                    }
+                                    DateTime timeValue = DateTime.Now;
+                                    if (!TryParseDate(time, out timeValue))
+                                    {
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{timeField}】日期格式不合法");
+                                    }
+                                    DateTime confirmTimeValue = DateTime.Now;
+                                    if (!TryParseDate(confirmTime, out confirmTimeValue))
+                                    {
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{confirmTimeField}】日期格式不合法");
+                                    }
+                                    if (!StringHelper.ValidateIdNumber(id))
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{idField}】不合法");
 
-                                if (!StringHelper.ValidateJobNo(empNo))
-                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{empNoField}】不合法");
+                                    if (!StringHelper.ValidateJobNo(empNo))
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{empNoField}】不合法");
 
-                                Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
-                                Guid nationId = nationData.Id;
-                                //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
-                                Department departmentData = _context.Departments.Where(d => d.Name.Contains(department) || department.Contains(d.Name)).FirstOrDefault();
-                                Guid departmentId = departmentData.Id;
-                                partyActivist.Name = name;
-                                partyActivist.Sex = Sex.Parse<Sex>(sex);
-                                partyActivist.BirthDate = birthdayValue;
-                                partyActivist.NationId = nationId;
-                                partyActivist.DepartmentId = departmentId;
-                                partyActivist.JobNo = empNo;
-                                partyActivist.IdNumber = id;
-                                partyActivist.Phone = phone;
-                                partyActivist.ApplicationTime = timeValue;
-                                partyActivist.ActiveApplicationTime = confirmTimeValue;
-                                partyActivist.PartyMemberType = PartyMemberType.教师;
-                            }
-                            else
-                            {
-                                string nameField = "姓名";
-                                string sexField = "性别";
-                                string birthdayField = "出生年月";
-                                string nationField = "民族";
-                                string idField = "身份证号";
-                                string phoneField = "联系电话";
-                                string timeField = "提交入党申请时间";
-                                string confirmTimeField = "确定入党积极分子时间";
-                                string remarkField = "备注";
-                                string studentNoField = "学号";
-                                string collegeField = "所在学院";
-                                string classField = "所在班级";
-                                string titleField = "担任职务";
-                                string name = row[nameField].ToString();
-                                string sex = row[sexField].ToString();
-                                string birthday = row[birthdayField].ToString();
-                                string nation = row[nationField].ToString();
-                                string id = row[idField].ToString();
-                                string phone = row[phoneField].ToString();
-                                string time = row[timeField].ToString();
-                                string confirmTime = row[confirmTimeField].ToString();
-                                string remark = row[remarkField].ToString();
-                                string studentNo = row[studentNoField].ToString();
-                                string college = row[collegeField].ToString();
-                                string @class = row[classField].ToString();
-                                string title = row[titleField].ToString();
-                                //跳过姓名为空的记录
-                                if (string.IsNullOrEmpty(name)) continue;
-                                birthday = birthday.Replace(".", "-").Replace("/", "-");
-                                time = time.Replace(".", "-").Replace("/", "-");
-                                confirmTime = confirmTime.Replace(".", "-").Replace("/", "-");
-                                DateTime birthdayValue = DateTime.Now;
-                                if (!birthday.Contains("-") && birthday.Length == 6)
-                                    birthday = birthday + "01";
-                                else if (birthday.Contains("-") && birthday.IndexOf('-') == birthday.LastIndexOf('-'))
-                                    birthday = birthday + "-01";
-                                if (!TryParseYearMonth(birthday, out birthdayValue))
-                                {
-                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{birthdayField}】年月格式不合法");
+                                    Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
+                                    Guid nationId = nationData.Id;
+                                    //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
+                                    Department departmentData = _context.Departments.Where(d => d.Name.Contains(department) || department.Contains(d.Name)).FirstOrDefault();
+                                    Guid departmentId = departmentData.Id;
+                                    partyActivist.Name = name;
+                                    partyActivist.Sex = Sex.Parse<Sex>(sex);
+                                    partyActivist.BirthDate = birthdayValue;
+                                    partyActivist.NationId = nationId;
+                                    partyActivist.DepartmentId = departmentId;
+                                    partyActivist.JobNo = empNo;
+                                    partyActivist.IdNumber = id;
+                                    partyActivist.Phone = phone;
+                                    partyActivist.ApplicationTime = timeValue;
+                                    partyActivist.ActiveApplicationTime = confirmTimeValue;
+                                    partyActivist.PartyMemberType = PartyMemberType.教师;
                                 }
-                                DateTime timeValue = DateTime.Now;
-                                if (!TryParseDate(time, out timeValue))
+                                else
                                 {
-                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{timeField}】日期格式不合法");
-                                }
-                                DateTime confirmTimeValue = DateTime.Now;
-                                if (!TryParseDate(confirmTime, out confirmTimeValue))
-                                {
-                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{confirmTimeField}】日期格式不合法");
-                                }
-                                if (!StringHelper.ValidateIdNumber(id))
-                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{idField}】不合法");
+                                    string nameField = "姓名";
+                                    string sexField = "性别";
+                                    string birthdayField = "出生年月";
+                                    string nationField = "民族";
+                                    string idField = "身份证号";
+                                    string phoneField = "联系电话";
+                                    string timeField = "提交入党申请时间";
+                                    string confirmTimeField = "确定入党积极分子时间";
+                                    string remarkField = "备注";
+                                    string studentNoField = "学号";
+                                    string collegeField = "所在学院";
+                                    string classField = "所在班级";
+                                    string titleField = "担任职务";
+                                    string name = row[nameField].ToString();
+                                    string sex = row[sexField].ToString();
+                                    string birthday = row[birthdayField].ToString();
+                                    string nation = row[nationField].ToString();
+                                    string id = row[idField].ToString();
+                                    string phone = row[phoneField].ToString();
+                                    string time = row[timeField].ToString();
+                                    string confirmTime = row[confirmTimeField].ToString();
+                                    string remark = row[remarkField].ToString();
+                                    string studentNo = row[studentNoField].ToString();
+                                    string college = row[collegeField].ToString();
+                                    string @class = row[classField].ToString();
+                                    string title = row[titleField].ToString();
+                                    //跳过姓名为空的记录
+                                    if (string.IsNullOrEmpty(name)) continue;
+                                    birthday = birthday.Replace(".", "-").Replace("/", "-");
+                                    time = time.Replace(".", "-").Replace("/", "-");
+                                    confirmTime = confirmTime.Replace(".", "-").Replace("/", "-");
+                                    DateTime birthdayValue = DateTime.Now;
+                                    if (!birthday.Contains("-") && birthday.Length == 6)
+                                        birthday = birthday + "01";
+                                    else if (birthday.Contains("-") && birthday.IndexOf('-') == birthday.LastIndexOf('-'))
+                                        birthday = birthday + "-01";
+                                    if (!TryParseYearMonth(birthday, out birthdayValue))
+                                    {
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{birthdayField}】年月格式不合法");
+                                    }
+                                    DateTime timeValue = DateTime.Now;
+                                    if (!TryParseDate(time, out timeValue))
+                                    {
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{timeField}】日期格式不合法");
+                                    }
+                                    DateTime confirmTimeValue = DateTime.Now;
+                                    if (!TryParseDate(confirmTime, out confirmTimeValue))
+                                    {
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{confirmTimeField}】日期格式不合法");
+                                    }
+                                    if (!StringHelper.ValidateIdNumber(id))
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{idField}】不合法");
 
-                                if (!StringHelper.ValidateJobNo(studentNo))
-                                    throw new PartyMemberException($"第{rowIndex}行数据中的【{studentNoField}】不合法");
-                                Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
-                                Guid nationId = nationData.Id;
-                                //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
-                                Department departmentData = _context.Departments.Where(d => d.Name.Contains(college) || college.Contains(d.Name)).FirstOrDefault();
-                                Guid departmentId = departmentData.Id;
-                                partyActivist.Name = name;
-                                partyActivist.Sex = Sex.Parse<Sex>(sex);
-                                partyActivist.BirthDate = birthdayValue;
-                                partyActivist.NationId = nationId;
-                                partyActivist.DepartmentId = departmentId;
-                                partyActivist.JobNo = studentNo;
-                                partyActivist.IdNumber = id;
-                                partyActivist.Phone = phone;
-                                partyActivist.ApplicationTime = timeValue;
-                                partyActivist.ActiveApplicationTime = confirmTimeValue;
-                                partyActivist.Class = @class;
-                                partyActivist.Duty = title;
-                                partyActivist.PartyMemberType = model.PartyMemberType;
+                                    if (!StringHelper.ValidateJobNo(studentNo))
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{studentNoField}】不合法");
+                                    Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
+                                    Guid nationId = nationData.Id;
+                                    //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
+                                    Department departmentData = _context.Departments.Where(d => d.Name.Contains(college) || college.Contains(d.Name)).FirstOrDefault();
+                                    Guid departmentId = departmentData.Id;
+                                    partyActivist.Name = name;
+                                    partyActivist.Sex = Sex.Parse<Sex>(sex);
+                                    partyActivist.BirthDate = birthdayValue;
+                                    partyActivist.NationId = nationId;
+                                    partyActivist.DepartmentId = departmentId;
+                                    partyActivist.JobNo = studentNo;
+                                    partyActivist.IdNumber = id;
+                                    partyActivist.Phone = phone;
+                                    partyActivist.ApplicationTime = timeValue;
+                                    partyActivist.ActiveApplicationTime = confirmTimeValue;
+                                    partyActivist.Class = @class;
+                                    partyActivist.Duty = title;
+                                    partyActivist.PartyMemberType = model.PartyMemberType;
+                                }
+                                ActivistTrainResult activistTrainResult = new ActivistTrainResult
+                                {
+                                    Id = Guid.NewGuid(),
+                                    PartyActivistId = partyActivist.Id,
+                                    CreateTime = DateTime.Now,
+                                    OperatorId = CurrentUser.Id,
+                                    IsDeleted = false,
+                                    Ordinal = _context.ActivistTrainResults.Count() + 1
+                                };
+                                var partyActivistOld = _context.PartyActivists.Where(d => d.JobNo == partyActivist.JobNo && d.TrainClassId == partyActivist.TrainClassId).FirstOrDefault();
+                                if (partyActivistOld != null)
+                                {
+                                    var noName = "【" + partyActivistOld.Name + "-" + partyActivistOld.JobNo + "】";
+                                    throw new ImportDataErrorException(noName + "已在该培训班，请核对");
+                                }
+                                _context.PartyActivists.Add(partyActivist);
+                                _context.ActivistTrainResults.Add(activistTrainResult);
+                                await _context.SaveChangesAsync();
                             }
-                            ActivistTrainResult activistTrainResult = new ActivistTrainResult
+                            catch (ImportDataErrorException ex)
                             {
-                                Id = Guid.NewGuid(),
-                                PartyActivistId = partyActivist.Id,
-                                CreateTime = DateTime.Now,
-                                OperatorId = CurrentUser.Id,
-                                IsDeleted = false,
-                                Ordinal = _context.ActivistTrainResults.Count() + 1
-                            };
-                            var partyActivistOld = _context.PartyActivists.Where(d => d.JobNo == partyActivist.JobNo && d.TrainClassId == partyActivist.TrainClassId).FirstOrDefault();
-                            if (partyActivistOld != null)
-                            {
-                                var noName = "【" + partyActivistOld.Name + "-" + partyActivistOld.JobNo + "】";
-                                throw new PartyMemberException(noName + "已在该培训班，请核对");
+                                //捕获到数据错误时，继续导入，将错误信息反馈给用户
+                                DataRow rowErrorData = tableErrorData.NewRow();
+                                foreach (DataColumn column in table.Columns)
+                                    rowErrorData[column.ColumnName] = row[column.ColumnName];
+                                rowErrorData[columnErrorMessage] = ex.Message;
+                                tableErrorData.Rows.Add(rowErrorData);
                             }
-                            _context.PartyActivists.Add(partyActivist);
-                            _context.ActivistTrainResults.Add(activistTrainResult);
-                            await _context.SaveChangesAsync();
                         }
                         #endregion
+                        if (tableErrorData.Rows.Count > 0)
+                        {
+                            string basePath = GetErrorImportDataFilePath();
+                            string fileName = $"入党积极分子错误数据_{CurrentUser.LoginName}.xlsx";
+                            string fileWithPath = $"{basePath}{Path.DirectorySeparatorChar}{fileName}";
+                            Stream streamOutExcel = OfficeHelper.ExportExcelByOpenXml(tableErrorData);
+                            FileStream outExcelFile = new FileStream(fileWithPath, FileMode.Create, System.IO.FileAccess.Write);
+                            byte[] bytes = new byte[streamOutExcel.Length];
+                            streamOutExcel.Read(bytes, 0, (int)streamOutExcel.Length);
+                            outExcelFile.Write(bytes, 0, bytes.Length);
+                            outExcelFile.Close();
+                            streamOutExcel.Close();
+                            jsonResult.ErrorDataFile = $"PartyActivists/GetErrorImportData?fileName={fileName}";
+                            jsonResult.FailCount = tableErrorData.Rows.Count;
+                            jsonResult.SuccessCount = successCount;
+                            jsonResult.Code = -2;
+                            jsonResult.Message = "部分数据导入错误";
+                        }
                     }
                     else
                     {
@@ -740,7 +773,31 @@ namespace PartyMemberManager.Controllers
             }
             return Json(jsonResult);
         }
-
+        /// <summary>
+        /// 返回导入错误文件的存放路径
+        /// </summary>
+        /// <returns></returns>
+        private static string GetErrorImportDataFilePath()
+        {
+            string basePath = AppContext.BaseDirectory;
+            if (!basePath.EndsWith(Path.DirectorySeparatorChar))
+                basePath += Path.DirectorySeparatorChar;
+            basePath += $"ErrorImportData";
+            if (!Directory.Exists(basePath))
+                Directory.CreateDirectory(basePath);
+            return basePath;
+        }
+        /// <summary>
+        /// 返回错误导入数据
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult GetErrorImportData(string fileName)
+        {
+            string basePath = GetErrorImportDataFilePath();
+            string fileWithPath = $"{basePath}{Path.DirectorySeparatorChar}{fileName}";
+            FileStream outExcelFile = new FileStream(fileWithPath, FileMode.Open);
+            return File(outExcelFile, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","入党积极分子导入失败数据.xlsx");
+        }
         /// <summary>
         /// 导出所有学生数据
         /// </summary>

@@ -72,7 +72,7 @@ namespace PartyMemberManager.Controllers
                     .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
                 if (data == null)
                     throw new PartyMemberException("未找到数据");
-                jsonResult.Count = _context.Set<ProvinceCadreTrain>().Count();
+                jsonResult.Count = _context.Set<ProvinceCadreTrain>().Include(d => d.ProvinceTrainClass).Where(filter).Where(d => d.ProvinceTrainClass.Enabled == true).Count();
                 jsonResult.Data = data.Data;
             }
 
@@ -379,10 +379,10 @@ namespace PartyMemberManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Import(ProvinceCadreTrainImportViewModel model)
         {
-            JsonResultNoData jsonResult = new JsonResultNoData
+            JsonResultImport jsonResult = new JsonResultImport
             {
                 Code = 0,
-                Message = "数据保存成功"
+                Message = "数据导入成功"
             };
             try
             {
@@ -400,7 +400,10 @@ namespace PartyMemberManager.Controllers
                         fileStream.Close();
                         #region 省级干部培训
                         DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
+                        DataTable tableErrorData = table.Clone();
+                        DataColumn columnErrorMessage = tableErrorData.Columns.Add("错误提示", typeof(string));
                         int rowIndex = 0;
+                        int successCount = 0;
                         string fieldsStudent = "序号,姓名,身份证,性别,民族,所在单位,职务,联系电话,备注";
                         string[] fieldList = fieldsStudent.Split(',');
                         foreach (string field in fieldList)
@@ -411,57 +414,89 @@ namespace PartyMemberManager.Controllers
                         foreach (DataRow row in table.Rows)
                         {
                             rowIndex++;
-                            ProvinceCadreTrain provinceCadreTrain = new ProvinceCadreTrain
+                            try
                             {
-                                Id = Guid.NewGuid(),
-                                CreateTime = DateTime.Now,
-                                Ordinal = rowIndex,
-                                OperatorId = CurrentUser.Id,
-                                ProvinceTrainClassId = provinceTrainClass.Id,
-                            };
-                            string nameField = "姓名";
-                            string sexField = "性别";
-                            string nationField = "民族";
-                            string idField = "身份证";
-                            string phoneField = "联系电话";
-                            string remarkField = "备注";
-                            string departmentField = "所在单位";
-                            string titleField = "职务";
-                            string name = row[nameField].ToString();
-                            string sex = row[sexField].ToString();
-                            string nation = row[nationField].ToString();
-                            string id = row[idField].ToString();
-                            string phone = row[phoneField].ToString();
-                            string remark = row[remarkField].ToString();
-                            string title = row[titleField].ToString();
-                            string department = row[departmentField].ToString();
-                            //跳过姓名为空的记录
-                            if (string.IsNullOrEmpty(name)) continue;
-                            if (!StringHelper.ValidateIdNumber(id))
-                                throw new PartyMemberException($"第{rowIndex}行数据中的【{idField}】不合法");
-                            Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
-                            Guid nationId = nationData.Id;
-                            provinceCadreTrain.Name = name;
-                            provinceCadreTrain.Sex = Sex.Parse<Sex>(sex);
-                            provinceCadreTrain.NationId = nationId;
-                            provinceCadreTrain.IdNumber = id;
-                            provinceCadreTrain.Phone = phone;
-                            provinceCadreTrain.Post = title;
-                            provinceCadreTrain.Department = department;
+                                ProvinceCadreTrain provinceCadreTrain = new ProvinceCadreTrain
+                                {
+                                    Id = Guid.NewGuid(),
+                                    CreateTime = DateTime.Now,
+                                    Ordinal = rowIndex,
+                                    OperatorId = CurrentUser.Id,
+                                    ProvinceTrainClassId = provinceTrainClass.Id,
+                                };
+                                string nameField = "姓名";
+                                string sexField = "性别";
+                                string nationField = "民族";
+                                string idField = "身份证";
+                                string phoneField = "联系电话";
+                                string remarkField = "备注";
+                                string departmentField = "所在单位";
+                                string titleField = "职务";
+                                string name = row[nameField].ToString();
+                                string sex = row[sexField].ToString();
+                                string nation = row[nationField].ToString();
+                                string id = row[idField].ToString();
+                                string phone = row[phoneField].ToString();
+                                string remark = row[remarkField].ToString();
+                                string title = row[titleField].ToString();
+                                string department = row[departmentField].ToString();
+                                //跳过姓名为空的记录
+                                if (string.IsNullOrEmpty(name)) continue;
+                                if (!StringHelper.ValidateIdNumber(id))
+                                    throw new ImportDataErrorException($"第{rowIndex}行数据中的【{idField}】不合法");
+                                Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
+                                Guid nationId = nationData.Id;
+                                provinceCadreTrain.Name = name;
+                                provinceCadreTrain.Sex = Sex.Parse<Sex>(sex);
+                                provinceCadreTrain.NationId = nationId;
+                                provinceCadreTrain.IdNumber = id;
+                                provinceCadreTrain.Phone = phone;
+                                provinceCadreTrain.Post = title;
+                                provinceCadreTrain.Department = department;
 
-                            _context.ProvinceCadreTrains.Add(provinceCadreTrain);
+                                _context.ProvinceCadreTrains.Add(provinceCadreTrain);
 
-                            provinceTrainClass.Total += 1;
-                            var ProvinceCadreTrainOld = _context.ProvinceCadreTrains.Where(d => d.IdNumber == provinceCadreTrain.IdNumber && d.ProvinceTrainClassId == provinceCadreTrain.ProvinceTrainClassId).FirstOrDefault();
-                            if (ProvinceCadreTrainOld != null)
-                            {
-                                var noName = "【" + ProvinceCadreTrainOld.Name + "-" + ProvinceCadreTrainOld.IdNumber + "】";
-                                throw new PartyMemberException(noName + "已在该培训班，请核对");
+                                provinceTrainClass.Total += 1;
+                                var ProvinceCadreTrainOld = _context.ProvinceCadreTrains.Where(d => d.IdNumber == provinceCadreTrain.IdNumber && d.ProvinceTrainClassId == provinceCadreTrain.ProvinceTrainClassId).FirstOrDefault();
+                                if (ProvinceCadreTrainOld != null)
+                                {
+                                    var noName = "【" + ProvinceCadreTrainOld.Name + "-" + ProvinceCadreTrainOld.IdNumber + "】";
+                                    throw new ImportDataErrorException(noName + "已在该培训班，请核对");
+                                }
+                                _context.Update(provinceTrainClass);
+                                successCount++;
+                                await _context.SaveChangesAsync();
                             }
-                            _context.Update(provinceTrainClass);
-                            await _context.SaveChangesAsync();
+                            catch (ImportDataErrorException ex)
+                            {
+                                //捕获到数据错误时，继续导入，将错误信息反馈给用户
+                                DataRow rowErrorData = tableErrorData.NewRow();
+                                foreach (DataColumn column in table.Columns)
+                                    rowErrorData[column.ColumnName] = row[column.ColumnName];
+                                rowErrorData[columnErrorMessage] = ex.Message;
+                                tableErrorData.Rows.Add(rowErrorData);
+                            }
+
                         }
                         #endregion
+                        if (tableErrorData.Rows.Count > 0)
+                        {
+                            string basePath = GetErrorImportDataFilePath();
+                            string fileName = $"省级干部培训名单错误数据_{CurrentUser.LoginName}.xlsx";
+                            string fileWithPath = $"{basePath}{Path.DirectorySeparatorChar}{fileName}";
+                            Stream streamOutExcel = OfficeHelper.ExportExcelByOpenXml(tableErrorData);
+                            FileStream outExcelFile = new FileStream(fileWithPath, FileMode.Create, System.IO.FileAccess.Write);
+                            byte[] bytes = new byte[streamOutExcel.Length];
+                            streamOutExcel.Read(bytes, 0, (int)streamOutExcel.Length);
+                            outExcelFile.Write(bytes, 0, bytes.Length);
+                            outExcelFile.Close();
+                            streamOutExcel.Close();
+                            jsonResult.ErrorDataFile = $"ProvinceCadreTrains/GetErrorImportData?fileName={fileName}";
+                            jsonResult.FailCount = tableErrorData.Rows.Count;
+                            jsonResult.SuccessCount = successCount;
+                            jsonResult.Code = -2;
+                            jsonResult.Message = "部分数据导入错误";
+                        }
                     }
                     else
                     {
@@ -489,7 +524,7 @@ namespace PartyMemberManager.Controllers
             {
                 _logger.LogError(ex, ex.Message);
                 jsonResult.Code = -1;
-                jsonResult.Message = "入党积极分子导入错误";
+                jsonResult.Message = "省级干部培训导入错误";
             }
             catch (PartyMemberException ex)
             {
@@ -509,6 +544,31 @@ namespace PartyMemberManager.Controllers
                 jsonResult.Message = "发生系统错误";
             }
             return Json(jsonResult);
+        }
+        /// <summary>
+        /// 返回导入错误文件的存放路径
+        /// </summary>
+        /// <returns></returns>
+        private static string GetErrorImportDataFilePath()
+        {
+            string basePath = AppContext.BaseDirectory;
+            if (!basePath.EndsWith(Path.DirectorySeparatorChar))
+                basePath += Path.DirectorySeparatorChar;
+            basePath += $"ErrorImportData";
+            if (!Directory.Exists(basePath))
+                Directory.CreateDirectory(basePath);
+            return basePath;
+        }
+        /// <summary>
+        /// 返回错误导入数据
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult GetErrorImportData(string fileName)
+        {
+            string basePath = GetErrorImportDataFilePath();
+            string fileWithPath = $"{basePath}{Path.DirectorySeparatorChar}{fileName}";
+            FileStream outExcelFile = new FileStream(fileWithPath, FileMode.Open);
+            return File(outExcelFile, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "省级干部培训名单导入失败数据.xlsx");
         }
 
         private bool ProvinceCadreTrainExists(Guid id)
