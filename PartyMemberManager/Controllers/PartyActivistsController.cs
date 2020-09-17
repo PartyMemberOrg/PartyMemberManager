@@ -689,8 +689,8 @@ namespace PartyMemberManager.Controllers
                                 var partyActivistOld = _context.PartyActivists.Where(d => d.JobNo == partyActivist.JobNo && d.TrainClassId == partyActivist.TrainClassId).FirstOrDefault();
                                 if (partyActivistOld != null)
                                 {
-                                    var noName = "【" + partyActivistOld.Name + "-" + partyActivistOld.JobNo + "】";
-                                    throw new ImportDataErrorException(noName + "已在该培训班，请核对学号和身份证号");
+                                    var noName = "【" + partyActivist.Name + "-" + partyActivist.JobNo + "】";
+                                    throw new ImportDataErrorException(noName + "该班级中已经存在学号或身份证号相同的学员，请核对");
                                 }
                                 _context.PartyActivists.Add(partyActivist);
                                 _context.ActivistTrainResults.Add(activistTrainResult);
