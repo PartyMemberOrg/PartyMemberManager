@@ -353,6 +353,9 @@ namespace PartyMemberManager.Controllers
                     PartyActivist partyActivistInDb = await _context.PartyActivists.FindAsync(partyActivist.Id);
                     if (partyActivistInDb != null)
                     {
+                        var partyActivistOld = _context.PartyActivists.Where(d =>d.Id!= partyActivistInDb.Id && (d.JobNo == partyActivist.JobNo || d.IdNumber == partyActivist.IdNumber) && d.TrainClassId == partyActivist.TrainClassId).FirstOrDefault();
+                        if (partyActivistOld != null)
+                            throw new PartyMemberException("该培训班已经存在相同的学号/工号或身份证号，请核对");
                         if (partyActivistInDb.IsPrint && CurrentUser.Roles == Role.学院党委)
                         {
                             var noName = "【" + partyActivistInDb.Name + "-" + partyActivistInDb.JobNo + "】";
@@ -375,6 +378,7 @@ namespace PartyMemberManager.Controllers
                         partyActivistInDb.OperatorId = CurrentUser.Id;
                         partyActivistInDb.Ordinal = _context.PartyActivists.Count() + 1;
                         partyActivistInDb.IsDeleted = partyActivist.IsDeleted;
+                        partyActivistInDb.YearTermId = partyActivist.YearTermId;
                         partyActivistInDb.TrainClassId = partyActivist.TrainClassId;
                         partyActivistInDb.DepartmentId = partyActivist.DepartmentId;
                         _context.Update(partyActivistInDb);
@@ -385,9 +389,9 @@ namespace PartyMemberManager.Controllers
                         partyActivist.CreateTime = DateTime.Now;
                         partyActivist.OperatorId = CurrentUser.Id;
                         partyActivist.Ordinal = _context.PartyActivists.Count() + 1;
-                        var partyActivistOld = _context.PartyActivists.Where(d => d.JobNo == partyActivist.JobNo && d.TrainClassId == partyActivist.TrainClassId).FirstOrDefault();
+                        var partyActivistOld = _context.PartyActivists.Where(d => (d.JobNo == partyActivist.JobNo || d.IdNumber == partyActivist.IdNumber) && d.TrainClassId == partyActivist.TrainClassId).FirstOrDefault();
                         if (partyActivistOld != null)
-                            throw new PartyMemberException("学号或工号已在该培训班");
+                            throw new PartyMemberException("该培训班已经存在相同的学号/工号或身份证号，请核对");
 
                         ActivistTrainResult activistTrainResult = new ActivistTrainResult
                         {
