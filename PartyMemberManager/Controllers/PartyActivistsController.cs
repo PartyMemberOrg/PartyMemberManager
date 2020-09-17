@@ -690,7 +690,7 @@ namespace PartyMemberManager.Controllers
                                 if (partyActivistOld != null)
                                 {
                                     var noName = "【" + partyActivistOld.Name + "-" + partyActivistOld.JobNo + "】";
-                                    throw new ImportDataErrorException(noName + "已在该培训班，请核对");
+                                    throw new ImportDataErrorException(noName + "已在该培训班，请核对学号和身份证号");
                                 }
                                 _context.PartyActivists.Add(partyActivist);
                                 _context.ActivistTrainResults.Add(activistTrainResult);
