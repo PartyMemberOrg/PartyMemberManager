@@ -322,7 +322,7 @@ namespace PartyMemberManager.Controllers
             {
                 if (partyActivist.Sex.ToString() == "0")
                     throw new PartyMemberException("请选择性别");
-                if (partyActivist.NationId == Guid.Empty)
+                if (partyActivist.NationId == Guid.Empty || partyActivist.NationId == null)
                     throw new PartyMemberException("请选择民族");
                 if (partyActivist.PartyMemberType.ToString() == "0")
                     throw new PartyMemberException("请选择类型");
@@ -332,12 +332,12 @@ namespace PartyMemberManager.Controllers
                     partyActivist.DepartmentId = CurrentUser.DepartmentId.Value;
                 else
                 {
-                    if (partyActivist.DepartmentId == Guid.Empty)
+                    if (partyActivist.DepartmentId == Guid.Empty || partyActivist.DepartmentId == null)
                         throw new PartyMemberException("请选择部门");
                 }
-                if (partyActivist.YearTermId == Guid.Empty)
+                if (partyActivist.YearTermId == Guid.Empty || partyActivist.YearTermId==null)
                     throw new PartyMemberException("请选择学年/学期");
-                if (partyActivist.TrainClassId == null)
+                if (partyActivist.TrainClassId == null || partyActivist.TrainClassId==null)
                     throw new PartyMemberException("请选择培训班");
                 if (partyActivist.ApplicationTime == null)
                     throw new PartyMemberException("申请入党时间不能为空");
