@@ -121,8 +121,7 @@ namespace PartyMemberManager.Dal.Entities
         /// 其他需求
         /// </summary>
         [DisplayName("其他需求")]
-        [StringLength(50, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [StringLength(255, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string OtherDemand { get; set; }
     }
 }
