@@ -229,7 +229,7 @@ namespace PartyMemberManager.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("ProvinceTrainClassId,Name,IdNumber,Sex,NationId,Department,Post,Phone,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ProvinceCadreTrain provinceCadreTrain)
+        public override async Task<IActionResult> Save([Bind("ProvinceTrainClassId,Name,IdNumber,Sex,NationId,Department,Post,Phone,Demand1,Demand2,OtherDemand,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ProvinceCadreTrain provinceCadreTrain)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -259,6 +259,9 @@ namespace PartyMemberManager.Controllers
                         provinceCadreTrainInDb.Department = provinceCadreTrain.Department;
                         provinceCadreTrainInDb.Post = provinceCadreTrain.Post;
                         provinceCadreTrainInDb.Phone = provinceCadreTrain.Phone;
+                        provinceCadreTrainInDb.Demand1 = provinceCadreTrain.Demand1;
+                        provinceCadreTrainInDb.Demand2 = provinceCadreTrain.Demand2;
+                        provinceCadreTrainInDb.OtherDemand = provinceCadreTrain.OtherDemand;
                         provinceCadreTrainInDb.CreateTime = DateTime.Now;
                         provinceCadreTrainInDb.OperatorId = CurrentUser.Id;
                         provinceCadreTrainInDb.Ordinal = _context.ProvinceCadreTrains.Count() + 1;
@@ -274,7 +277,7 @@ namespace PartyMemberManager.Controllers
                         var ProvinceCadreTrainOld = _context.ProvinceCadreTrains.Where(d => d.IdNumber == provinceCadreTrain.IdNumber && d.ProvinceTrainClassId == provinceCadreTrain.ProvinceTrainClassId).FirstOrDefault();
                         if (ProvinceCadreTrainOld != null)
                         {
-                            var noName = "【" + ProvinceCadreTrainOld.Name + "-" + ProvinceCadreTrainOld.IdNumber + "】";
+                            var noName = "【" + provinceCadreTrain.Name + "-" + provinceCadreTrain.IdNumber + "】";
                             throw new PartyMemberException(noName + "已在该培训班，请核对");
                         }
                         _context.Add(provinceCadreTrain);
