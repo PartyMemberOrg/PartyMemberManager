@@ -587,10 +587,15 @@ namespace PartyMemberManager.Controllers
                                     if (!ValidateImportTeacherNo(empNo))
                                         throw new ImportDataErrorException($"第{rowIndex}行数据中的【{empNoField}】不合法");
 
+                                    nation = nation.Trim();
                                     Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
+                                    if (nationData == null)
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{nationField}】不合法");
                                     Guid nationId = nationData.Id;
                                     //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
                                     Department departmentData = _context.Departments.Where(d => d.Name.Contains(department) || department.Contains(d.Name)).FirstOrDefault();
+                                    if (departmentData == null)
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{departmentField}】不合法");
                                     Guid departmentId = departmentData.Id;
                                     partyActivist.Name = name;
                                     partyActivist.Sex = Sex.Parse<Sex>(sex);
@@ -658,7 +663,7 @@ namespace PartyMemberManager.Controllers
                                     }
                                     if (!StringHelper.ValidateIdNumber(id))
                                         throw new ImportDataErrorException($"第{rowIndex}行数据中的【{idField}】不合法");
-                                    if(model.PartyMemberType==PartyMemberType.研究生)
+                                    if (model.PartyMemberType == PartyMemberType.研究生)
                                     {
                                         if (!ValidateImportPostgraduateNo(studentNo))
                                             throw new ImportDataErrorException($"第{rowIndex}行数据中的【{studentNoField}】不合法");
@@ -668,10 +673,15 @@ namespace PartyMemberManager.Controllers
                                         if (!ValidateImportUndergraduateNo(studentNo))
                                             throw new ImportDataErrorException($"第{rowIndex}行数据中的【{studentNoField}】不合法");
                                     }
+                                    nation = nation.Trim();
                                     Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
+                                    if (nationData == null)
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{nationField}】不合法");
                                     Guid nationId = nationData.Id;
                                     //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
                                     Department departmentData = _context.Departments.Where(d => d.Name.Contains(college) || college.Contains(d.Name)).FirstOrDefault();
+                                    if (departmentData == null)
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{collegeField}】不合法");
                                     Guid departmentId = departmentData.Id;
                                     partyActivist.Name = name;
                                     partyActivist.Sex = Sex.Parse<Sex>(sex);
