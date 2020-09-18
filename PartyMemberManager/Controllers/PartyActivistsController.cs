@@ -584,7 +584,7 @@ namespace PartyMemberManager.Controllers
                                     if (!StringHelper.ValidateIdNumber(id))
                                         throw new ImportDataErrorException($"第{rowIndex}行数据中的【{idField}】不合法");
 
-                                    if (ValidateImportTeacherNo(empNo))
+                                    if (!ValidateImportTeacherNo(empNo))
                                         throw new ImportDataErrorException($"第{rowIndex}行数据中的【{empNoField}】不合法");
 
                                     Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
@@ -660,12 +660,12 @@ namespace PartyMemberManager.Controllers
                                         throw new ImportDataErrorException($"第{rowIndex}行数据中的【{idField}】不合法");
                                     if(model.PartyMemberType==PartyMemberType.研究生)
                                     {
-                                        if (ValidateImportPostgraduateNo(studentNo))
+                                        if (!ValidateImportPostgraduateNo(studentNo))
                                             throw new ImportDataErrorException($"第{rowIndex}行数据中的【{studentNoField}】不合法");
                                     }
                                     else
                                     {
-                                        if (ValidateImportUndergraduateNo(studentNo))
+                                        if (!ValidateImportUndergraduateNo(studentNo))
                                             throw new ImportDataErrorException($"第{rowIndex}行数据中的【{studentNoField}】不合法");
                                     }
                                     Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
