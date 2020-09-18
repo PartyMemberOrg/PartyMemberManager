@@ -585,6 +585,73 @@ namespace PartyMemberManager.Controllers
             FileStream outExcelFile = new FileStream(fileWithPath, FileMode.Open);
             return File(outExcelFile, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "省级干部培训名单导入失败数据.xlsx");
         }
+        /// <summary>
+        /// 导出所有学生数据
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> Export(string year, Guid? provinceTrainClassId, string keyword)
+        {
+            try
+            {
+                string fileName = "省级干部培训导出名单.xlsx";
+                List<ProvinceCadreTrain> provinceCadreTrains = null;
+                var filter = PredicateBuilder.True<ProvinceCadreTrain>();
+                if (year != null)
+                {
+                    filter = filter.And(d => d.ProvinceTrainClass.Year == year);
+                }
+                if (provinceTrainClassId != null)
+                {
+                    filter = filter.And(d => d.ProvinceTrainClassId == provinceTrainClassId);
+                }
+                if (keyword != null)
+                {
+                    filter = filter.And(d => d.Name.Contains(keyword) || d.Department.Contains(keyword) || d.Post.Contains(keyword));
+                }
+                provinceCadreTrains = await _context.Set<ProvinceCadreTrain>().Include(d => d.ProvinceTrainClass).Include(d => d.Nation)
+                    .Where(filter)
+                    .Where(d => d.ProvinceTrainClass.Enabled == true)
+                    .OrderByDescending(d => d.Ordinal).ToListAsync();
+
+                DataTable table = new DataTable();
+                //string fieldsStudent = "序号,姓名,身份证,性别,民族,所在单位,职务,联系电话,备注,学员需求1,学员需求2,其他需求";
+                table.Columns.Add("年份", typeof(string));
+                table.Columns.Add("培训班", typeof(string));
+                table.Columns.Add("姓名", typeof(string));
+                table.Columns.Add("身份证号", typeof(string));
+                table.Columns.Add("性别", typeof(string));
+                table.Columns.Add("民族", typeof(string));
+                table.Columns.Add("所在单位", typeof(string));
+                table.Columns.Add("职务", typeof(string));
+                table.Columns.Add("电话", typeof(string));
+                table.Columns.Add("学员需求1", typeof(string));
+                table.Columns.Add("学员需求2", typeof(string));
+                table.Columns.Add("其他需求", typeof(string));
+                foreach (ProvinceCadreTrain provinceCadreTrain in provinceCadreTrains)
+                {
+                    DataRow row = table.NewRow();
+                    row["年份"] = provinceCadreTrain.YearDisplay;
+                    row["培训班"] = provinceCadreTrain.TrainClassDisplay;
+                    row["姓名"] = provinceCadreTrain.Name;
+                    row["身份证号"] = provinceCadreTrain.IdNumber;
+                    row["性别"] = provinceCadreTrain.Sex;
+                    row["民族"] = provinceCadreTrain.NationDisplay;
+                    row["所在单位"] = provinceCadreTrain.Department;
+                    row["职务"] = provinceCadreTrain.Post;
+                    row["电话"] = provinceCadreTrain.Phone;
+                    row["学员需求1"] = provinceCadreTrain.Demand1;
+                    row["学员需求2"] = provinceCadreTrain.Demand2;
+                    row["其他需求"] = provinceCadreTrain.OtherDemand;
+                    table.Rows.Add(row);
+                }
+                Stream datas = OfficeHelper.ExportExcelByOpenXml(table);
+                return File(datas, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
+            catch (Exception ex)
+            {
+                return View("ShowErrorMessage", ex);
+            }
+        }
 
         private bool ProvinceCadreTrainExists(Guid id)
         {

@@ -460,6 +460,66 @@ namespace PartyMemberManager.Controllers
             FileStream outExcelFile = new FileStream(fileWithPath, FileMode.Open);
             return File(outExcelFile, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "学校干部培训名单导入失败数据.xlsx");
         }
+        /// <summary>
+        /// 导出所有学生数据
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> Export(string year, string keyword)
+        {
+            try
+            {
+                string fileName = "学校干部培训导出名单.xlsx";
+                List<SchoolCadreTrain> schoolCadreTrains = null;
+                var filter = PredicateBuilder.True<SchoolCadreTrain>();
+                if (year != null)
+                {
+                    filter = filter.And(d => d.Year == year);
+                }
+                if (keyword != null)
+                {
+                    filter = filter.And(d => d.Name.Contains(keyword) || d.Organizer.Contains(keyword) || d.TrainClassName.Contains(keyword) || d.TrainOrganizational.Contains(keyword));
+                }
+                schoolCadreTrains = await _context.Set<SchoolCadreTrain>()
+                    .Where(filter)
+                    .OrderByDescending(d => d.Ordinal).ToListAsync();
+
+                DataTable table = new DataTable();
+                //string fieldsStudent = "序号,姓名,,组织单位,培训单位,年度,培训时间,结束时间,培训地点,备注";
+                table.Columns.Add("年度", typeof(string));
+                table.Columns.Add("姓名", typeof(string));
+                table.Columns.Add("培训班名称", typeof(string));
+                table.Columns.Add("组织单位", typeof(string));
+                table.Columns.Add("培训单位", typeof(string));
+                table.Columns.Add("培训时间", typeof(string));
+                table.Columns.Add("结束时间", typeof(string));
+                table.Columns.Add("培训时长", typeof(int));
+                table.Columns.Add("培训学时", typeof(int));
+                table.Columns.Add("培训地点", typeof(string));
+                table.Columns.Add("备注", typeof(string));
+                foreach (SchoolCadreTrain schoolCadreTrain in schoolCadreTrains)
+                {
+                    DataRow row = table.NewRow();
+                    row["年度"] = schoolCadreTrain.Year;
+                    row["姓名"] = schoolCadreTrain.Name;
+                    row["培训班名称"] = schoolCadreTrain.TrainClassName;
+                    row["组织单位"] = schoolCadreTrain.Organizer;
+                    row["培训单位"] = schoolCadreTrain.TrainOrganizational;
+                    row["培训时间"] = string.Format("{0:yyyy-MM-dd}", schoolCadreTrain.TrainTime);
+                    row["结束时间"] = string.Format("{0:yyyy-MM-dd}", schoolCadreTrain.EndTrainTime);
+                    row["培训时长"] = schoolCadreTrain.TrainDuration;
+                    row["培训学时"] = schoolCadreTrain.ClassHour;
+                    row["培训地点"] = schoolCadreTrain.TrainAddress;
+                    row["备注"] = "";
+                    table.Rows.Add(row);
+                }
+                Stream datas = OfficeHelper.ExportExcelByOpenXml(table);
+                return File(datas, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
+            catch (Exception ex)
+            {
+                return View("ShowErrorMessage", ex);
+            }
+        }
 
         private bool SchoolCadreTrainExists(Guid id)
         {
