@@ -126,7 +126,7 @@ namespace PartyMemberManager.Core.Helpers
         /// <returns></returns>
         public static bool ValidateJobNo(string jobNo)
         {
-            string pattern = @"(^\d{12}$)|(^10741\d{5}$)";
+            string pattern = @"(^\d{12}$)|(^10741\d{5}$)|(^\d{13}$)";
             if (Regex.IsMatch(jobNo, pattern))
                 return true;
             else

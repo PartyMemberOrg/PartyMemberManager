@@ -335,9 +335,9 @@ namespace PartyMemberManager.Controllers
                     if (partyActivist.DepartmentId == Guid.Empty || partyActivist.DepartmentId == null)
                         throw new PartyMemberException("请选择部门");
                 }
-                if (partyActivist.YearTermId == Guid.Empty || partyActivist.YearTermId==null)
+                if (partyActivist.YearTermId == Guid.Empty || partyActivist.YearTermId == null)
                     throw new PartyMemberException("请选择学年/学期");
-                if (partyActivist.TrainClassId == null || partyActivist.TrainClassId==null)
+                if (partyActivist.TrainClassId == null || partyActivist.TrainClassId == null)
                     throw new PartyMemberException("请选择培训班");
                 if (partyActivist.ApplicationTime == null)
                     throw new PartyMemberException("申请入党时间不能为空");
@@ -345,15 +345,14 @@ namespace PartyMemberManager.Controllers
                     throw new PartyMemberException("确定为入党积极分子时间不能为空");
                 if (!StringHelper.ValidateIdNumber(partyActivist.IdNumber))
                     throw new PartyMemberException("身份证号不合法");
-                if (!StringHelper.ValidateJobNo(partyActivist.JobNo))
-                    throw new PartyMemberException("学号/工号不合法");
+                ValidateJobNo(partyActivist);
 
                 if (ModelState.IsValid)
                 {
                     PartyActivist partyActivistInDb = await _context.PartyActivists.FindAsync(partyActivist.Id);
                     if (partyActivistInDb != null)
                     {
-                        var partyActivistOld = _context.PartyActivists.Where(d =>d.Id!= partyActivistInDb.Id && (d.JobNo == partyActivist.JobNo || d.IdNumber == partyActivist.IdNumber) && d.TrainClassId == partyActivist.TrainClassId).FirstOrDefault();
+                        var partyActivistOld = _context.PartyActivists.Where(d => d.Id != partyActivistInDb.Id && (d.JobNo == partyActivist.JobNo || d.IdNumber == partyActivist.IdNumber) && d.TrainClassId == partyActivist.TrainClassId).FirstOrDefault();
                         if (partyActivistOld != null)
                             throw new PartyMemberException("该培训班已经存在相同的学号/工号或身份证号，请核对");
                         if (partyActivistInDb.IsPrint && CurrentUser.Roles == Role.学院党委)
@@ -585,7 +584,7 @@ namespace PartyMemberManager.Controllers
                                     if (!StringHelper.ValidateIdNumber(id))
                                         throw new ImportDataErrorException($"第{rowIndex}行数据中的【{idField}】不合法");
 
-                                    if (!StringHelper.ValidateJobNo(empNo))
+                                    if (ValidateImportTeacherNo(empNo))
                                         throw new ImportDataErrorException($"第{rowIndex}行数据中的【{empNoField}】不合法");
 
                                     Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
@@ -659,9 +658,16 @@ namespace PartyMemberManager.Controllers
                                     }
                                     if (!StringHelper.ValidateIdNumber(id))
                                         throw new ImportDataErrorException($"第{rowIndex}行数据中的【{idField}】不合法");
-
-                                    if (!StringHelper.ValidateJobNo(studentNo))
-                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{studentNoField}】不合法");
+                                    if(model.PartyMemberType==PartyMemberType.研究生)
+                                    {
+                                        if (ValidateImportPostgraduateNo(studentNo))
+                                            throw new ImportDataErrorException($"第{rowIndex}行数据中的【{studentNoField}】不合法");
+                                    }
+                                    else
+                                    {
+                                        if (ValidateImportUndergraduateNo(studentNo))
+                                            throw new ImportDataErrorException($"第{rowIndex}行数据中的【{studentNoField}】不合法");
+                                    }
                                     Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
                                     Guid nationId = nationData.Id;
                                     //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
@@ -800,7 +806,7 @@ namespace PartyMemberManager.Controllers
             string basePath = GetErrorImportDataFilePath();
             string fileWithPath = $"{basePath}{Path.DirectorySeparatorChar}{fileName}";
             FileStream outExcelFile = new FileStream(fileWithPath, FileMode.Open);
-            return File(outExcelFile, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","入党积极分子导入失败数据.xlsx");
+            return File(outExcelFile, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "入党积极分子导入失败数据.xlsx");
         }
         /// <summary>
         /// 导出所有学生数据
@@ -905,6 +911,75 @@ namespace PartyMemberManager.Controllers
             {
                 return View("ShowErrorMessage", ex);
             }
+        }
+        /// <summary>
+        /// 验证工号和学号
+        /// </summary>
+        /// <param name="partyActivist"></param>
+        public void ValidateJobNo(PartyActivist partyActivist)
+        {
+            if (!StringHelper.ValidateJobNo(partyActivist.JobNo))
+                throw new PartyMemberException("学号/工号不合法");
+            int noLength = 10;
+            switch (partyActivist.PartyMemberType)
+            {
+                case PartyMemberType.教师:
+                    noLength = 10;
+                    break;
+                case PartyMemberType.本科生:
+                    noLength = 12;
+                    break;
+                case PartyMemberType.研究生:
+                    noLength = 13;
+                    break;
+            }
+            if (partyActivist.JobNo.Trim().Length != noLength)
+                throw new PartyMemberException("学号/工号长度不合法");
+        }
+        /// <summary>
+        /// 校验教工工号
+        /// </summary>
+        /// <param name="no"></param>
+        public bool ValidateImportTeacherNo(string no)
+        {
+            if (string.IsNullOrEmpty(no))
+                return false;
+            if (!StringHelper.ValidateJobNo(no))
+                return false;
+            int noLength = 10;
+            if (no.Trim().Length != noLength)
+                return false;
+            return true;
+        }
+        /// <summary>
+        /// 校验本科生学号(仅导入用）
+        /// </summary>
+        /// <param name="partyActivist"></param>
+        public bool ValidateImportUndergraduateNo(string no)
+        {
+            if (string.IsNullOrEmpty(no))
+                return false;
+            if (!StringHelper.ValidateJobNo(no))
+                return false;
+            int noLength = 12;
+            if (no.Trim().Length != noLength)
+                return false;
+            return true;
+        }
+        /// <summary>
+        /// 校验研究生学号(仅导入用）
+        /// </summary>
+        /// <param name="no"></param>
+        public bool ValidateImportPostgraduateNo(string no)
+        {
+            if (string.IsNullOrEmpty(no))
+                return false;
+            if (!StringHelper.ValidateJobNo(no))
+                return false;
+            int noLength = 13;
+            if (no.Trim().Length != noLength)
+                return false;
+            return true;
         }
         private bool PartyActivistExists(Guid id)
         {
