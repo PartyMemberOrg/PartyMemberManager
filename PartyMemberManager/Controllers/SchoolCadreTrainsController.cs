@@ -196,11 +196,11 @@ namespace PartyMemberManager.Controllers
                         schoolCadreTrainInDb.TrainAddress = schoolCadreTrain.TrainAddress;
                         //schoolCadreTrainInDb.TrainDuration = schoolCadreTrain.TrainDuration;
                         //schoolCadreTrainInDb.ClassHour = schoolCadreTrain.ClassHour;
-                        schoolCadreTrainInDb.Id = schoolCadreTrain.Id;
-                        schoolCadreTrainInDb.CreateTime = DateTime.Now;
-                        schoolCadreTrainInDb.OperatorId = CurrentUser.Id;
-                        schoolCadreTrainInDb.Ordinal = _context.SchoolCadreTrains.Count() + 1;
-                        schoolCadreTrainInDb.IsDeleted = schoolCadreTrain.IsDeleted;
+                        //schoolCadreTrainInDb.Id = schoolCadreTrain.Id;
+                        //schoolCadreTrainInDb.CreateTime = DateTime.Now;
+                        //schoolCadreTrainInDb.OperatorId = CurrentUser.Id;
+                        //schoolCadreTrainInDb.Ordinal = _context.SchoolCadreTrains.Count() + 1;
+                        //schoolCadreTrainInDb.IsDeleted = schoolCadreTrain.IsDeleted;
                         _context.Update(schoolCadreTrainInDb);
                     }
                     else

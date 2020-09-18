@@ -433,7 +433,7 @@
         }
         /**从Excel文件中导入入党积极分子 */
         function importExcel() {
-            showImport('@Url.Action("Import")', '@Url.Action("Import")', '导入入党积极分子培训成绩', 600, 450, function () { location.reload(); });
+            showImport('@Url.Action("Import")', '@Url.Action("Import")', '导入入党积极分子培训成绩', 600, 450, function () { RefreshTable(); });
         }
         /**打印选中的积极分子培训结业证 */
         function printSelected() {

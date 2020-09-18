@@ -306,11 +306,11 @@ namespace PartyMemberManager.Controllers
                         activistTrainResultInDb.IsPass = activistTrainResult.IsPass;
                         //activistTrainResultInDb.IsPrint = activistTrainResult.IsPrint;
                         //activistTrainResultInDb.PrintTime = activistTrainResult.PrintTime;
-                        activistTrainResultInDb.Id = activistTrainResult.Id;
-                        activistTrainResultInDb.CreateTime = activistTrainResult.CreateTime;
-                        activistTrainResultInDb.OperatorId = activistTrainResult.OperatorId;
-                        activistTrainResultInDb.Ordinal = activistTrainResult.Ordinal;
-                        activistTrainResultInDb.IsDeleted = activistTrainResult.IsDeleted;
+                        //activistTrainResultInDb.Id = activistTrainResult.Id;
+                        //activistTrainResultInDb.CreateTime = activistTrainResult.CreateTime;
+                        //activistTrainResultInDb.OperatorId = activistTrainResult.OperatorId;
+                        //activistTrainResultInDb.Ordinal = activistTrainResult.Ordinal;
+                        //activistTrainResultInDb.IsDeleted = activistTrainResult.IsDeleted;
                         _context.Update(activistTrainResultInDb);
                     }
                     else

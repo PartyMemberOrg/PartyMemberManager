@@ -373,10 +373,10 @@ namespace PartyMemberManager.Controllers
                         partyActivistInDb.Department = partyActivist.Department;
                         partyActivistInDb.Class = partyActivist.Class;
                         partyActivistInDb.Id = partyActivist.Id;
-                        partyActivistInDb.CreateTime = DateTime.Now;
-                        partyActivistInDb.OperatorId = CurrentUser.Id;
-                        partyActivistInDb.Ordinal = _context.PartyActivists.Count() + 1;
-                        partyActivistInDb.IsDeleted = partyActivist.IsDeleted;
+                        //partyActivistInDb.CreateTime = DateTime.Now;
+                        //partyActivistInDb.OperatorId = CurrentUser.Id;
+                        //partyActivistInDb.Ordinal = _context.PartyActivists.Count() + 1;
+                        //partyActivistInDb.IsDeleted = partyActivist.IsDeleted;
                         partyActivistInDb.YearTermId = partyActivist.YearTermId;
                         partyActivistInDb.TrainClassId = partyActivist.TrainClassId;
                         partyActivistInDb.DepartmentId = partyActivist.DepartmentId;

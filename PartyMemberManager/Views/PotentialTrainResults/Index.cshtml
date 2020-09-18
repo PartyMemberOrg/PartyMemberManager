@@ -401,7 +401,7 @@
             contextMenu.showMenu(event);
         }
         function importExcel() {
-            showImport('@Url.Action("Import")', '@Url.Action("Import")', '导入发展对象培训成绩', 600, 450, function () { location.reload(); });
+            showImport('@Url.Action("Import")', '@Url.Action("Import")', '导入发展对象培训成绩', 600, 450, function () { RefreshTable(); });
         }
         /**打印选中的发展对象培训结业证 */
         function printSelected() {

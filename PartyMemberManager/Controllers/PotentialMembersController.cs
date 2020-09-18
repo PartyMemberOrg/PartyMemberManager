@@ -320,10 +320,10 @@ namespace PartyMemberManager.Controllers
                     }
                     potentialMemberInDb.PotentialMemberTime = potentialMember.PotentialMemberTime;
                     potentialMemberInDb.TrainClassId = potentialMember.TrainClassId;
-                    potentialMemberInDb.CreateTime = DateTime.Now;
-                    potentialMemberInDb.OperatorId = CurrentUser.Id;
-                    potentialMemberInDb.Ordinal = _context.PotentialMembers.Count() + 1;
-                    potentialMemberInDb.IsDeleted = potentialMember.IsDeleted;
+                    //potentialMemberInDb.CreateTime = DateTime.Now;
+                    //potentialMemberInDb.OperatorId = CurrentUser.Id;
+                    //potentialMemberInDb.Ordinal = _context.PotentialMembers.Count() + 1;
+                    //potentialMemberInDb.IsDeleted = potentialMember.IsDeleted;
                     _context.Update(potentialMemberInDb);
                 }
                 else

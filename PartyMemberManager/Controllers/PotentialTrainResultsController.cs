@@ -280,11 +280,11 @@ namespace PartyMemberManager.Controllers
                         potentialTrainResultInDb.IsPass = potentialTrainResult.IsPass;
                         //potentialTrainResultInDb.IsPrint = potentialTrainResult.IsPrint;
                         //potentialTrainResultInDb.PrintTime = potentialTrainResult.PrintTime;
-                        potentialTrainResultInDb.Id = potentialTrainResult.Id;
-                        potentialTrainResultInDb.CreateTime = potentialTrainResult.CreateTime;
-                        potentialTrainResultInDb.OperatorId = potentialTrainResult.OperatorId;
-                        potentialTrainResultInDb.Ordinal = potentialTrainResult.Ordinal;
-                        potentialTrainResultInDb.IsDeleted = potentialTrainResult.IsDeleted;
+                        //potentialTrainResultInDb.Id = potentialTrainResult.Id;
+                        //potentialTrainResultInDb.CreateTime = potentialTrainResult.CreateTime;
+                        //potentialTrainResultInDb.OperatorId = potentialTrainResult.OperatorId;
+                        //potentialTrainResultInDb.Ordinal = potentialTrainResult.Ordinal;
+                        //potentialTrainResultInDb.IsDeleted = potentialTrainResult.IsDeleted;
                         _context.Update(potentialTrainResultInDb);
                     }
                     else

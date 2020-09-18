@@ -212,10 +212,10 @@ namespace PartyMemberManager.Controllers
                         provinceTrainClassInDb.Year = provinceTrainClass.Year;
                         provinceTrainClassInDb.Name = provinceTrainClass.Name;
                         provinceTrainClassInDb.Enabled = provinceTrainClass.Enabled;
-                        provinceTrainClassInDb.Id = provinceTrainClass.Id;
-                        provinceTrainClassInDb.CreateTime = DateTime.Now;
-                        provinceTrainClassInDb.OperatorId = CurrentUser.Id;
-                        provinceTrainClassInDb.Ordinal = _context.ProvinceTrainClasses.Count()+1;
+                        //provinceTrainClassInDb.Id = provinceTrainClass.Id;
+                        //provinceTrainClassInDb.CreateTime = DateTime.Now;
+                        //provinceTrainClassInDb.OperatorId = CurrentUser.Id;
+                        //provinceTrainClassInDb.Ordinal = _context.ProvinceTrainClasses.Count()+1;
                         provinceTrainClassInDb.IsDeleted = provinceTrainClass.IsDeleted;
                         _context.Update(provinceTrainClassInDb);
                     }

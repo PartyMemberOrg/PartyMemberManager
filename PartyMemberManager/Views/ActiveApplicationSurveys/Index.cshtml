@@ -149,7 +149,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 500, 500);
+                showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 500, 500, function () { RefreshTable(); });
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);

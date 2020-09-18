@@ -189,7 +189,7 @@
             var contextMenu = new ContextMenu();
             if (curUser != "学院党委") {
                 contextMenu.addMenuItem("编辑", function () {
-                    showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 600, 650);
+                    showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 600, 650, function () { RefreshTable(); });
                 })
                 contextMenu.addMenuItem("删除", function () {
                     Delete(id);
@@ -197,7 +197,7 @@
             }
             else if (isPrint=="false") {
                 contextMenu.addMenuItem("编辑", function () {
-                    showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 600, 650);
+                    showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 600, 650, function () { RefreshTable(); });
                 })
                 contextMenu.addMenuItem("删除", function () {
                     Delete(id);

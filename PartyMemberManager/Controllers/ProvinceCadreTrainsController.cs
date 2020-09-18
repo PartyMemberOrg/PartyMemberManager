@@ -262,10 +262,10 @@ namespace PartyMemberManager.Controllers
                         provinceCadreTrainInDb.Demand1 = provinceCadreTrain.Demand1;
                         provinceCadreTrainInDb.Demand2 = provinceCadreTrain.Demand2;
                         provinceCadreTrainInDb.OtherDemand = provinceCadreTrain.OtherDemand;
-                        provinceCadreTrainInDb.CreateTime = DateTime.Now;
-                        provinceCadreTrainInDb.OperatorId = CurrentUser.Id;
-                        provinceCadreTrainInDb.Ordinal = _context.ProvinceCadreTrains.Count() + 1;
-                        provinceCadreTrainInDb.IsDeleted = provinceCadreTrain.IsDeleted;
+                        //provinceCadreTrainInDb.CreateTime = DateTime.Now;
+                        //provinceCadreTrainInDb.OperatorId = CurrentUser.Id;
+                        //provinceCadreTrainInDb.Ordinal = _context.ProvinceCadreTrains.Count() + 1;
+                        //provinceCadreTrainInDb.IsDeleted = provinceCadreTrain.IsDeleted;
                         _context.Update(provinceCadreTrainInDb);
                     }
                     else
