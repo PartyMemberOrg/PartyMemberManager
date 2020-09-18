@@ -322,6 +322,7 @@ namespace PartyMemberManager.Controllers
                                 string trainEndTime = row[trainEndTimeField].ToString();
                                 string trainAddress = row[trainAddressField].ToString();
                                 string remark = row[remarkField].ToString();
+                                year = year.Replace("年", "").Trim();
                                 //跳过姓名为空的记录
                                 if (string.IsNullOrEmpty(name)) continue;
                                 schoolCadreTrain.Name = name;

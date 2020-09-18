@@ -444,7 +444,10 @@ namespace PartyMemberManager.Controllers
                                 if (string.IsNullOrEmpty(name)) continue;
                                 if (!StringHelper.ValidateIdNumber(id))
                                     throw new ImportDataErrorException($"第{rowIndex}行数据中的【{idField}】不合法");
+                                nation = nation.Trim();
                                 Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
+                                if (nationData == null)
+                                    throw new ImportDataErrorException($"第{rowIndex}行数据中的【{nationField}】不合法");
                                 Guid nationId = nationData.Id;
                                 provinceCadreTrain.Name = name;
                                 provinceCadreTrain.Sex = Sex.Parse<Sex>(sex);
