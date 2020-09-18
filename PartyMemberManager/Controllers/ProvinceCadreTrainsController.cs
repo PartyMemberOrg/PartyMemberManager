@@ -407,7 +407,7 @@ namespace PartyMemberManager.Controllers
                         DataColumn columnErrorMessage = tableErrorData.Columns.Add("错误提示", typeof(string));
                         int rowIndex = 0;
                         int successCount = 0;
-                        string fieldsStudent = "序号,姓名,身份证,性别,民族,所在单位,职务,联系电话,备注";
+                        string fieldsStudent = "序号,姓名,身份证,性别,民族,所在单位,职务,联系电话,备注,学员需求1,学员需求2";
                         string[] fieldList = fieldsStudent.Split(',');
                         foreach (string field in fieldList)
                         {
@@ -435,6 +435,8 @@ namespace PartyMemberManager.Controllers
                                 string remarkField = "备注";
                                 string departmentField = "所在单位";
                                 string titleField = "职务";
+                                string demand1Field = "学员需求1";
+                                string Demand2Field = "学员需求2";
                                 string name = row[nameField].ToString();
                                 string sex = row[sexField].ToString();
                                 string nation = row[nationField].ToString();
@@ -443,6 +445,8 @@ namespace PartyMemberManager.Controllers
                                 string remark = row[remarkField].ToString();
                                 string title = row[titleField].ToString();
                                 string department = row[departmentField].ToString();
+                                string demand1 = row[demand1Field].ToString();
+                                string demand2 = row[Demand2Field].ToString();
                                 //跳过姓名为空的记录
                                 if (string.IsNullOrEmpty(name)) continue;
                                 if (!StringHelper.ValidateIdNumber(id))
@@ -459,6 +463,8 @@ namespace PartyMemberManager.Controllers
                                 provinceCadreTrain.Phone = phone;
                                 provinceCadreTrain.Post = title;
                                 provinceCadreTrain.Department = department;
+                                provinceCadreTrain.Demand1 = demand1;
+                                provinceCadreTrain.Demand2 = demand2;
 
                                 _context.ProvinceCadreTrains.Add(provinceCadreTrain);
 
