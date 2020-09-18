@@ -118,9 +118,9 @@ namespace PartyMemberManager.Dal.Entities
         [StringLength(50, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Demand2 { get; set; }
         /// <summary>
-        /// 其他
+        /// 其他需求
         /// </summary>
-        [DisplayName("其他")]
+        [DisplayName("其他需求")]
         [StringLength(50, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string OtherDemand { get; set; }
