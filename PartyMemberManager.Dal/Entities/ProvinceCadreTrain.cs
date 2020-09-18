@@ -109,20 +109,19 @@ namespace PartyMemberManager.Dal.Entities
         /// 学员需求1
         /// </summary>
         [DisplayName("学员需求1")]
-        [StringLength(50, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [StringLength(255, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Demand1 { get; set; }
         /// <summary>
         /// 学员需求2
         /// </summary>
         [DisplayName("学员需求2")]
-        [StringLength(50, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [StringLength(255, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Demand2 { get; set; }
         /// <summary>
         /// 其他
         /// </summary>
         [DisplayName("其他")]
-        [StringLength(50, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [StringLength(255, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string OtherDemand { get; set; }
     }
 }
