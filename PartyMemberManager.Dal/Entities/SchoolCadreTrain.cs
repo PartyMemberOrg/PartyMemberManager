@@ -79,7 +79,9 @@ namespace PartyMemberManager.Dal.Entities
         ///学时
         /// </summary>
         [DisplayName("学时")]
-        public int ClassHour { get { return (TrainTime.HasValue && EndTrainTime.HasValue) ? ((Convert.ToDateTime(EndTrainTime.Value.ToShortDateString()) - Convert.ToDateTime(TrainTime.Value.ToShortDateString())).Days+1) * 8 : 0; } }
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [Range(0, 500, ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public int ClassHour { get; set; }
 
 
     }
