@@ -343,8 +343,8 @@ namespace ExcelCore
         {
             MemoryStream ms = new MemoryStream();
             var spreadsheetDocument = SpreadsheetDocument.Create(ms, SpreadsheetDocumentType.Workbook);
-            var workbookpart = spreadsheetDocument.WorkbookPart;
-            Workbook workbook = workbookpart.Workbook;
+            var workbookpart = spreadsheetDocument.AddWorkbookPart();
+            workbookpart.Workbook = new Workbook();
             WorksheetPart worksheetPart = workbookpart.AddNewPart<WorksheetPart>();
             worksheetPart.Worksheet = new Worksheet(new SheetData());
             Sheets sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());

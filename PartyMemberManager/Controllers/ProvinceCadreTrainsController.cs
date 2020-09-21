@@ -630,30 +630,32 @@ namespace PartyMemberManager.Controllers
                 table.Columns.Add("年份", typeof(string));
                 table.Columns.Add("培训班", typeof(string));
                 table.Columns.Add("姓名", typeof(string));
-                table.Columns.Add("身份证号", typeof(string));
+                table.Columns.Add("身份证", typeof(string));
                 table.Columns.Add("性别", typeof(string));
                 table.Columns.Add("民族", typeof(string));
                 table.Columns.Add("所在单位", typeof(string));
-                table.Columns.Add("职务", typeof(string));
+                table.Columns.Add("联系电话", typeof(string));
                 table.Columns.Add("电话", typeof(string));
                 table.Columns.Add("学员需求1", typeof(string));
                 table.Columns.Add("学员需求2", typeof(string));
                 table.Columns.Add("其他需求", typeof(string));
+                table.Columns.Add("备注", typeof(string));
                 foreach (ProvinceCadreTrain provinceCadreTrain in provinceCadreTrains)
                 {
                     DataRow row = table.NewRow();
                     row["年份"] = provinceCadreTrain.YearDisplay;
                     row["培训班"] = provinceCadreTrain.TrainClassDisplay;
                     row["姓名"] = provinceCadreTrain.Name;
-                    row["身份证号"] = provinceCadreTrain.IdNumber;
+                    row["身份证"] = provinceCadreTrain.IdNumber;
                     row["性别"] = provinceCadreTrain.Sex;
                     row["民族"] = provinceCadreTrain.NationDisplay;
                     row["所在单位"] = provinceCadreTrain.Department;
                     row["职务"] = provinceCadreTrain.Post;
-                    row["电话"] = provinceCadreTrain.Phone;
+                    row["联系电话"] = provinceCadreTrain.Phone;
                     row["学员需求1"] = provinceCadreTrain.Demand1;
                     row["学员需求2"] = provinceCadreTrain.Demand2;
                     row["其他需求"] = provinceCadreTrain.OtherDemand;
+                    row["备注"] = "";
                     table.Rows.Add(row);
                 }
                 Stream datas = OfficeHelper.ExportExcelByOpenXml(table);
