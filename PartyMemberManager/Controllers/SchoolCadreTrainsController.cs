@@ -324,6 +324,18 @@ namespace PartyMemberManager.Controllers
                                 string trainAddress = row[trainAddressField].ToString();
                                 string remark = row[remarkField].ToString();
                                 year = year.Replace("年", "").Trim();
+                                if (!string.IsNullOrEmpty(name))
+                                    name = name.Trim();
+                                if (!string.IsNullOrEmpty(trainClassName))
+                                    trainClassName = trainClassName.Trim();
+                                else
+                                    throw new ImportDataErrorException($"第{rowIndex}行数据中的【{trainClassNameField}】不能为空 ");
+                                if (!string.IsNullOrEmpty(organizer))
+                                    organizer = organizer.Trim();
+                                if (!string.IsNullOrEmpty(trainOrganizational))
+                                    trainOrganizational = trainOrganizational.Trim();
+                                if (!string.IsNullOrEmpty(trainAddress))
+                                    trainAddress = trainAddress.Trim();
                                 //跳过姓名为空的记录
                                 if (string.IsNullOrEmpty(name)) continue;
                                 schoolCadreTrain.Name = name;

@@ -91,6 +91,8 @@ namespace ExcelCore
                         DataRow dataRow = data.NewRow();
                         for (int j = row.FirstCellNum; j < cellCount; ++j)
                         {
+                            if (row.Cells.Count == 0) continue;
+                            if (row.Cells.Count <= j) break;
                             if (row.GetCell(j) != null) //同理，没有数据的单元格都默认是null
                             {
                                 switch (row.GetCell(j).CellType)
@@ -344,7 +346,7 @@ namespace ExcelCore
             foreach (DataRow dataRow in datatable.Rows)
             {
                 Row row = new Row();
-                foreach(DataColumn column in datatable.Columns)
+                foreach (DataColumn column in datatable.Columns)
                 {
                     Cell dataCell = new Cell();
                     dataCell.CellValue = new DocumentFormat.OpenXml.Spreadsheet.CellValue($"{dataRow[column]}");

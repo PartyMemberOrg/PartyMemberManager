@@ -76,7 +76,7 @@ namespace PartyMemberManager.Dal.Entities
         public int TrainDuration { get { return (TrainTime.HasValue && EndTrainTime.HasValue) ? (Convert.ToDateTime(EndTrainTime.Value.ToShortDateString()) - Convert.ToDateTime(TrainTime.Value.ToShortDateString())).Days+1 : 0; } }
 
         /// <summary>
-        ///学时
+        ///学时b
         /// </summary>
         [DisplayName("学时")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]

@@ -451,6 +451,14 @@ namespace PartyMemberManager.Controllers
                                 string otherDemand = row[otherDemandField].ToString();
                                 //跳过姓名为空的记录
                                 if (string.IsNullOrEmpty(name)) continue;
+                                if (!string.IsNullOrEmpty(name))
+                                    name = name.Trim();
+                                if (!string.IsNullOrEmpty(id))
+                                    id = id.Trim();
+                                if (!string.IsNullOrEmpty(department))
+                                    department = department.Trim();
+                                if (!string.IsNullOrEmpty(title))
+                                    title = title.Trim();
                                 if (!StringHelper.ValidateIdNumber(id))
                                     throw new ImportDataErrorException($"第{rowIndex}行数据中的【{idField}】不合法");
                                 nation = nation.Trim();

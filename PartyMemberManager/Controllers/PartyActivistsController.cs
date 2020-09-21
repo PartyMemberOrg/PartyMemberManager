@@ -559,6 +559,10 @@ namespace PartyMemberManager.Controllers
                                     string remark = row[remarkField].ToString();
                                     //跳过姓名为空的记录
                                     if (string.IsNullOrEmpty(name)) continue;
+                                    name = name.Trim();
+                                    id = id.Trim();
+                                    empNo = empNo.Trim();
+                                    department = department.Trim();
                                     birthday = birthday.Replace(".", "-").Replace("/", "-");
                                     time = time.Replace(".", "-").Replace("/", "-");
                                     confirmTime = confirmTime.Replace(".", "-").Replace("/", "-");
@@ -639,6 +643,19 @@ namespace PartyMemberManager.Controllers
                                     string title = row[titleField].ToString();
                                     //跳过姓名为空的记录
                                     if (string.IsNullOrEmpty(name)) continue;
+                                    name = name.Trim();
+                                    if (!string.IsNullOrEmpty(college))
+                                        id = id.Trim();
+                                    else
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{idField}】不能为空 ");
+                                    if (!string.IsNullOrEmpty(college))
+                                        studentNo = studentNo.Trim();
+                                    else
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{studentNoField}】不能为空 ");
+                                    if (!string.IsNullOrEmpty(college))
+                                        college = college.Trim();
+                                    else
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{collegeField}】不能为空 ");
                                     birthday = birthday.Replace(".", "-").Replace("/", "-");
                                     time = time.Replace(".", "-").Replace("/", "-");
                                     confirmTime = confirmTime.Replace(".", "-").Replace("/", "-");
@@ -715,6 +732,7 @@ namespace PartyMemberManager.Controllers
                                 _context.PartyActivists.Add(partyActivist);
                                 _context.ActivistTrainResults.Add(activistTrainResult);
                                 await _context.SaveChangesAsync();
+                                successCount++;
                             }
                             catch (ImportDataErrorException ex)
                             {
