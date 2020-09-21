@@ -634,6 +634,7 @@ namespace PartyMemberManager.Controllers
                 table.Columns.Add("性别", typeof(string));
                 table.Columns.Add("民族", typeof(string));
                 table.Columns.Add("所在单位", typeof(string));
+                table.Columns.Add("职务", typeof(string));
                 table.Columns.Add("联系电话", typeof(string));
                 table.Columns.Add("电话", typeof(string));
                 table.Columns.Add("学员需求1", typeof(string));
