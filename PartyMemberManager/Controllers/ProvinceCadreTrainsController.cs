@@ -404,10 +404,14 @@ namespace PartyMemberManager.Controllers
                         #region 省级干部培训
                         DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
                         DataTable tableErrorData = table.Clone();
-                        DataColumn columnErrorMessage = tableErrorData.Columns.Add("错误提示", typeof(string));
+                        DataColumn columnErrorMessage = null;
+                        if (!tableErrorData.Columns.Contains("错误提示"))
+                            columnErrorMessage = tableErrorData.Columns.Add("错误提示", typeof(string));
+                        else
+                            columnErrorMessage = tableErrorData.Columns["错误提示"];
                         int rowIndex = 0;
                         int successCount = 0;
-                        string fieldsStudent = "序号,姓名,身份证,性别,民族,所在单位,职务,联系电话,备注,学员需求1,学员需求2,其他需求";
+                        string fieldsStudent = "姓名,身份证,性别,民族,所在单位,职务,联系电话,备注,学员需求1,学员需求2,其他需求";
                         string[] fieldList = fieldsStudent.Split(',');
                         foreach (string field in fieldList)
                         {

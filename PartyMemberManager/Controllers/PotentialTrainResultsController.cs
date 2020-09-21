@@ -708,7 +708,11 @@ namespace PartyMemberManager.Controllers
                         #region 导入成绩
                         DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
                         DataTable tableErrorData = table.Clone();
-                        DataColumn columnErrorMessage = tableErrorData.Columns.Add("错误提示", typeof(string));
+                        DataColumn columnErrorMessage = null;
+                        if (!tableErrorData.Columns.Contains("错误提示"))
+                            columnErrorMessage = tableErrorData.Columns.Add("错误提示", typeof(string));
+                        else
+                            columnErrorMessage = tableErrorData.Columns["错误提示"];
                         int rowIndex = 0;
                         int successCount = 0;
                         string fieldsTeacher = "工号/学号,平时成绩,实践成绩,考试成绩";

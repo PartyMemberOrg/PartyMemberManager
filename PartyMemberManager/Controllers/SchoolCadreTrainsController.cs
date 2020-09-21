@@ -282,10 +282,14 @@ namespace PartyMemberManager.Controllers
                         #region 领导干部培训名单
                         DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
                         DataTable tableErrorData = table.Clone();
-                        DataColumn columnErrorMessage = tableErrorData.Columns.Add("错误提示", typeof(string));
+                        DataColumn columnErrorMessage = null;
+                        if (!tableErrorData.Columns.Contains("错误提示"))
+                            columnErrorMessage = tableErrorData.Columns.Add("错误提示", typeof(string));
+                        else
+                            columnErrorMessage = tableErrorData.Columns["错误提示"];
                         int rowIndex = 0;
                         int successCount = 0;
-                        string fieldsStudent = "序号,姓名,培训班名称,组织单位,培训单位,年度,培训时间,结束时间,培训地点,备注";
+                        string fieldsStudent = "姓名,培训班名称,组织单位,培训单位,年度,培训时间,结束时间,培训地点,备注";
                         string[] fieldList = fieldsStudent.Split(',');
                         foreach (string field in fieldList)
                         {

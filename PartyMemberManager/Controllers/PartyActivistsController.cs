@@ -493,7 +493,11 @@ namespace PartyMemberManager.Controllers
                         #region 导入入党积极分子
                         DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
                         DataTable tableErrorData = table.Clone();
-                        DataColumn columnErrorMessage = tableErrorData.Columns.Add("错误提示", typeof(string));
+                        DataColumn columnErrorMessage = null;
+                        if (!tableErrorData.Columns.Contains("错误提示"))
+                            columnErrorMessage = tableErrorData.Columns.Add("错误提示", typeof(string));
+                        else
+                            columnErrorMessage = tableErrorData.Columns["错误提示"];
                         int rowIndex = 0;
                         int successCount = 0;
                         string fieldsTeacher = "姓名,性别,出生年月,民族,所在部门,工号,身份证号,联系电话,提交入党申请时间,确定入党积极分子时间,备注";

@@ -8,6 +8,9 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.Data.Common;
+using NPOI.OpenXmlFormats.Dml.Chart;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace ExcelCore
 {
@@ -28,6 +31,7 @@ namespace ExcelCore
             ISheet sheet = null;
             //数据开始行(排除标题行)
             int startRow = 0;
+            bool isByOpenXmlSDK = false;
             try
             {
                 if (!File.Exists(fileName))
@@ -57,77 +61,90 @@ namespace ExcelCore
                 if (sheet != null)
                 {
                     IRow firstRow = sheet.GetRow(0);
-                    //一行最后一个cell的编号 即总的列数
-                    int cellCount = firstRow.LastCellNum;
-                    //如果第一行是标题列名
-                    if (isFirstRowColumn)
+                    if (firstRow != null)
                     {
-                        for (int i = firstRow.FirstCellNum; i < cellCount; ++i)
+                        //一行最后一个cell的编号 即总的列数
+                        int cellCount = firstRow.LastCellNum;
+                        //如果第一行是标题列名
+                        if (isFirstRowColumn)
                         {
-                            ICell cell = firstRow.GetCell(i);
-                            if (cell != null)
+                            for (int i = firstRow.FirstCellNum; i < cellCount; ++i)
                             {
-                                string cellValue = cell.StringCellValue;
-                                if (cellValue != null)
+                                ICell cell = firstRow.GetCell(i);
+                                if (cell != null)
                                 {
-                                    DataColumn column = new DataColumn(cellValue);
-                                    data.Columns.Add(column);
+                                    string cellValue = cell.StringCellValue;
+                                    if (cellValue != null)
+                                    {
+                                        DataColumn column = new DataColumn(cellValue);
+                                        data.Columns.Add(column);
+                                    }
                                 }
                             }
+                            startRow = sheet.FirstRowNum + 1;
                         }
-                        startRow = sheet.FirstRowNum + 1;
+                        else
+                        {
+                            startRow = sheet.FirstRowNum;
+                        }
+                        //最后一列的标号
+                        int rowCount = sheet.LastRowNum;
+                        for (int i = startRow; i <= rowCount; ++i)
+                        {
+                            IRow row = sheet.GetRow(i);
+                            if (row == null) continue; //没有数据的行默认是null　　　　　　　
+
+                            DataRow dataRow = data.NewRow();
+                            for (int j = row.FirstCellNum; j < cellCount; ++j)
+                            {
+                                if (row.Cells.Count == 0) continue;
+                                if (row.Cells.Count <= j) break;
+                                if (row.GetCell(j) != null) //同理，没有数据的单元格都默认是null
+                                {
+                                    switch (row.GetCell(j).CellType)
+                                    {
+                                        case NPOI.SS.UserModel.CellType.Numeric:
+                                            switch (row.GetCell(j).CellStyle.DataFormat)
+                                            {
+                                                case 0:
+                                                    double doubleValue = row.GetCell(j).NumericCellValue;
+                                                    dataRow[j] = row.GetCell(j).ToString();
+                                                    break;
+                                                case 14://日期格式
+                                                case 31:
+                                                case 57:
+                                                case 58:
+                                                case 20://时间格式
+                                                case 32:
+                                                    DateTime timeValue = row.GetCell(j).DateCellValue;
+                                                    dataRow[j] = timeValue.ToString("yyyy-MM-dd HH:mm:ss");
+                                                    break;
+                                                default:
+                                                    dataRow[j] = row.GetCell(j).ToString();
+                                                    break;
+                                            }
+                                            break;
+                                        default:
+                                            dataRow[j] = row.GetCell(j).ToString();
+                                            break;
+                                    }
+                                }
+                            }
+                            data.Rows.Add(dataRow);
+                        }
                     }
                     else
                     {
-                        startRow = sheet.FirstRowNum;
-                    }
-                    //最后一列的标号
-                    int rowCount = sheet.LastRowNum;
-                    for (int i = startRow; i <= rowCount; ++i)
-                    {
-                        IRow row = sheet.GetRow(i);
-                        if (row == null) continue; //没有数据的行默认是null　　　　　　　
-
-                        DataRow dataRow = data.NewRow();
-                        for (int j = row.FirstCellNum; j < cellCount; ++j)
-                        {
-                            if (row.Cells.Count == 0) continue;
-                            if (row.Cells.Count <= j) break;
-                            if (row.GetCell(j) != null) //同理，没有数据的单元格都默认是null
-                            {
-                                switch (row.GetCell(j).CellType)
-                                {
-                                    case NPOI.SS.UserModel.CellType.Numeric:
-                                        switch (row.GetCell(j).CellStyle.DataFormat)
-                                        {
-                                            case 0:
-                                                double doubleValue = row.GetCell(j).NumericCellValue;
-                                                dataRow[j] = row.GetCell(j).ToString();
-                                                break;
-                                            case 14://日期格式
-                                            case 31:
-                                            case 57:
-                                            case 58:
-                                            case 20://时间格式
-                                            case 32:
-                                                DateTime timeValue = row.GetCell(j).DateCellValue;
-                                                dataRow[j] = timeValue.ToString("yyyy-MM-dd HH:mm:ss");
-                                                break;
-                                            default:
-                                                dataRow[j] = row.GetCell(j).ToString();
-                                                break;
-                                        }
-                                        break;
-                                    default:
-                                        dataRow[j] = row.GetCell(j).ToString();
-                                        break;
-                                }
-                            }
-                        }
-                        data.Rows.Add(dataRow);
+                        isByOpenXmlSDK = true;
                     }
                 }
                 fs.Close();
+                if(isByOpenXmlSDK)
+                {
+                    fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                    data = ReadStreamToDataTableByOpenXml(fs, sheetName, isFirstRowColumn);
+                    fs.Close();
+                }
                 return data;
             }
             catch (Exception ex)
@@ -326,8 +343,8 @@ namespace ExcelCore
         {
             MemoryStream ms = new MemoryStream();
             var spreadsheetDocument = SpreadsheetDocument.Create(ms, SpreadsheetDocumentType.Workbook);
-            var workbookpart = spreadsheetDocument.AddWorkbookPart();
-            workbookpart.Workbook = new Workbook();
+            var workbookpart = spreadsheetDocument.WorkbookPart;
+            Workbook workbook = workbookpart.Workbook;
             WorksheetPart worksheetPart = workbookpart.AddNewPart<WorksheetPart>();
             worksheetPart.Worksheet = new Worksheet(new SheetData());
             Sheets sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
@@ -362,6 +379,62 @@ namespace ExcelCore
             ms.Flush();
             ms.Seek(0, SeekOrigin.Begin);
             return ms;
+        }
+        public static DataTable ReadToDataTableByOpenXml(string fileName, string sheetName = null, bool isFirstRowColumn = true)
+        {
+            if (!File.Exists(fileName))
+            {
+                return null;
+            }
+            //根据指定路径读取文件
+            FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            DataTable datatable = ReadStreamToDataTableByOpenXml(fs, sheetName, isFirstRowColumn = true);
+            fs.Close();
+            return datatable;
+        }
+
+        public static DataTable ReadStreamToDataTableByOpenXml(Stream fileStream, string sheetName = null, bool isFirstRowColumn = true)
+        {
+            //定义要返回的datatable对象
+            DataTable datatable = new DataTable();
+            var spreadsheetDocument = SpreadsheetDocument.Open(fileStream, false);
+            var workbookpart = spreadsheetDocument.WorkbookPart;
+            Workbook workbook = workbookpart.Workbook;
+            WorksheetPart worksheetPart = workbookpart.WorksheetParts.FirstOrDefault();
+            Worksheet worksheet = worksheetPart.Worksheet;
+            SheetData sheetData = worksheet.GetFirstChild<SheetData>();
+            List<Row> rows = sheetData.Elements<Row>().ToList();
+            Row rowHead = rows.FirstOrDefault();
+            foreach (var childElement in rowHead.ChildElements)
+            {
+                if (childElement is Cell)
+                {
+                    Cell dataCell = childElement as Cell;
+                    string columnName = dataCell.CellValue.Text;
+                    DataColumn column = datatable.Columns.Add(columnName, typeof(string));
+                }
+            }
+            for (int i = 1; i < rows.Count; i++)
+            {
+                DataRow rowTableData = datatable.NewRow();
+                Row rowData = rows[i];
+                int columnIndex = 0;
+                foreach (var childElement in rowData.ChildElements)
+                {
+                    if (childElement is Cell)
+                    {
+                        Cell dataCell = childElement as Cell;
+                        string data = dataCell.CellValue.Text;
+                        if (columnIndex >= datatable.Columns.Count)
+                            break;
+                        rowTableData[columnIndex] = data;
+                        columnIndex++;
+                    }
+                }
+                datatable.Rows.Add(rowTableData);
+            }
+            spreadsheetDocument.Close();
+            return datatable;
         }
 
         private class NPOIMemoryStream : MemoryStream
