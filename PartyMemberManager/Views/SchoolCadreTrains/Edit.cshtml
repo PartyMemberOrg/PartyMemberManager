@@ -41,7 +41,8 @@
                 , trigger: 'click'
             });
             laydate.render({
-                elem: '#TrainTime'
+                elem: '#TrainTime',
+                type: 'date'
                 , trigger: 'click',
                 done: function (value, date, endDate) {
                     var end = $("#EndTrainTime").val();
@@ -49,7 +50,8 @@
                 }
             });
             laydate.render({
-                elem: '#EndTrainTime'
+                elem: '#EndTrainTime',
+                type: 'date'
                 , trigger: 'click',
                 done: function (value, date, endDate) {
                     var start = $("#TrainTime").val();
