@@ -289,7 +289,7 @@ namespace PartyMemberManager.Controllers
                             columnErrorMessage = tableErrorData.Columns["错误提示"];
                         int rowIndex = 0;
                         int successCount = 0;
-                        string fieldsStudent = "姓名,培训班名称,组织单位,培训单位,年度,培训时间,结束时间,培训地点,备注";
+                        string fieldsStudent = "姓名,培训班名称,组织单位,培训单位,年度,培训时间,结束时间,培训学时,培训地点,备注";
                         string[] fieldList = fieldsStudent.Split(',');
                         foreach (string field in fieldList)
                         {
@@ -315,6 +315,7 @@ namespace PartyMemberManager.Controllers
                                 string yearField = "年度";
                                 string trainTimeField = "培训时间";
                                 string trainEndTimeField = "结束时间";
+                                string classHourField = "培训学时";
                                 string trainAddressField = "培训地点";
                                 string remarkField = "备注";
 
@@ -325,6 +326,7 @@ namespace PartyMemberManager.Controllers
                                 string year = row[yearField].ToString();
                                 string trainTime = row[trainTimeField].ToString();
                                 string trainEndTime = row[trainEndTimeField].ToString();
+                                string classHour = row[classHourField].ToString();
                                 string trainAddress = row[trainAddressField].ToString();
                                 string remark = row[remarkField].ToString();
                                 year = year.Replace("年", "").Trim();
@@ -367,6 +369,13 @@ namespace PartyMemberManager.Controllers
                                 schoolCadreTrain.TrainOrganizational = trainOrganizational;
                                 schoolCadreTrain.TrainTime = trainTimeValue;
                                 schoolCadreTrain.EndTrainTime = trainEndTimeValue;
+                                int classHourValue = 0;
+                                if(int.TryParse(classHour,out classHourValue))
+                                {
+                                    schoolCadreTrain.ClassHour = classHourValue;
+                                }
+                                else
+                                    throw new ImportDataErrorException($"第{rowIndex}行数据中的【{classHourField}】不合法");
                                 schoolCadreTrain.Year = year;
 
                                 _context.SchoolCadreTrains.Add(schoolCadreTrain);
