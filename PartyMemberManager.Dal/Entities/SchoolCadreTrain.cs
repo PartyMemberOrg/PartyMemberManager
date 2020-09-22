@@ -52,6 +52,7 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("培训开始日期")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? TrainTime { get; set; }
 
         /// <summary>
@@ -59,6 +60,7 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("培训结束日期")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? EndTrainTime { get; set; }
 
         /// <summary>

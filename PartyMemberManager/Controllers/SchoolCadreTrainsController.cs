@@ -359,7 +359,7 @@ namespace PartyMemberManager.Controllers
                                     throw new ImportDataErrorException($"第{rowIndex}行数据中的【{trainTimeField}】日期格式不合法");
                                 }
                                 trainEndTime = trainEndTime.Replace(".", "-").Replace("/", "-");
-                                DateTime trainEndTimeValue = DateTime.Now;
+                                DateTime trainEndTimeValue = DateTime.Now;  
                                 if (!TryParseDate(trainEndTime, out trainEndTimeValue))
                                 {
                                     throw new ImportDataErrorException($"第{rowIndex}行数据中的【{trainEndTimeField}】日期格式不合法");
