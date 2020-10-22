@@ -113,6 +113,8 @@ namespace PartyMemberManager.Core.Helpers
         /// <returns></returns>
         public static bool ValidateIdNumber(string idNumber)
         {
+            if (string.IsNullOrEmpty(idNumber))
+                return true;
             string pattern = @"(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)";
             if (Regex.IsMatch(idNumber, pattern))
                 return true;
@@ -126,6 +128,8 @@ namespace PartyMemberManager.Core.Helpers
         /// <returns></returns>
         public static bool ValidateJobNo(string jobNo)
         {
+            if (string.IsNullOrEmpty(jobNo))
+                return true;
             string pattern = @"(^\d{12}$)|(^10741\d{5}$)|(^\d{13}$)";
             if (Regex.IsMatch(jobNo, pattern))
                 return true;
