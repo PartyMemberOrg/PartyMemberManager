@@ -5,11 +5,11 @@
 }
 
 <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
-    @*<div style="display:inline-block">
+    <div style="display:inline-block">
         <div class="layui-input-inline" style="width:80px">
-            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,650,function () {RefreshTable();})" class="layui-btn layui-btn-primary">+添加</a>
+            <a href="javascript:showEdit('@Url.Action("CreateNoActivist")','@Url.Action("SaveNoActivist")','添加',600,650,function () {RefreshTable();})" class="layui-btn layui-btn-primary">+添加</a>
         </div>
-    </div>*@
+    </div>
     <input type="hidden" id="TrainClassTypeId" value="@ViewBag.TrainClassTypeId" />
     <div style="display:inline-block">
         <label class="layui-form-label" style="padding:5px">学年/学期:</label>
@@ -204,24 +204,35 @@
             }
         }
         /**显示操作菜单 */
-        function showOperatMenu(event, id,isPrint,curUser) {
+        function showOperatMenu(event, id,isPrint,curUser,partyActivistId) {
             var contextMenu = new ContextMenu();
-            if (curUser != "学院党委") {
-                contextMenu.addMenuItem("编辑", function () {
-                    showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 600, 650, function () { RefreshTable(); });
-                })
-                contextMenu.addMenuItem("删除", function () {
-                    Delete(id);
-                })
-            }
-            else if (isPrint=="false") {
-                contextMenu.addMenuItem("编辑", function () {
-                    showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 600, 650, function () { RefreshTable(); });
-                })
-                contextMenu.addMenuItem("删除", function () {
-                    Delete(id);
-                })
+            if (partyActivistId == "null") {
+                    contextMenu.addMenuItem("编辑无入党积极分子", function () {
+                        showEdit('@Url.Action("EditNoActivist")' + '/' + id, '@Url.Action("SaveNoActivist")', '编辑', 600, 650, function () { RefreshTable(); });
+                    })
+                    contextMenu.addMenuItem("删除", function () {
+                        Delete(id);
+                    })
 
+            }
+            else {
+                if (curUser != "学院党委") {
+                    contextMenu.addMenuItem("编辑", function () {
+                        showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 600, 650, function () { RefreshTable(); });
+                    })
+                    contextMenu.addMenuItem("删除", function () {
+                        Delete(id);
+                    })
+                }
+                else if (isPrint == "false") {
+                    contextMenu.addMenuItem("编辑", function () {
+                        showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 600, 650, function () { RefreshTable(); });
+                    })
+                    contextMenu.addMenuItem("删除", function () {
+                        Delete(id);
+                    })
+
+                }
             }
             contextMenu.addMenuItem("上移", function () {
                 ItemUp(id);
@@ -253,7 +264,7 @@
         }
     </script>
     <script type="text/html" id="optTpl">
-        <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}','{{d.isPrint}}','@CurrentUser.Roles')" style="padding-left:10px;padding-right:10px;">
+        <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}','{{d.isPrint}}','@CurrentUser.Roles','{{d.partyActivistId}}')" style="padding-left:10px;padding-right:10px;">
             <img src="~/images/gridmenu1x.png" />
         </a>
     </script>
