@@ -18,6 +18,8 @@ using PartyMemberManager.Core.Enums;
 using System.Data;
 using System.IO;
 using ExcelCore;
+using PartyMemberManager.Models;
+using Newtonsoft.Json;
 
 namespace PartyMemberManager.Controllers
 {
@@ -578,6 +580,495 @@ namespace PartyMemberManager.Controllers
             }
             return Json(jsonResult);
 
+        }
+
+
+        /// <summary>
+        /// 导入发展对象
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Import()
+        {
+            ProtentialMemberImportViewModel model = new ProtentialMemberImportViewModel
+            {
+                DepartmentId = CurrentUser.DepartmentId.HasValue ? CurrentUser.DepartmentId.Value : Guid.Empty,
+            };
+            ViewBag.Departments = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name");
+            if (CurrentUser.Roles == Role.学院党委)
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "42").Where(d => d.DepartmentId == CurrentUser.DepartmentId.Value).OrderBy(d => d.Ordinal), "Id", "Name");
+            else
+                ViewBag.TrainClasses = new SelectList(_context.TrainClasses.Include(d => d.TrainClassType).Where(d => d.TrainClassType.Code == "42").OrderBy(d => d.Ordinal), "Id", "Name");
+            //if (CurrentUser.Roles == Role.学院党委)
+            //    ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.Where(d => d.Code.StartsWith("4")).OrderByDescending(d => d.Code), "Id", "Name");
+            //else
+            //    ViewBag.TrainClassTypeId = new SelectList(_context.TrainClassTypes.OrderBy(d => d.Code), "Id", "Name");
+            TrainClassType trainClassType = _context.TrainClassTypes.Where(t => t.Code == "42").FirstOrDefault();
+            if (trainClassType != null)
+                ViewBag.TrainClassTypeId = trainClassType.Id;
+            else
+                ViewBag.TrainClassTypeId = Guid.Empty;
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term), "Id", "Name");
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Import(ProtentialMemberImportViewModel model)
+        {
+            JsonResultImport jsonResult = new JsonResultImport
+            {
+                Code = 0,
+                Message = "数据导入成功"
+            };
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    IFormFile file = model.File;
+                    if (file != null)
+                    {
+                        TrainClass trainClass = await _context.TrainClasses.FindAsync(model.TrainClassId);
+                        Stream stream = file.OpenReadStream();
+                        var filePath = Path.GetTempFileName();
+                        var fileStream = System.IO.File.Create(filePath);
+                        await file.CopyToAsync(fileStream);
+                        await fileStream.FlushAsync();
+                        fileStream.Close();
+                        #region 导入入党积极分子
+                        DataTable table = OfficeHelper.ReadExcelToDataTable(filePath);
+                        DataTable tableErrorData = table.Clone();
+                        DataColumn columnErrorMessage = null;
+                        if (!tableErrorData.Columns.Contains("错误提示"))
+                            columnErrorMessage = tableErrorData.Columns.Add("错误提示", typeof(string));
+                        else
+                            columnErrorMessage = tableErrorData.Columns["错误提示"];
+                        int rowIndex = 0;
+                        int successCount = 0;
+                        string fieldsTeacher = "姓名,性别,出生年月,民族,所在部门,工号,身份证号,联系电话,提交入党申请时间,确定入党积极分子时间,确定发展对象时间,备注";
+                        string fieldsStudent = "姓名,学号,身份证号,性别,出生年月,民族,所在学院,所在班级,联系电话,提交入党申请时间,确定入党积极分子时间,确定发展对象时间,备注";
+                        string[] fieldListTeacher = fieldsTeacher.Split(',');
+                        string[] fieldListStudent = fieldsStudent.Split(',');
+                        bool isTeacher = model.PartyMemberType == PartyMemberType.教师;
+                        if (isTeacher)
+                        {
+                            foreach (string field in fieldListTeacher)
+                            {
+                                if (!table.Columns.Contains(field))
+                                    throw new PartyMemberException($"缺少【{field}】列");
+                            }
+                        }
+                        else
+                        {
+                            foreach (string field in fieldListStudent)
+                            {
+                                if (!table.Columns.Contains(field))
+                                    throw new PartyMemberException($"缺少【{field}】列");
+                            }
+                        }
+                        foreach (DataRow row in table.Rows)
+                        {
+                            rowIndex++;
+                            try
+                            {
+                                PotentialMember potentialMember = new PotentialMember
+                                {
+                                    Id = Guid.NewGuid(),
+                                    CreateTime = DateTime.Now,
+                                    Ordinal = rowIndex,
+                                    OperatorId = CurrentUser.Id,
+                                    TrainClassId = trainClass.Id,
+                                    YearTermId = trainClass.YearTermId
+                                    //Year=trainClass.Year,
+                                    //Term=trainClass.Term,
+                                };
+                                if (isTeacher)
+                                {
+                                    string nameField = "姓名";
+                                    string sexField = "性别";
+                                    string birthdayField = "出生年月";
+                                    string nationField = "民族";
+                                    string departmentField = "所在部门";
+                                    string empNoField = "工号";
+                                    string idField = "身份证号";
+                                    string phoneField = "联系电话";
+                                    string timeField = "提交入党申请时间";
+                                    string confirmTimeField = "确定入党积极分子时间";
+                                    string potentialMemberTimeField = "确定发展对象时间";
+                                    string remarkField = "备注";
+                                    string name = row[nameField].ToString();
+                                    string sex = row[sexField].ToString();
+                                    string birthday = row[birthdayField].ToString();
+                                    string nation = row[nationField].ToString();
+                                    string department = row[departmentField].ToString();
+                                    string empNo = row[empNoField].ToString();
+                                    string id = row[idField].ToString();
+                                    string phone = row[phoneField].ToString();
+                                    string time = row[timeField].ToString();
+                                    string confirmTime = row[confirmTimeField].ToString();
+                                    string potentialMemberTime = row[potentialMemberTimeField].ToString();
+                                    string remark = row[remarkField].ToString();
+                                    //跳过姓名为空的记录
+                                    if (string.IsNullOrEmpty(name)) continue;
+                                    name = name.Trim();
+                                    id = id.Trim();
+                                    empNo = empNo.Trim();
+                                    department = department.Trim();
+                                    birthday = birthday.Replace(".", "-").Replace("/", "-");
+                                    time = time.Replace(".", "-").Replace("/", "-");
+                                    confirmTime = confirmTime.Replace(".", "-").Replace("/", "-");
+                                    potentialMemberTime = potentialMemberTime.Replace(".", "-").Replace("/", "-");
+                                    DateTime birthdayValue = DateTime.Now;
+                                    if (!birthday.Contains("-") && birthday.Length == 6)
+                                        birthday = birthday + "01";
+                                    else if (birthday.Contains("-") && birthday.IndexOf('-') == birthday.LastIndexOf('-'))
+                                        birthday = birthday + "-01";
+                                    if (!TryParseYearMonth(birthday, out birthdayValue))
+                                    {
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{birthdayField}】年月格式不合法");
+                                    }
+                                    DateTime timeValue = DateTime.Now;
+                                    if (!TryParseDate(time, out timeValue))
+                                    {
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{timeField}】日期格式不合法");
+                                    }
+                                    DateTime confirmTimeValue = DateTime.Now;
+                                    if (!TryParseDate(confirmTime, out confirmTimeValue))
+                                    {
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{confirmTimeField}】日期格式不合法");
+                                    }
+                                    DateTime potentialMemberTimeValue = DateTime.Now;
+                                    if (!TryParseDate(potentialMemberTime, out potentialMemberTimeValue))
+                                    {
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{potentialMemberTimeField}】日期格式不合法");
+                                    }
+                                    if (!StringHelper.ValidateIdNumber(id))
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{idField}】不合法");
+
+                                    if (!ValidateImportTeacherNo(empNo))
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{empNoField}】不合法");
+
+                                    nation = nation.Trim();
+                                    Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
+                                    if (nationData == null)
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{nationField}】不合法");
+                                    Guid nationId = nationData.Id;
+                                    //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
+                                    Department departmentData = _context.Departments.Where(d => d.Name.Contains(department) || department.Contains(d.Name)).FirstOrDefault();
+                                    if (departmentData == null)
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{departmentField}】不合法");
+                                    Guid departmentId = departmentData.Id;
+                                    potentialMember.Name = name;
+                                    potentialMember.Sex = Sex.Parse<Sex>(sex);
+                                    potentialMember.BirthDate = birthdayValue;
+                                    potentialMember.NationId = nationId;
+                                    potentialMember.DepartmentId = departmentId;
+                                    potentialMember.JobNo = empNo;
+                                    potentialMember.IdNumber = id;
+                                    potentialMember.Phone = phone;
+                                    potentialMember.ApplicationTime = timeValue;
+                                    potentialMember.ActiveApplicationTime = confirmTimeValue;
+                                    potentialMember.PotentialMemberTime = potentialMemberTimeValue;
+                                    potentialMember.PartyMemberType = PartyMemberType.教师;
+                                }
+                                else
+                                {
+                                    string nameField = "姓名";
+                                    string sexField = "性别";
+                                    string birthdayField = "出生年月";
+                                    string nationField = "民族";
+                                    string idField = "身份证号";
+                                    string phoneField = "联系电话";
+                                    string timeField = "提交入党申请时间";
+                                    string confirmTimeField = "确定入党积极分子时间";
+                                    string potentialMemberTimeField = "确定发展对象时间";
+                                    string remarkField = "备注";
+                                    string studentNoField = "学号";
+                                    string collegeField = "所在学院";
+                                    string classField = "所在班级";
+                                    //string titleField = "担任职务";
+                                    string name = row[nameField].ToString();
+                                    string sex = row[sexField].ToString();
+                                    string birthday = row[birthdayField].ToString();
+                                    string nation = row[nationField].ToString();
+                                    string id = row[idField].ToString();
+                                    string phone = row[phoneField].ToString();
+                                    string time = row[timeField].ToString();
+                                    string confirmTime = row[confirmTimeField].ToString();
+                                    string potentialMemberTime = row[potentialMemberTimeField].ToString();
+                                    string remark = row[remarkField].ToString();
+                                    string studentNo = row[studentNoField].ToString();
+                                    string college = row[collegeField].ToString();
+                                    string @class = row[classField].ToString();
+                                    //string title = row[titleField].ToString();
+                                    //跳过姓名为空的记录
+                                    if (string.IsNullOrEmpty(name)) continue;
+                                    name = name.Trim();
+                                    if (!string.IsNullOrEmpty(college))
+                                        id = id.Trim();
+                                    else
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{idField}】不能为空 ");
+                                    if (!string.IsNullOrEmpty(college))
+                                        studentNo = studentNo.Trim();
+                                    else
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{studentNoField}】不能为空 ");
+                                    if (!string.IsNullOrEmpty(college))
+                                        college = college.Trim();
+                                    else
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{collegeField}】不能为空 ");
+                                    birthday = birthday.Replace(".", "-").Replace("/", "-");
+                                    time = time.Replace(".", "-").Replace("/", "-");
+                                    confirmTime = confirmTime.Replace(".", "-").Replace("/", "-");
+                                    potentialMemberTime = potentialMemberTime.Replace(".", "-").Replace("/", "-");
+                                    DateTime birthdayValue = DateTime.Now;
+                                    if (!birthday.Contains("-") && birthday.Length == 6)
+                                        birthday = birthday + "01";
+                                    else if (birthday.Contains("-") && birthday.IndexOf('-') == birthday.LastIndexOf('-'))
+                                        birthday = birthday + "-01";
+                                    if (!TryParseYearMonth(birthday, out birthdayValue))
+                                    {
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{birthdayField}】年月格式不合法");
+                                    }
+                                    DateTime timeValue = DateTime.Now;
+                                    if (!TryParseDate(time, out timeValue))
+                                    {
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{timeField}】日期格式不合法");
+                                    }
+                                    DateTime confirmTimeValue = DateTime.Now;
+                                    if (!TryParseDate(confirmTime, out confirmTimeValue))
+                                    {
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{confirmTimeField}】日期格式不合法");
+                                    }
+                                    DateTime potentialMemberTimeValue = DateTime.Now;
+                                    if (!TryParseDate(potentialMemberTime, out potentialMemberTimeValue))
+                                    {
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{potentialMemberTimeField}】日期格式不合法");
+                                    }
+                                    if (!StringHelper.ValidateIdNumber(id))
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{idField}】不合法");
+                                    if (model.PartyMemberType == PartyMemberType.研究生)
+                                    {
+                                        if (!ValidateImportPostgraduateNo(studentNo))
+                                            throw new ImportDataErrorException($"第{rowIndex}行数据中的【{studentNoField}】不合法");
+                                    }
+                                    else
+                                    {
+                                        if (!ValidateImportUndergraduateNo(studentNo))
+                                            throw new ImportDataErrorException($"第{rowIndex}行数据中的【{studentNoField}】不合法");
+                                    }
+                                    nation = nation.Trim();
+                                    Nation nationData = _context.Nations.Where(n => n.Name == nation).FirstOrDefault();
+                                    if (nationData == null)
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{nationField}】不合法");
+                                    Guid nationId = nationData.Id;
+                                    //部门只要有包含（两种包含：导入的名称被部门包含，或者导入的名称包含库中的部门名称）
+                                    Department departmentData = _context.Departments.Where(d => d.Name.Contains(college) || college.Contains(d.Name)).FirstOrDefault();
+                                    if (departmentData == null)
+                                        throw new ImportDataErrorException($"第{rowIndex}行数据中的【{collegeField}】不合法");
+                                    Guid departmentId = departmentData.Id;
+                                    potentialMember.Name = name;
+                                    potentialMember.Sex = Sex.Parse<Sex>(sex);
+                                    potentialMember.BirthDate = birthdayValue;
+                                    potentialMember.NationId = nationId;
+                                    potentialMember.DepartmentId = departmentId;
+                                    potentialMember.JobNo = studentNo;
+                                    potentialMember.IdNumber = id;
+                                    potentialMember.Phone = phone;
+                                    potentialMember.ApplicationTime = timeValue;
+                                    potentialMember.ActiveApplicationTime = confirmTimeValue;
+                                    potentialMember.PotentialMemberTime = potentialMemberTimeValue;
+                                    potentialMember.Class = @class;
+                                    //partyActivist.Duty = title;
+                                    potentialMember.PartyMemberType = model.PartyMemberType;
+                                }
+                                PotentialTrainResult potentialTrainResult = new PotentialTrainResult
+                                {
+                                    Id = Guid.NewGuid(),
+                                    PotentialMemberId = potentialMember.Id,
+                                    CreateTime = DateTime.Now,
+                                    OperatorId = CurrentUser.Id,
+                                    IsDeleted = false,
+                                    Ordinal = _context.ActivistTrainResults.Count() + 1
+                                };
+                                var potentialMemberOld = _context.PotentialMembers.Where(d => d.JobNo == potentialMember.JobNo && d.TrainClassId == potentialMember.TrainClassId).FirstOrDefault();
+                                if (potentialMemberOld != null)
+                                {
+                                    var noName = "【" + potentialMember.Name + "-" + potentialMember.JobNo + "】";
+                                    throw new ImportDataErrorException(noName + "该班级中已经存在学号或身份证号相同的学员，请核对");
+                                }
+                                _context.PotentialMembers.Add(potentialMember);
+                                _context.PotentialTrainResults.Add(potentialTrainResult);
+                                await _context.SaveChangesAsync();
+                                successCount++;
+                            }
+                            catch (ImportDataErrorException ex)
+                            {
+                                //捕获到数据错误时，继续导入，将错误信息反馈给用户
+                                DataRow rowErrorData = tableErrorData.NewRow();
+                                foreach (DataColumn column in table.Columns)
+                                    rowErrorData[column.ColumnName] = row[column.ColumnName];
+                                rowErrorData[columnErrorMessage] = ex.Message;
+                                tableErrorData.Rows.Add(rowErrorData);
+                            }
+                        }
+                        #endregion
+                        if (tableErrorData.Rows.Count > 0)
+                        {
+                            string basePath = GetErrorImportDataFilePath();
+                            string fileName = $"发展对象错误数据_{CurrentUser.LoginName}.xlsx";
+                            string fileWithPath = $"{basePath}{Path.DirectorySeparatorChar}{fileName}";
+                            Stream streamOutExcel = OfficeHelper.ExportExcelByOpenXml(tableErrorData);
+                            FileStream outExcelFile = new FileStream(fileWithPath, FileMode.Create, System.IO.FileAccess.Write);
+                            byte[] bytes = new byte[streamOutExcel.Length];
+                            streamOutExcel.Read(bytes, 0, (int)streamOutExcel.Length);
+                            outExcelFile.Write(bytes, 0, bytes.Length);
+                            outExcelFile.Close();
+                            streamOutExcel.Close();
+                            jsonResult.ErrorDataFile = $"PotentialMembers/GetErrorImportData?fileName={fileName}";
+                            jsonResult.FailCount = tableErrorData.Rows.Count;
+                            jsonResult.SuccessCount = successCount;
+                            jsonResult.Code = -2;
+                            jsonResult.Message = "部分数据导入错误";
+                        }
+                    }
+                    else
+                    {
+                        jsonResult.Code = -1;
+                        jsonResult.Message = "请选择文件";
+                    }
+                }
+                else
+                {
+                    foreach (string key in ModelState.Keys)
+                    {
+                        if (ModelState[key].Errors.Count > 0)
+                            jsonResult.Errors.Add(new ModelError
+                            {
+                                Key = key,
+                                Message = ModelState[key].Errors[0].ErrorMessage
+                            });
+                    }
+                    jsonResult.Code = -1;
+                    jsonResult.Message = "数据错误";
+                }
+
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发展对象导入错误";
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (JsonReaderException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "JSON文件内容格式错误";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
+        /// <summary>
+        /// 返回导入错误文件的存放路径
+        /// </summary>
+        /// <returns></returns>
+        private static string GetErrorImportDataFilePath()
+        {
+            string basePath = AppContext.BaseDirectory;
+            if (!basePath.EndsWith(Path.DirectorySeparatorChar))
+                basePath += Path.DirectorySeparatorChar;
+            basePath += $"ErrorImportData";
+            if (!Directory.Exists(basePath))
+                Directory.CreateDirectory(basePath);
+            return basePath;
+        }
+        /// <summary>
+        /// 返回错误导入数据
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult GetErrorImportData(string fileName)
+        {
+            string basePath = GetErrorImportDataFilePath();
+            string fileWithPath = $"{basePath}{Path.DirectorySeparatorChar}{fileName}";
+            FileStream outExcelFile = new FileStream(fileWithPath, FileMode.Open);
+            return File(outExcelFile, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "入党积极分子导入失败数据.xlsx");
+        }
+        /// <summary>
+        /// 验证工号和学号
+        /// </summary>
+        /// <param name="partyActivist"></param>
+        public void ValidateJobNo(PartyActivist partyActivist)
+        {
+            if (!StringHelper.ValidateJobNo(partyActivist.JobNo))
+                throw new PartyMemberException("学号/工号不合法");
+            int noLength = 10;
+            switch (partyActivist.PartyMemberType)
+            {
+                case PartyMemberType.教师:
+                    noLength = 10;
+                    break;
+                case PartyMemberType.本科生:
+                    noLength = 12;
+                    break;
+                case PartyMemberType.研究生:
+                    noLength = 13;
+                    break;
+            }
+            if (partyActivist.JobNo.Trim().Length != noLength)
+                throw new PartyMemberException("学号/工号长度不合法");
+        }
+        /// <summary>
+        /// 校验教工工号
+        /// </summary>
+        /// <param name="no"></param>
+        public bool ValidateImportTeacherNo(string no)
+        {
+            if (string.IsNullOrEmpty(no))
+                return false;
+            if (!StringHelper.ValidateJobNo(no))
+                return false;
+            int noLength = 10;
+            if (no.Trim().Length != noLength)
+                return false;
+            return true;
+        }
+        /// <summary>
+        /// 校验本科生学号(仅导入用）
+        /// </summary>
+        /// <param name="partyActivist"></param>
+        public bool ValidateImportUndergraduateNo(string no)
+        {
+            if (string.IsNullOrEmpty(no))
+                return false;
+            if (!StringHelper.ValidateJobNo(no))
+                return false;
+            int noLength = 12;
+            if (no.Trim().Length != noLength)
+                return false;
+            return true;
+        }
+        /// <summary>
+        /// 校验研究生学号(仅导入用）
+        /// </summary>
+        /// <param name="no"></param>
+        public bool ValidateImportPostgraduateNo(string no)
+        {
+            if (string.IsNullOrEmpty(no))
+                return false;
+            if (!StringHelper.ValidateJobNo(no))
+                return false;
+            int noLength = 13;
+            if (no.Trim().Length != noLength)
+                return false;
+            return true;
         }
         private bool PotentialMemberExists(Guid id)
         {

@@ -5,6 +5,11 @@
 }
 
 <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
+    @*<div style="display:inline-block">
+        <div class="layui-input-inline" style="width:80px">
+            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,650,function () {RefreshTable();})" class="layui-btn layui-btn-primary">+添加</a>
+        </div>
+    </div>*@
     <input type="hidden" id="TrainClassTypeId" value="@ViewBag.TrainClassTypeId" />
     <div style="display:inline-block">
         <label class="layui-form-label" style="padding:5px">学年/学期:</label>
@@ -16,14 +21,14 @@
     </div>
     @if (CurrentUser.Roles > Role.学院党委)
     {
-    <div style="display:inline-block">
-        <label class="layui-form-label" style="padding:5px;width:60px">部门:</label>
-        <div class="layui-input-inline" style="width:200px">
-            <select name="DepartmentId" asp-items="@ViewBag.DepartmentId" class="layui-input" id="DepartmentId">
-                <option value="">-请选择部门-</option>
-            </select>
+        <div style="display:inline-block">
+            <label class="layui-form-label" style="padding:5px;width:60px">部门:</label>
+            <div class="layui-input-inline" style="width:200px">
+                <select name="DepartmentId" asp-items="@ViewBag.DepartmentId" class="layui-input" id="DepartmentId">
+                    <option value="">-请选择部门-</option>
+                </select>
+            </div>
         </div>
-    </div>
     }
     <div style="display:inline-block">
         <label class="layui-form-label" style="padding:5px;width:60px">培训班:</label>
@@ -50,6 +55,13 @@
         <div class="layui-input-inline" style="width:80px">
             <a class="layui-btn layui-btn-primary" id="search" href="javascript:;" onclick="tablefilter()">
                 <i class="layui-icon layui-icon-search" style="font-size: 14px; color: #FFFFFF;"></i>查询
+            </a>
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <div class="layui-input-inline" style="width:110px">
+            <a class="layui-btn layui-btn-primary" id="import" href="javascript:;" onclick="importExcel()">
+                <i class="layui-icon layui-icon-export" style="font-size: 14px; color: #FFFFFF;"></i>导入名单
             </a>
         </div>
     </div>
@@ -218,6 +230,10 @@
                 ItemDown(id);
             })
             contextMenu.showMenu(event);
+        }
+
+        function importExcel() {
+            showImport('@Url.Action("Import")', '@Url.Action("Import")', '导入发展对象', 600, 450, function () { RefreshTable(); });
         }
         /**导出数据 */
         function exportExcel()

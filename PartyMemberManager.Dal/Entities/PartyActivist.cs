@@ -8,6 +8,9 @@ using System.Text;
 
 namespace PartyMemberManager.Dal.Entities
 {
+    /// <summary>
+    /// 入党积极分子
+    /// </summary>
     public class PartyActivist :PartyMemberBase
     {
         /// <summary>
