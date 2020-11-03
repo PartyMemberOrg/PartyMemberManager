@@ -381,10 +381,12 @@
         function showOperatMenu(event, id, totalGrade, isPass) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("打印", function () {
-                if (isPass=="false")
+                if (isPass == "false")
                     showError("成绩不合格无法打印");
                 else
-                    showPrint('@Url.Action("PrintAndPreview")' + '?fillBlank=false&idList=' + id, '打印结业证', 800, 600, function () { updatePrintStatus(id);}, function () { tablefilter(); });
+                    showPrintDate('@Url.Action("PrintDate")', function (date) {
+                        showPrint('@Url.Action("PrintAndPreview")' + '?fillBlank=false&dateTime=' + date +'&idList=' + id, '打印结业证', 800, 600, function () { updatePrintStatus(id); }, function () { tablefilter(); });
+                    });
             })
                 contextMenu.addMenuItem("录入补考成绩", function () {
                     showEdit('@Url.Action("BcGrade", "PotentialTrainResults")' + '/' + id, '@Url.Action("BcGrade", "PotentialTrainResults")', '录入补考成绩', 500, 400);
@@ -418,7 +420,9 @@
             if (datas == "")
                 showError("请选择成绩合格的发展对象");
             else
-                showPrint('@Url.Action("PrintAndPreview")' + '?fillBlank=false&idList=' + datas, '打印结业证', 800, 600, function () { updatePrintStatus(datas); }, function () { tablefilter(); });
+                showPrintDate('@Url.Action("PrintDate")', function (date) {
+                    showPrint('@Url.Action("PrintAndPreview")' + '?fillBlank=false&dateTime=' + date +'&idList=' + datas, '打印结业证', 800, 600, function () { updatePrintStatus(datas); }, function () { tablefilter(); });
+                });
         }
         /**预览选中的发展对象培训结业证 */
         function previewSelected() {
@@ -435,7 +439,9 @@
             if (datas == "")
                 showError("请选择成绩合格的发展对象");
             else
-                showPrint('@Url.Action("PrintAndPreview")' + '?fillBlank=true&idList=' + datas, '打印结业证', 800, 600, function () { updatePrintStatus(datas);}, function () { tablefilter(); });
+                showPrintDate('@Url.Action("PrintDate")', function (date) {
+                    showPrint('@Url.Action("PrintAndPreview")' + '?fillBlank=true&dateTime=' + date +'&idList=' + datas, '打印结业证', 800, 600, function () { updatePrintStatus(datas); }, function () { tablefilter(); });
+                });
         }
         /**
          * 更新打印状态

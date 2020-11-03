@@ -590,3 +590,33 @@ function TestGuid(testID) {
     }
     return false;
 }
+
+
+/**
+ * 显示日期对话框
+ * @param {String} url - 编辑页面的url
+ * @param {Function} callBack - 编辑结束并保存后的回调函数
+ */
+function showPrintDate(url,callBack) {
+    top.layui.use('layer', function () {
+        var layer = top.layui.layer;
+        layer.ready(function () {
+            var index = layer.load(2);
+            layer.open({
+                title: '选择打印日期'
+                , area: ['400px', '450px']
+                , type: 2
+                , content: [url, 'no']//第二个参数no，表示不显示iframe滚动条
+                , btnAlign: 'c'
+                , btn: ['确定']
+                , yes: function (index, layero) {
+                    var body = layer.getChildFrame('body', index);
+                    var date = $(body).find('#date').val();
+                    layer.close(index);
+                    callBack(date);
+                }
+            });
+            layer.close(index);
+        });
+    });
+}

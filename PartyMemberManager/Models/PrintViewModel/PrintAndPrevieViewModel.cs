@@ -8,6 +8,7 @@ namespace PartyMemberManager.Models.PrintViewModel
     public class PrintAndPrevieViewModel
     {
         public bool IsFillBlank { get; set; }
+        public string DateTime { get; set; }
         public string PrintIdList { get; set; }
     }
 }

@@ -290,5 +290,14 @@ namespace PartyMemberManager.Framework.Controllers
             }
             return true;
         }
+
+        /// <summary>
+        /// 打印日期
+        /// </summary>
+        /// <returns></returns>
+        public virtual IActionResult PrintDate()
+        {
+            return View("PrintDate");
+        }
     }
 }

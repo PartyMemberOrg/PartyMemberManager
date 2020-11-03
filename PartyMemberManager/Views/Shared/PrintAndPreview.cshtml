@@ -1,15 +1,15 @@
 ﻿@model PartyMemberManager.Models.PrintViewModel.PrintAndPrevieViewModel
 @if (Model.PrintIdList.Length > 250)
 {
-    <iframe id="preview" src="~/lib/pdfjs-2.4.456-dist/web/viewer.html?file=@Html.Raw(Url.Action("PreviewSelected",new { isFillBlank=Model.IsFillBlank}))" height="536" width="800" scrolling="no" frameborder="0">
+    <iframe id="preview" src="~/lib/pdfjs-2.4.456-dist/web/viewer.html?file=@Html.Raw(Url.Action("PreviewSelected",new { isFillBlank=Model.IsFillBlank,dateTime=Model.DateTime}))" height="536" width="800" scrolling="no" frameborder="0">
     </iframe>
-    <iframe id="print" src="@Url.Action("PrintSelected",new { isFillBlank=Model.IsFillBlank})" height="0" width="800" scrolling="no" frameborder="0">
+    <iframe id="print" src="@Url.Action("PrintSelected",new { isFillBlank=Model.IsFillBlank,dateTime=Model.DateTime})" height="0" width="800" scrolling="no" frameborder="0">
     </iframe>
 }
 else
 {
-    <iframe id="preview" src="~/lib/pdfjs-2.4.456-dist/web/viewer.html?file=@Html.Raw(Url.Action("PreviewSelected",new { isFillBlank=Model.IsFillBlank,idList=@Model.PrintIdList}))" height="536" width="800" scrolling="no" frameborder="0">
+    <iframe id="preview" src="~/lib/pdfjs-2.4.456-dist/web/viewer.html?file=@Html.Raw(Url.Action("PreviewSelected",new { isFillBlank=Model.IsFillBlank,dateTime=Model.DateTime,idList=@Model.PrintIdList}))" height="536" width="800" scrolling="no" frameborder="0">
     </iframe>
-    <iframe id="print" src="@Url.Action("PrintSelected",new { isFillBlank=Model.IsFillBlank,idList=@Model.PrintIdList})" height="0" width="800" scrolling="no" frameborder="0">
+    <iframe id="print" src="@Url.Action("PrintSelected",new { isFillBlank=Model.IsFillBlank,dateTime=Model.DateTime,idList=@Model.PrintIdList})" height="0" width="800" scrolling="no" frameborder="0">
     </iframe>
 }

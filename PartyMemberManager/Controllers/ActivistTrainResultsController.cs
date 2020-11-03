@@ -429,13 +429,15 @@ namespace PartyMemberManager.Controllers
         /// </summary>
         /// <param name="partyActivistId"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetPrintData(Guid id)
+        public async Task<IActionResult> GetPrintData(Guid id, DateTime? dateTime)
         {
-            PartyActivistPrintViewModel model = await GetReportData(id);
+            if (!dateTime.HasValue)
+                dateTime = DateTime.Today;
+            PartyActivistPrintViewModel model = await GetReportData(id, dateTime.Value);
             return Json(model);
         }
 
-        private async Task<PartyActivistPrintViewModel> GetReportData(Guid id)
+        private async Task<PartyActivistPrintViewModel> GetReportData(Guid id, DateTime dateTime)
         {
             ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.FindAsync(id);
             PartyActivist partyActivist = await _context.PartyActivists.FindAsync(activistTrainResult.PartyActivistId);
@@ -443,7 +445,7 @@ namespace PartyMemberManager.Controllers
             TrainClass trainClass = await _context.TrainClasses.FindAsync(partyActivist.TrainClassId);
             Department department = await _context.Departments.FindAsync(trainClass.DepartmentId);
             TrainClassType trainClassType = await _context.TrainClassTypes.FindAsync(trainClass.TrainClassTypeId);
-            DateTime dateTime = DateTime.Today;
+            //DateTime dateTime = DateTime.Today;
             //编号可能需要在录入成绩后生成，暂时生成1号结业证编号
             string no = string.Format("{0:yyyy}{1:00}{2:00}{0:MM}{3:000}", trainClass.StartTime.Value, trainClassType.Code, department.Code, 1);
             PartyActivistPrintViewModel model = new PartyActivistPrintViewModel
@@ -459,7 +461,7 @@ namespace PartyMemberManager.Controllers
             };
             return model;
         }
-        private async Task<List<PartyActivistPrintViewModel>> GetReportDatas(Guid[] ids)
+        private async Task<List<PartyActivistPrintViewModel>> GetReportDatas(Guid[] ids, DateTime dateTime)
         {
             List<PartyActivistPrintViewModel> datas = new List<PartyActivistPrintViewModel>();
             foreach (Guid id in ids)
@@ -473,7 +475,7 @@ namespace PartyMemberManager.Controllers
                 TrainClass trainClass = await _context.TrainClasses.FindAsync(partyActivist.TrainClassId);
                 Department department = await _context.Departments.FindAsync(trainClass.DepartmentId);
                 TrainClassType trainClassType = await _context.TrainClassTypes.FindAsync(trainClass.TrainClassTypeId);
-                DateTime dateTime = DateTime.Today;
+                //DateTime dateTime = DateTime.Today;
                 //编号可能需要在录入成绩后生成，暂时生成1号结业证编号
                 string no = null;
                 if (string.IsNullOrEmpty(activistTrainResult.CertificateNumber))
@@ -511,15 +513,15 @@ namespace PartyMemberManager.Controllers
             return datas;
         }
 
-        [Route("ActivistTrainResults/PrintSelected/{isFillBlank}/{idList?}")]
-        public async Task<IActionResult> PrintSelected(string idList, bool isFillBlank = false)
+        [Route("ActivistTrainResults/PrintSelected/{isFillBlank}/{dateTime}/{idList?}")]
+        public async Task<IActionResult> PrintSelected(string idList, bool isFillBlank = false, DateTime? dateTime = null)
         {
             try
             {
                 if (string.IsNullOrEmpty(idList))
                     idList = HttpContext.Session.GetString(printSessionKey);
                 Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
-                var stream = await PrintPdf(ids, isFillBlank, false);
+                var stream = await PrintPdf(ids, isFillBlank, false, dateTime);
                 FileStreamResult fileStreamResult = File(stream, "application/pdf");
                 return fileStreamResult;
             }
@@ -533,15 +535,15 @@ namespace PartyMemberManager.Controllers
             }
         }
 
-        [Route("ActivistTrainResults/PreviewSelected/{isFillBlank}/{idList?}")]
-        public async Task<IActionResult> PreviewSelected(string idList, bool isFillBlank = false)
+        [Route("ActivistTrainResults/PreviewSelected/{isFillBlank}/{dateTime}/{idList?}")]
+        public async Task<IActionResult> PreviewSelected(string idList, bool isFillBlank = false, DateTime? dateTime = null)
         {
             try
             {
                 if (string.IsNullOrEmpty(idList))
                     idList = HttpContext.Session.GetString(printSessionKey);
                 Guid[] ids = idList.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToArray();
-                var stream = await PrintPdf(ids, isFillBlank, true);
+                var stream = await PrintPdf(ids, isFillBlank, true, dateTime);
                 FileStreamResult fileStreamResult = File(stream, "application/pdf");
                 return fileStreamResult;
             }
@@ -561,9 +563,11 @@ namespace PartyMemberManager.Controllers
         /// <param name="ids"></param>
         /// <param name="isFillBlank">//如果套打，则只打印空</param>
         /// <returns></returns>
-        public async Task<Stream> PrintPdf(Guid[] ids, bool isFillBlank = false, bool isPreview = false)
+        public async Task<Stream> PrintPdf(Guid[] ids, bool isFillBlank = false, bool isPreview = false, DateTime? dateTime = null)
         {
-            List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids); ;
+            if (!dateTime.HasValue)
+                dateTime = DateTime.Today;
+            List<PartyActivistPrintViewModel> partyActivistPrintViewModels = await GetReportDatas(ids, dateTime.Value);
             if (partyActivistPrintViewModels.Count == 0)
                 throw new PartyMemberException("选择的所有发展对象成绩均不合格，无法打印");
             List<PdfData> pdfDatas = new List<PdfData>();
@@ -1284,13 +1288,14 @@ namespace PartyMemberManager.Controllers
         /// </summary>
         /// <param name="idList"></param>
         /// <returns></returns>
-        public IActionResult PrintAndPreview(string idList, bool fillBlank = false)
+        public IActionResult PrintAndPreview(string idList, bool fillBlank = false, DateTime? dateTime = null)
         {
             //为了解决idList超过260各字符，get请求会报错，采用session解决
             HttpContext.Session.SetString(printSessionKey, idList);
             PrintAndPrevieViewModel printAndPrevieViewModel = new PrintAndPrevieViewModel
             {
                 IsFillBlank = fillBlank,
+                DateTime=string.Format("{0:yyyy-MM-dd}",dateTime),
                 PrintIdList = idList
             };
             return View(printAndPrevieViewModel);
