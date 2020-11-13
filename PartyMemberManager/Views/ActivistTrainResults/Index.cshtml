@@ -50,6 +50,7 @@
             <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',800,800)" class="layui-btn layui-btn-primary">+添加</a>
         </div>*@
     <input type="hidden" id="TrainClassTypeId" value="@ViewBag.TrainClassTypeId" />
+    <input type="hidden" id="CurrentUserRole" value="@CurrentUser.Roles" />
     <div style="display:inline-block">
         <label class="layui-form-label" style="padding:5px">学年/学期:</label>
         <div class="layui-input-inline" style="width:240px">
@@ -181,6 +182,12 @@
         function Delete(id) {
             var url="@Url.Action("Delete")";
             DeleteData(url, id, function () {
+                tableObject.reload();
+            });
+        }
+        function ResetPrint(id) {
+            var url="@Url.Action("ResetPrint")";
+            ResetPrintData(url, id, function () {
                 tableObject.reload();
             });
         }
@@ -409,7 +416,7 @@
             }
         }
         /**显示操作菜单 */
-        function showOperatMenu(event, id,totalGrade,isPass) {
+        function showOperatMenu(event, id,totalGrade,isPass,isPrint,role) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("打印", function () {
                 if (isPass == "false")
@@ -422,15 +429,17 @@
                 contextMenu.addMenuItem("录入补考成绩", function () {
                     showEdit('@Url.Action("BcGrade", "ActivistTrainResults")' + '/' + id, '@Url.Action("BcGrade", "ActivistTrainResults")', '录入补考成绩', 500, 400);
                 })
-            @*contextMenu.addMenuItem("删除", function () {
-                Delete(id);
-            })*@
             contextMenu.addMenuItem("上移", function () {
                 ItemUp(id);
             })
             contextMenu.addMenuItem("下移", function () {
                 ItemDown(id);
             })
+            if (isPrint == "true") {
+                contextMenu.addMenuItem("重置打印状态", function () {
+                    ResetPrint(id);
+                })
+            }
             contextMenu.showMenu(event);
         }
         /**从Excel文件中导入入党积极分子 */
@@ -524,7 +533,7 @@
         }
     </script>
     <script type="text/html" id="optTpl">
-        <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}','{{d.totalGrade}}','{{d.isPass}}')" style="padding-left:10px;padding-right:10px;">
+        <a class="operate" href="javascript:;" onmousedown="showOperatMenu(event,'{{d.id}}','{{d.totalGrade}}','{{d.isPass}}','{{d.isPrint}}')" style="padding-left:10px;padding-right:10px;">
             <img src="~/images/gridmenu1x.png" />
         </a>
     </script>

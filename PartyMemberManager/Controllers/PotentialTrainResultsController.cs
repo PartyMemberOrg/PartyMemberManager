@@ -1078,7 +1078,45 @@ namespace PartyMemberManager.Controllers
             }
             return Json(jsonResult);
         }
+        /// <summary>
+        /// 重置打印数据（通过ajax调用)
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost, ActionName("ResetPrint")]
+        public virtual async Task<IActionResult> ResetPrint(Guid? id)
+        {
+            JsonResultNoData jsonResult = new JsonResultNoData
+            {
+                Code = 0,
+                Message = "重置打印成功"
+            };
 
+            try
+            {
+                if (id == null)
+                    throw new PartyMemberException("未传入重置项目的Id");
+                var data = await _context.Set<PotentialTrainResult>().Include(d => d.PotentialMember).SingleOrDefaultAsync(m => m.Id == id);
+                if (data == null)
+                    throw new PartyMemberException("未找到要重置打印的数据");
+                data.PotentialMember.IsPrint = false;
+                _context.Set<PotentialMember>().Update(data.PotentialMember);
+                await _context.SaveChangesAsync();
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Message = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Message = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
         private bool PotentialTrainResultExists(Guid id)
         {
             return _context.PotentialTrainResults.Any(e => e.Id == id);

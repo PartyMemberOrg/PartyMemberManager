@@ -56,7 +56,56 @@ function DeleteData(url, id, callFun) {
         });
     })
 }
-
+/**
+* 重置打印状态
+* @param {String} url - 重置打印操作url，通过ajax调用
+* @param {String} id - 重置打印数据的id
+* @param  {Function} callFun - 重置打印成功或失败后的回调函数
+*/
+function ResetPrintData(url, id, callFun) {
+    showConfirm('确定要重置本条数据的打印吗?', function () {
+        //var verification_code = "";
+        $.ajax({
+            url: url,
+            data: {
+                "id": id//, "verification_code": verification_code
+            },
+            type: "post",
+            dataType: "json",
+            success: function (response) {
+                if (response.code == 0) {
+                    if (callFun != null) {
+                        callFun();
+                        showMessage("重置打印成功");
+                    }
+                    else {
+                        showMessage("重置打印成功");
+                        location.reload();
+                    }
+                    //showMessage("数据删除成功", function () {
+                    //    if (callFun != null)
+                    //        callFun();
+                    //    else
+                    //        //刷新页面
+                    //        location.reload();
+                    //});
+                }
+                else {
+                    showError(response.message, function () {
+                        if (callFun != null)
+                            callFun();
+                        else
+                            //刷新页面
+                            location.reload();
+                    });
+                }
+            },
+            error: function () {
+                showError("重置打印数据时发生错误");
+            }
+        });
+    })
+}
 /**
  * 显示编辑对话框
  * @param {String} url - 编辑页面的url
