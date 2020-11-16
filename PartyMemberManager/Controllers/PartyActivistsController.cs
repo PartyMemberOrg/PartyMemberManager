@@ -965,7 +965,7 @@ namespace PartyMemberManager.Controllers
                     noLength = 13;
                     break;
                 case PartyMemberType.预科生:
-                    noLength = 8;
+                    noLength = 9;
                     break;
             }
             if (partyActivist.JobNo.Trim().Length != noLength)
