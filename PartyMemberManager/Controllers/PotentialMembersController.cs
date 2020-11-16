@@ -1206,6 +1206,9 @@ namespace PartyMemberManager.Controllers
                 case PartyMemberType.研究生:
                     noLength = 13;
                     break;
+                case PartyMemberType.预科生:
+                    noLength = 8;
+                    break;
             }
             if (potentialMember.JobNo.Trim().Length != noLength)
                 throw new PartyMemberException("学号/工号长度不合法");

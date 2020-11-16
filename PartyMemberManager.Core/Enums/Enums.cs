@@ -60,7 +60,8 @@ namespace PartyMemberManager.Core.Enums
     {
         本科生 = 1,
         教师 = 2,
-        研究生=3
+        研究生=3,
+        预科生=4
     }
     /// <summary>
     /// 授权类型

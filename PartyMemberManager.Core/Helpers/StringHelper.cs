@@ -130,7 +130,7 @@ namespace PartyMemberManager.Core.Helpers
         {
             if (string.IsNullOrEmpty(jobNo))
                 return true;
-            string pattern = @"(^\d{12}$)|(^10741\d{5}$)|(^\d{13}$)";
+            string pattern = @"(^\d{12}$)|(^10741\d{5}$)|(^\d{13}$)|(^\d{8}$)";
             if (Regex.IsMatch(jobNo, pattern))
                 return true;
             else
