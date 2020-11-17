@@ -689,6 +689,11 @@ namespace PartyMemberManager.Controllers
                                         if (!ValidateImportPostgraduateNo(studentNo))
                                             throw new ImportDataErrorException($"第{rowIndex}行数据中的【{studentNoField}】不合法");
                                     }
+                                    else if(model.PartyMemberType == PartyMemberType.预科生)
+                                    {
+                                        if (!ValidateImportPreparatoryStudentNo(studentNo))
+                                            throw new ImportDataErrorException($"第{rowIndex}行数据中的【{studentNoField}】不合法");
+                                    }
                                     else
                                     {
                                         if (!ValidateImportUndergraduateNo(studentNo))
@@ -982,6 +987,21 @@ namespace PartyMemberManager.Controllers
             if (!StringHelper.ValidateJobNo(no))
                 return false;
             int noLength = 10;
+            if (no.Trim().Length != noLength)
+                return false;
+            return true;
+        }
+        /// <summary>
+        /// 校验预科生学号(仅导入用）
+        /// </summary>
+        /// <param name="partyActivist"></param>
+        public bool ValidateImportPreparatoryStudentNo(string no)
+        {
+            if (string.IsNullOrEmpty(no))
+                return false;
+            if (!StringHelper.ValidateJobNo(no))
+                return false;
+            int noLength = 9;
             if (no.Trim().Length != noLength)
                 return false;
             return true;
