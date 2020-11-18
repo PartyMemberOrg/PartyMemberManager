@@ -111,6 +111,7 @@ namespace ExcelCore
                                                     dataRow[j] = row.GetCell(j).ToString();
                                                     break;
                                                 case 14://日期格式
+                                                case 27:
                                                 case 31:
                                                 case 57:
                                                 case 58:
@@ -118,6 +119,10 @@ namespace ExcelCore
                                                 case 32:
                                                     DateTime timeValue = row.GetCell(j).DateCellValue;
                                                     dataRow[j] = timeValue.ToString("yyyy-MM-dd HH:mm:ss");
+                                                    break;
+                                                case 164:
+                                                    double numberValue = row.GetCell(j).NumericCellValue;
+                                                    dataRow[j] = row.GetCell(j).ToString();
                                                     break;
                                                 default:
                                                     dataRow[j] = row.GetCell(j).ToString();
@@ -139,7 +144,7 @@ namespace ExcelCore
                     }
                 }
                 fs.Close();
-                if(isByOpenXmlSDK)
+                if (isByOpenXmlSDK)
                 {
                     fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
                     data = ReadStreamToDataTableByOpenXml(fs, sheetName, isFirstRowColumn);
