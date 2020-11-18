@@ -447,7 +447,26 @@ namespace PartyMemberManager.Controllers
             TrainClassType trainClassType = await _context.TrainClassTypes.FindAsync(trainClass.TrainClassTypeId);
             //DateTime dateTime = DateTime.Today;
             //编号可能需要在录入成绩后生成，暂时生成1号结业证编号
-            string no = string.Format("{0:yyyy}{1:00}{2:00}{0:MM}{3:000}", trainClass.StartTime.Value, trainClassType.Code, department.Code, 1);
+            string no = activistTrainResult.CertificateNumber;
+            if (string.IsNullOrEmpty(activistTrainResult.CertificateNumber))
+            {
+                ActivistTrainResult activistTrainResultLast = await _context.ActivistTrainResults
+                    .Include(p => p.PartyActivist)
+                    .Include(p => p.PartyActivist.TrainClass)
+                    .Include(p => p.PartyActivist.TrainClass.YearTerm)
+                    .Where(p => p.PartyActivist.TrainClass.TrainClassTypeId == trainClass.TrainClassTypeId
+                     && p.PartyActivist.TrainClass.DepartmentId == department.Id
+                     && p.PartyActivist.TrainClass.YearTerm.StartYear == yearTerm.StartYear
+                    && p.CertificateOrder > 0).OrderByDescending(p => p.CertificateOrder).FirstOrDefaultAsync();
+                int certificateOrder = 1;
+                if (activistTrainResultLast != null)
+                    certificateOrder = activistTrainResultLast.CertificateOrder.Value + 1;
+                no = string.Format("{0:yyyy}{1:00}{2:00}{0:MM}{3:000}", trainClass.StartTime.Value, trainClassType.Code, department.Code, certificateOrder);
+                //更新证书编号
+                activistTrainResult.CertificateOrder = certificateOrder;
+                activistTrainResult.CertificateNumber = no;
+            }
+            //no = string.Format("{0:yyyy}{1:00}{2:00}{0:MM}{3:000}", trainClass.StartTime.Value, trainClassType.Code, department.Code, 1);
             PartyActivistPrintViewModel model = new PartyActivistPrintViewModel
             {
                 No = no,
@@ -459,6 +478,7 @@ namespace PartyMemberManager.Controllers
                 Month = dateTime.Month.ToString(),
                 Day = dateTime.Day.ToString()
             };
+            await _context.SaveChangesAsync();
             return model;
         }
         private async Task<List<PartyActivistPrintViewModel>> GetReportDatas(Guid[] ids, DateTime dateTime)
@@ -480,7 +500,14 @@ namespace PartyMemberManager.Controllers
                 string no = null;
                 if (string.IsNullOrEmpty(activistTrainResult.CertificateNumber))
                 {
-                    ActivistTrainResult activistTrainResultLast = await _context.ActivistTrainResults.Include(p => p.PartyActivist).Where(p => p.PartyActivist.TrainClassId == trainClass.Id && p.CertificateOrder > 0).OrderByDescending(p => p.CertificateOrder).FirstOrDefaultAsync();
+                    ActivistTrainResult activistTrainResultLast = await _context.ActivistTrainResults
+                        .Include(p => p.PartyActivist)
+                        .Include(p=>p.PartyActivist.TrainClass)
+                        .Include(p=>p.PartyActivist.TrainClass.YearTerm)
+                        .Where(p => p.PartyActivist.TrainClass.TrainClassTypeId==trainClass.TrainClassTypeId
+                         && p.PartyActivist.TrainClass.DepartmentId == department.Id
+                         && p.PartyActivist.TrainClass.YearTerm.StartYear == yearTerm.StartYear
+                        && p.CertificateOrder > 0).OrderByDescending(p => p.CertificateOrder).FirstOrDefaultAsync();
                     int certificateOrder = 1;
                     if (activistTrainResultLast != null)
                         certificateOrder = activistTrainResultLast.CertificateOrder.Value + 1;

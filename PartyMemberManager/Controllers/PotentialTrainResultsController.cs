@@ -416,7 +416,14 @@ namespace PartyMemberManager.Controllers
                 string no = null;
                 if (string.IsNullOrEmpty(potentialTrainResult.CertificateNumber))
                 {
-                    PotentialTrainResult potentialTrainResultLast = await _context.PotentialTrainResults.Include(p => p.PotentialMember).Where(p => p.PotentialMember.TrainClassId == trainClass.Id && p.CertificateOrder > 0).OrderByDescending(p => p.CertificateOrder).FirstOrDefaultAsync();
+                    PotentialTrainResult potentialTrainResultLast = await _context.PotentialTrainResults
+                        .Include(p => p.PotentialMember)
+                        .Include(p=>p.PotentialMember.TrainClass)
+                        .Include(p => p.PotentialMember.TrainClass.YearTerm)
+                        .Where(p =>p.PotentialMember.TrainClass.TrainClassTypeId==trainClass.TrainClassTypeId
+                        &&p.PotentialMember.TrainClass.DepartmentId==department.Id
+                        &&p.PotentialMember.TrainClass.YearTerm.StartYear==yearTerm.StartYear
+                        && p.CertificateOrder > 0).OrderByDescending(p => p.CertificateOrder).FirstOrDefaultAsync();
                     int certificateOrder = 1;
                     if (potentialTrainResultLast != null)
                         certificateOrder = potentialTrainResultLast.CertificateOrder.Value + 1;

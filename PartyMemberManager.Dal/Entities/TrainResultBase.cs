@@ -54,6 +54,7 @@ namespace PartyMemberManager.Dal.Entities
         /// 证书编号
         /// </summary>
         [DisplayName("证书编号")]
+        [StringLength(50)]
         public string CertificateNumber { get; set; }
     }
 }
