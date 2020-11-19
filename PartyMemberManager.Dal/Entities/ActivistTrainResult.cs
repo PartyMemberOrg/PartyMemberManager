@@ -48,6 +48,13 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("培训班名称")]
         [NotMapped]
         public string TrainClassDisplay { get => PartyActivist == null ? "" : PartyActivist.TrainClass==null?"":PartyActivist.TrainClass.Name; }
+        
+        /// <summary>
+        /// 批次
+        /// </summary>
+        [DisplayName("批次")]
+        [NotMapped]
+        public string BatchDisplay { get => PartyActivist == null ? "" : PartyActivist.TrainClass == null ? "" : PartyActivist.TrainClass.Batch.ToString(); }
 
         /// <summary>
         /// 是否已打印

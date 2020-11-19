@@ -54,7 +54,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(Guid? yearTermId, Guid? departmentId, Guid? trainClassId, string partyMemberType, string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? yearTermId, Guid? departmentId, Guid? trainClassId, string partyMemberType,BatchType batch, string keyword, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<PotentialMember> jsonResult = new JsonResultDatasModel<PotentialMember>
             {
@@ -84,6 +84,10 @@ namespace PartyMemberManager.Controllers
                 if (partyMemberType != null)
                 {
                     filter = filter.And(d => d.PartyMemberType == (PartyMemberType)Enum.Parse(typeof(PartyMemberType), partyMemberType));
+                }
+                if ((int)batch > 0)
+                {
+                    filter = filter.And(d => d.TrainClass.Batch == batch);
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {

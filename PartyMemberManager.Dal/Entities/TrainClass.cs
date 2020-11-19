@@ -27,6 +27,18 @@ namespace PartyMemberManager.Dal.Entities
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public Guid YearTermId { get; set; }
         /// <summary>
+        /// 批次
+        /// </summary>
+        [DisplayName("批次")]
+        public BatchType Batch { get; set; }
+
+        /// <summary>
+        /// 批次
+        /// </summary>
+        [DisplayName("批次")]
+        [NotMapped]
+        public string BatchDisplay { get => Batch.ToString(); }
+        /// <summary>
         /// 年度学期
         /// </summary>
         [DisplayName("学年/学期")]

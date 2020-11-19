@@ -47,6 +47,14 @@ namespace PartyMemberManager.Dal.Entities
         [NotMapped]
         public string TrainClassDisplay { get => PotentialMember == null ? "" : PotentialMember.TrainClass == null ? "" : PotentialMember.TrainClass.Name; }
 
+
+        /// <summary>
+        /// 批次
+        /// </summary>
+        [DisplayName("批次")]
+        [NotMapped]
+        public string BatchDisplay { get => PotentialMember == null ? "" : PotentialMember.TrainClass == null ? "" : PotentialMember.TrainClass.Batch.ToString(); }
+
         /// <summary>
         /// 是否已打印
         /// </summary>

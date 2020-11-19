@@ -60,7 +60,7 @@ namespace PartyMemberManager.Controllers
             ViewBag.TrainClassTypeId = _context.TrainClassTypes.Where(d => d.Code == "42").Select(d => d.Id).SingleOrDefault();
             return View(await pMContext.ToListAsync());
         }
-        public async Task<IActionResult> GetDatasWithFilter(Guid? yearTermId, Guid? departmentId, string isPass, string isPrint, string isBcGrade, Guid? trainClassId, string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? yearTermId, Guid? departmentId, string isPass, string isPrint, string isBcGrade, Guid? trainClassId, string keyword,BatchType batch, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<PotentialTrainResult> jsonResult = new JsonResultDatasModel<PotentialTrainResult>
             {
@@ -101,6 +101,10 @@ namespace PartyMemberManager.Controllers
                 if (trainClassId != null)
                 {
                     filter = filter.And(d => d.PotentialMember.TrainClassId == trainClassId);
+                }
+                if ((int)batch > 0)
+                {
+                    filter = filter.And(d => d.PotentialMember.TrainClass.Batch == batch);
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {

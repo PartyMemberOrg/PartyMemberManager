@@ -48,7 +48,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(Guid? trainClassTypeId, Guid? departmentId, string keyword, Guid? yearTermId, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? trainClassTypeId, Guid? departmentId, string keyword, Guid? yearTermId,BatchType batch, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<TrainClass> jsonResult = new JsonResultDatasModel<TrainClass>
             {
@@ -74,6 +74,10 @@ namespace PartyMemberManager.Controllers
                 if (keyword != null)
                 {
                     filter = filter.And(d => d.Name.Contains(keyword));
+                }
+                if ((int)batch>0)
+                {
+                    filter = filter.And(d => d.Batch==batch);
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {
@@ -217,7 +221,7 @@ namespace PartyMemberManager.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("YearTermId,Name,TrainClassTypeId,StartTime,PsGradeProportion,CsGradeProportion,SjGradeProportion,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] TrainClass trainClass)
+        public override async Task<IActionResult> Save([Bind("YearTermId,Name,TrainClassTypeId,StartTime,Batch,PsGradeProportion,CsGradeProportion,SjGradeProportion,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] TrainClass trainClass)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -226,6 +230,8 @@ namespace PartyMemberManager.Controllers
             };
             try
             {
+                if (trainClass.Batch.ToString() == "0")
+                    throw new PartyMemberException("请选择批次");
                 if (ModelState.IsValid)
                 {
                     TrainClass trainClassInDb = await _context.TrainClasses.FindAsync(trainClass.Id);
@@ -239,6 +245,7 @@ namespace PartyMemberManager.Controllers
                         trainClassInDb.PsGradeProportion = trainClass.PsGradeProportion;
                         trainClassInDb.CsGradeProportion = trainClass.CsGradeProportion;
                         trainClassInDb.SjGradeProportion = trainClass.SjGradeProportion;
+                        trainClassInDb.Batch = trainClass.Batch;
                         trainClassInDb.Id = trainClass.Id;
                         trainClassInDb.CreateTime = DateTime.Now;
                         trainClassInDb.OperatorId = CurrentUser.Id;

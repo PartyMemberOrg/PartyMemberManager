@@ -30,6 +30,13 @@ namespace PartyMemberManager.Dal.Entities
         public string TrainClassDisplay { get => TrainClass == null ? "" : TrainClass.Name; }
 
         /// <summary>
+        /// 批次
+        /// </summary>
+        [DisplayName("批次")]
+        [NotMapped]
+        public string BatchDisplay { get => TrainClass == null ? "" : TrainClass.Batch.ToString(); }
+
+        /// <summary>
         /// 学年/学期
         /// </summary>
         [DisplayName("学年/学期")]

@@ -282,7 +282,7 @@ namespace PartyMemberManager.Controllers
                         }
                         _context.Add(provinceCadreTrain);
                         var provinceTrainClass = await _context.ProvinceTrainClasses.FindAsync(provinceCadreTrain.ProvinceTrainClassId);
-                        provinceTrainClass.Total += 1;
+                        provinceTrainClass.Total = provinceTrainClass.Total.HasValue ? provinceTrainClass.Total + 1 : 1;
                         _context.Update(provinceTrainClass);
                     }
                     await _context.SaveChangesAsync();

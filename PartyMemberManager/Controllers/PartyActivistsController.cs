@@ -57,7 +57,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(Guid? yearTermId, Guid? departmentId, Guid? trainClassId, string partyMemberType, string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? yearTermId, Guid? departmentId, Guid? trainClassId, string partyMemberType,BatchType batch, string keyword, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<PartyActivist> jsonResult = new JsonResultDatasModel<PartyActivist>
             {
@@ -83,6 +83,10 @@ namespace PartyMemberManager.Controllers
                 if (keyword != null)
                 {
                     filter = filter.And(d => d.Name.Contains(keyword) || d.JobNo.Contains(keyword));
+                }
+                if ((int)batch >0)
+                {
+                    filter = filter.And(d => d.TrainClass.Batch ==batch);
                 }
                 if (partyMemberType != null)
                 {

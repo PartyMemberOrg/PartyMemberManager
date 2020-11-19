@@ -224,6 +224,7 @@ namespace PartyMemberManager.Controllers
                         //provinceTrainClass.Id = Guid.NewGuid();
                         provinceTrainClass.CreateTime = DateTime.Now;
                         provinceTrainClass.OperatorId = CurrentUser.Id;
+                        provinceTrainClass.Total = 0;
                         provinceTrainClass.Ordinal = _context.ProvinceTrainClasses.Count() + 1;
                         _context.Add(provinceTrainClass);
                     }

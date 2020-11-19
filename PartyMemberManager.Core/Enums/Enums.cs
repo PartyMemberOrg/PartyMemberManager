@@ -64,6 +64,16 @@ namespace PartyMemberManager.Core.Enums
         预科生=4
     }
     /// <summary>
+    /// 批次
+    /// </summary>
+    public enum BatchType
+    {
+        第一期 = 1,
+        第二期 = 2,
+        第三期 = 3,
+        第四期 = 4
+    }
+    /// <summary>
     /// 授权类型
     /// </summary>
     public enum RightType

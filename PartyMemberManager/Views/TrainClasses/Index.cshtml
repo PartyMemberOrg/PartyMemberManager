@@ -17,6 +17,14 @@
             </select>
         </div>
     </div>
+    <div style="display:inline-block">
+        <label class="layui-form-label" style="padding:5px;width:60px">批次:</label>
+        <div class="layui-input-inline" style="width:200px">
+            <select name="batch" asp-items="@Html.GetEnumSelectList(typeof(BatchType))" class="layui-input" id="batch">
+                <option value="">-请选择批次-</option>
+            </select>
+        </div>
+    </div>
     @if (CurrentUser.Roles > Role.学院党委)
     {
         <div style="display:inline-block">
@@ -117,6 +125,7 @@
                         { field: 'termDisplay', title: '学年/学期', align: 'center' },
                         { field: 'name', title:'名称', align: 'center' },
                         { field: 'trainClassTypeDisplay', title: '培训班类型', align: 'center', templet: '#optClassTypeNameTpl' },
+                        { field: 'batchDisplay', title: '批次', align: 'center'},
                         { field: 'departmentDisplay', title: '所属部门', align: 'center', templet: '#optDepartmentNameTpl' },
                         { field: 'startTime', title: '开始时间', align: 'center', templet: function (d) { return formatDate(d.startTime, 'yyyy-MM-dd');}},
                         { field: 'psGradeProportion', title: '平时成绩比例', align: 'center' },
@@ -143,6 +152,7 @@
                         yearTermId: $("#YearTermId").val(),
                         departmentId: $("#departmentId").val(),
                         keyword: $("#keyword").val(),
+                        batch: $("#batch").val()
                     }
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);

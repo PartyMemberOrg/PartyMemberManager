@@ -28,6 +28,19 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("学年/学期")]
         [NotMapped]
         public string YearTermDisplay { get => YearTerm == null ? "" : YearTerm.Name; }
+
+        /// <summary>
+        /// 批次
+        /// </summary>
+        [DisplayName("批次")]
+        public BatchType Batch { get; set; }
+
+        /// <summary>
+        /// 批次
+        /// </summary>
+        [DisplayName("批次")]
+        [NotMapped]
+        public string BatchDisplay { get => Batch.ToString(); }
         /// <summary>
         /// 所属部门
         /// </summary>

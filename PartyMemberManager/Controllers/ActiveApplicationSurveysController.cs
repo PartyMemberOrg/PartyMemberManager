@@ -39,7 +39,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId,Guid? yearTermId, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? departmentId,Guid? yearTermId,BatchType batch, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<ActiveApplicationSurvey> jsonResult = new JsonResultDatasModel<ActiveApplicationSurvey>
             {
@@ -57,6 +57,10 @@ namespace PartyMemberManager.Controllers
                 if (yearTermId != null)
                 {
                     filter = filter.And(d => d.YearTermId == yearTermId);
+                }
+                if ((int)batch > 0)
+                {
+                    filter = filter.And(d => d.Batch == batch);
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {
@@ -146,7 +150,7 @@ namespace PartyMemberManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("SchoolArea,YearTermId,Total,PartyMemberType,TrainTotal,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ActiveApplicationSurvey activeApplicationSurvey)
+        public override async Task<IActionResult> Save([Bind("SchoolArea,YearTermId,Total,PartyMemberType,Batch,TrainTotal,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ActiveApplicationSurvey activeApplicationSurvey)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -157,12 +161,15 @@ namespace PartyMemberManager.Controllers
             {
                 if (activeApplicationSurvey.PartyMemberType.ToString() == "0")
                     throw new PartyMemberException("请选择类型");
+                if ((int)activeApplicationSurvey.Batch == 0)
+                    throw new PartyMemberException("请选择批次");
                 if (ModelState.IsValid)
                 {
                     ActiveApplicationSurvey activeApplicationSurveyInDb = await _context.ActiveApplicationSurveies.FindAsync(activeApplicationSurvey.Id);
                     if (activeApplicationSurveyInDb != null)
                     {
                         activeApplicationSurveyInDb.YearTermId = activeApplicationSurvey.YearTermId;
+                        activeApplicationSurveyInDb.Batch = activeApplicationSurvey.Batch;
                         activeApplicationSurveyInDb.PartyMemberType = activeApplicationSurvey.PartyMemberType;
                         activeApplicationSurveyInDb.Total = activeApplicationSurvey.Total;
                         activeApplicationSurveyInDb.TrainTotal = activeApplicationSurvey.TrainTotal;

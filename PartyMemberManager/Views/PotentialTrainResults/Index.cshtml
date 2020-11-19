@@ -18,6 +18,14 @@
             </select>
         </div>
     </div>
+    <div style="display:inline-block">
+        <label class="layui-form-label" style="padding:5px;width:60px">批次:</label>
+        <div class="layui-input-inline" style="width:200px">
+            <select name="batch" asp-items="@Html.GetEnumSelectList(typeof(BatchType))" class="layui-input" id="batch">
+                <option value="">-请选择批次-</option>
+            </select>
+        </div>
+    </div>
     @if (CurrentUser.Roles > Role.学院党委)
     {
         <div style="display:inline-block">
@@ -190,6 +198,7 @@
                        // ,
                         { type: 'checkbox', fixed: 'left' },
                         { field: 'yearTermDisplay', title: '学年/学期', align: 'center', templet: '#optYearTermTpl' },
+                        { field: 'batchDisplay', title: '批次', align: 'center', templet: '#optBatchTpl' },
                         { field: 'trainClassDisplay', title: '培训班', align: 'center', templet: '#optTrainClassDisplayTpl' },
                         { field: 'partyActivistJobNoDisplay', title: '学号/工号', align: 'center', templet: '#optPartyActivistJobNoTpl' },
                         { field: 'partyActivistNameDisplay', title: '姓名', align: 'center', templet: '#optPartyActivistNameoTpl' },
@@ -269,7 +278,8 @@
                         isPass: $("#isPass").val(),
                         isPrint: $("#isPrint").val(),
                         keyword: $("#keyword").val(),
-                        isBcGrade: $("#isBcGrade").val()
+                        isBcGrade: $("#isBcGrade").val(),
+                        batch: $("#batch").val()
                     }
                     , done: function (res, curr, count) {
                         //fillPatientList(res, curr, count);
@@ -505,6 +515,9 @@
     </script>
     <script type="text/html" id="optIdoTpl">
         {{d.id}}
+    </script>
+    <script type="text/html" id="optBatchTpl">
+        {{d.batchDisplay}}
     </script>
     <script>
         function filterTrainClass() {
