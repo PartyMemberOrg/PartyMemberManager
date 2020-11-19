@@ -118,6 +118,9 @@ namespace PartyMemberManager.Dal
                 .WithMany()
                 .HasForeignKey(a => a.PartyActivistId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ActivistTrainResult>()
+                .HasIndex(p => p.CertificateNumber).IsUnique(true);
+
             modelBuilder.Entity<PotentialMember>()
                 .HasOne(p => p.TrainClass)
                 .WithMany()
@@ -132,6 +135,8 @@ namespace PartyMemberManager.Dal
                 .WithMany()
                 .HasForeignKey(a => a.PotentialMemberId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<PotentialTrainResult>()
+                .HasIndex(p => p.CertificateNumber).IsUnique(true);
 
             modelBuilder.Entity<ProvinceCadreTrain>()
                 .HasOne(p => p.ProvinceTrainClass)
