@@ -125,7 +125,7 @@ namespace PartyMemberManager.Framework.Controllers
         /// <param name="term"></param>
         /// <param name="departmentId"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetTrainClassDatas(Guid? trainClassTypeId, Guid? yearTermId, Guid? departmentId)
+        public async Task<IActionResult> GetTrainClassDatas(Guid? trainClassTypeId, Guid? yearTermId, Guid? departmentId,BatchType batch)
         {
             JsonResultModel<TrainClass> jsonResult = new JsonResultModel<TrainClass>
             {
@@ -148,6 +148,10 @@ namespace PartyMemberManager.Framework.Controllers
                 if (departmentId != null)
                 {
                     filter = filter.And(d => d.DepartmentId == departmentId);
+                }
+                if ((int)batch >0)
+                {
+                    filter = filter.And(d => d.Batch == batch);
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {

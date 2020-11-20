@@ -74,6 +74,9 @@
             $("#DepartmentId").change(function () {
                 filterTrainClass();
             });
+            $("#Batch").change(function () {
+                filterTrainClass();
+            });
             filterTrainClass();
         });
         /**过滤培训班 */
@@ -82,8 +85,8 @@
             var trainClassTypeId = $("#TrainClassTypeId").val();
             var yearTermId = $("#YearTermId").val();
             var departmentId = $("#DepartmentId").val();
-            var trainClassId = $("#TrainClassId").val();
-            var where = { trainClassTypeId: trainClassTypeId, yearTermId: yearTermId, departmentId: departmentId };
+            var batch = $("#Batch").val();
+            var where = { trainClassTypeId: trainClassTypeId, yearTermId: yearTermId, departmentId: departmentId,batch:batch};
             $.ajax({
                 url: url,
                 data: where,
