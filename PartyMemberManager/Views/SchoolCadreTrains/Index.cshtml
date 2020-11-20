@@ -6,13 +6,21 @@
 <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
     <div style="display:inline-block">
         <div class="layui-input-inline" style="width:80px">
-            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,650,function(){RefreshTable();})" class="layui-btn layui-btn-primary">+添加</a>
+            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,680,function(){RefreshTable();})" class="layui-btn layui-btn-primary">+添加</a>
         </div>
     </div>
     <div style="display:inline-block">
         <label class="layui-form-label" style="padding:5px;width:60px">年份:</label>
         <div class="layui-input-inline" style="width:80px">
             <input name="year" type="text" class="layui-input" readonly id="year" />
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <label class="layui-form-label" style="padding:5px;width:60px">职级:</label>
+        <div class="layui-input-inline" style="width:200px">
+            <select name="SchoolCadreTrainType" asp-items="@Html.GetEnumSelectList(typeof(SchoolCadreTrainType))" class="layui-input" id="SchoolCadreTrainType">
+                <option value="">-请选择职级-</option>
+            </select>
         </div>
     </div>
     <div style="display:inline-block">
@@ -115,7 +123,8 @@
                         { type: 'checkbox' }
                         ,
             { field: 'year', title: '年份', align: 'center' },
-            { field: 'name', title: '姓名', align: 'center' },
+                        { field: 'name', title: '姓名', align: 'center' },
+                        { field: 'schoolCadreTrainTypeDisplay', title: '职级', align: 'center' },
             { field: 'trainClassName', title: '培训班名称', align: 'center' },
             { field: 'organizer', title: '组织机构', align: 'center' },
             { field: 'trainOrganizational', title: '培训机构', align: 'center' },
@@ -132,7 +141,7 @@
                 });
             });
         }
-                        /**过滤数据 */
+        /**过滤数据 */
         function tablefilter() {
             //此处Id不要#号
             var tableId = "dataGrid";
@@ -142,7 +151,8 @@
                     url: '@Url.Action("GetDatasWithFilter")'
                     , where: {
                         year: $("#year").val(),
-                        keyword: $("#keyword").val()
+                        keyword: $("#keyword").val(),
+                        schoolCadreTrainType: $("#SchoolCadreTrainType").val()
                     }
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);

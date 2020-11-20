@@ -60,8 +60,20 @@ namespace PartyMemberManager.Core.Enums
     {
         本科生 = 1,
         教师 = 2,
-        研究生=3,
-        预科生=4
+        研究生 = 3,
+        预科生 = 4
+    }
+    /// <summary>
+    /// 学校干部培训类型
+    /// </summary>
+    public enum SchoolCadreTrainType
+    {
+        校领导 = 1,
+        正处级 = 2,
+        副处级 = 3,
+        正科级 = 4,
+        副科级 = 5,
+        普通教师 = 6
     }
     /// <summary>
     /// 批次
@@ -72,6 +84,16 @@ namespace PartyMemberManager.Core.Enums
         第二期 = 2,
         第三期 = 3,
         第四期 = 4
+    }
+
+    /// <summary>
+    /// 授课类型
+    /// </summary>
+    public enum CourseType
+    {
+        入党积极分子培训 = 1,
+        发展对象培训 = 2,
+        省级干部培训 = 3,
     }
     /// <summary>
     /// 授权类型
@@ -89,11 +111,11 @@ namespace PartyMemberManager.Core.Enums
     /// </summary>
     public enum ActivistTrainStatus
     {
-        成绩不合格=0,
-        成绩合格=1,
-        已打印=2,
-        已列为发展对象=4,
-        成绩合格并打印=成绩合格+已打印,
-        成绩合格并列为发展对象=成绩合格+已打印+已列为发展对象
+        成绩不合格 = 0,
+        成绩合格 = 1,
+        已打印 = 2,
+        已列为发展对象 = 4,
+        成绩合格并打印 = 成绩合格 + 已打印,
+        成绩合格并列为发展对象 = 成绩合格 + 已打印 + 已列为发展对象
     }
 }

@@ -36,6 +36,8 @@ namespace PartyMemberManager.Dal
         public virtual DbSet<ProvinceTrainClass> ProvinceTrainClasses { get; set; }
         public virtual DbSet<ProvinceCadreTrain> ProvinceCadreTrains { get; set; }
         public virtual DbSet<SchoolCadreTrain> SchoolCadreTrains { get; set; }
+        public virtual DbSet<Course> Courses { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

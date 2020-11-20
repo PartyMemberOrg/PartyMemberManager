@@ -19,6 +19,7 @@ using System.Data;
 using ExcelCore;
 using Newtonsoft.Json;
 using PartyMemberManager.Models;
+using PartyMemberManager.Core.Enums;
 
 namespace PartyMemberManager.Controllers
 {
@@ -41,7 +42,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(string year, string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(string year, string keyword, SchoolCadreTrainType schoolCadreTrainType, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<SchoolCadreTrain> jsonResult = new JsonResultDatasModel<SchoolCadreTrain>
             {
@@ -59,6 +60,10 @@ namespace PartyMemberManager.Controllers
                 if (keyword != null)
                 {
                     filter = filter.And(d => d.Name.Contains(keyword) || d.Organizer.Contains(keyword) || d.TrainClassName.Contains(keyword) || d.TrainOrganizational.Contains(keyword));
+                }
+                if (schoolCadreTrainType.ToString() != "0")
+                {
+                    filter = filter.And(d => d.SchoolCadreTrainType==schoolCadreTrainType);
                 }
                 var data = await _context.Set<SchoolCadreTrain>()
                     .Where(filter)
@@ -171,7 +176,7 @@ namespace PartyMemberManager.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("Year,Name,TrainClassName,Organizer,TrainOrganizational,TrainTime,EndTrainTime,TrainAddress,ClassHour,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] SchoolCadreTrain schoolCadreTrain)
+        public override async Task<IActionResult> Save([Bind("Year,Name,SchoolCadreTrainType,TrainClassName,Organizer,TrainOrganizational,TrainTime,EndTrainTime,TrainAddress,ClassHour,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] SchoolCadreTrain schoolCadreTrain)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -180,6 +185,8 @@ namespace PartyMemberManager.Controllers
             };
             try
             {
+                if(schoolCadreTrain.SchoolCadreTrainType.ToString()=="0")
+                    throw new PartyMemberException("请选择职级");
                 if (ModelState.IsValid)
                 {
                     SchoolCadreTrain schoolCadreTrainInDb = await _context.SchoolCadreTrains.FindAsync(schoolCadreTrain.Id);
@@ -193,7 +200,7 @@ namespace PartyMemberManager.Controllers
                         schoolCadreTrainInDb.TrainTime = schoolCadreTrain.TrainTime;
                         schoolCadreTrainInDb.EndTrainTime = schoolCadreTrain.EndTrainTime;
                         schoolCadreTrainInDb.ClassHour = schoolCadreTrain.ClassHour;
-
+                        schoolCadreTrainInDb.SchoolCadreTrainType = schoolCadreTrain.SchoolCadreTrainType;
                         schoolCadreTrainInDb.TrainAddress = schoolCadreTrain.TrainAddress;
                         //schoolCadreTrainInDb.TrainDuration = schoolCadreTrain.TrainDuration;
                         //schoolCadreTrainInDb.ClassHour = schoolCadreTrain.ClassHour;

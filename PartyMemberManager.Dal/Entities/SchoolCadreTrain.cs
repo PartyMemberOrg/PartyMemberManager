@@ -1,7 +1,9 @@
-﻿using System;
+﻿using PartyMemberManager.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace PartyMemberManager.Dal.Entities
@@ -23,6 +25,19 @@ namespace PartyMemberManager.Dal.Entities
         [StringLength(50, MinimumLength = 2, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Name { get; set; }
+
+        /// <summary>
+        /// 职级
+        /// </summary>
+        [DisplayName("职级")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public SchoolCadreTrainType SchoolCadreTrainType { get; set; }
+        /// <summary>
+        /// 职级
+        /// </summary>
+        [DisplayName("职级")]
+        [NotMapped]
+        public string SchoolCadreTrainTypeDisplay { get => SchoolCadreTrainType.ToString(); }
         /// <summary>
         /// 培训班次
         /// </summary>
