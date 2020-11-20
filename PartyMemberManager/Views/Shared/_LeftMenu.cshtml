@@ -123,6 +123,15 @@
                     </a>
                 </li>
             }
+            if (Model.Any(m => m.Controller == "Courses"))
+            {
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:openLink('@Url.Action("Index", "Courses")')">
+                        <img src="~/images/PreoperativeSel.png" data-icon="/images/PreoperativeSel.png" data-icon-sel="/images/PreoperativeSel.png" width="16" height="16" />
+                        <span>培训课程</span>
+                    </a>
+                </li>
+            }
             <li class="layui-nav-item">
                 <a class="" href="javascript:0">
                     <img src="~/images/SystemSet.png" data-icon="/images/SystemSet.png" data-icon-sel="/images/SystemSetSel.png" width="16" height="16" />
@@ -196,7 +205,7 @@
             </li>
         }
     }
-    </ul>
+</ul>
 
     @*<ul class="menu" lay-filter="test">
         <li class="menuitem" onclick="openLink('@Url.Action("RightIndex", "Home")')">

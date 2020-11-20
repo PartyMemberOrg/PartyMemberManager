@@ -37,7 +37,7 @@ namespace PartyMemberManager.Dal
         public virtual DbSet<ProvinceCadreTrain> ProvinceCadreTrains { get; set; }
         public virtual DbSet<SchoolCadreTrain> SchoolCadreTrains { get; set; }
         public virtual DbSet<Course> Courses { get; set; }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -91,7 +91,7 @@ namespace PartyMemberManager.Dal
             modelBuilder.Entity<TrainClass>()
                 .HasOne(t => t.YearTerm)
                 .WithMany()
-                .HasForeignKey(t=>t.YearTermId)
+                .HasForeignKey(t => t.YearTermId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ActiveApplicationSurvey>()
@@ -144,6 +144,11 @@ namespace PartyMemberManager.Dal
                 .HasOne(p => p.ProvinceTrainClass)
                 .WithMany()
                 .HasForeignKey(a => a.ProvinceTrainClassId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Course>()
+                .HasOne(p => p.Nation)
+                .WithMany()
+                .HasForeignKey(p => p.NationId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

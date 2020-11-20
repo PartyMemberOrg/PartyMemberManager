@@ -298,6 +298,17 @@ namespace PartyMemberManager.Dal
                 Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员
             };
             context.Modules.Add(module);
+            module = new Module
+            {
+                Id = Guid.NewGuid(),
+                CreateTime = DateTime.Now,
+                Name = "授课管理",
+                Controller = "Courses",
+                Action = null,
+                Ordinal = 6,
+                Roles = Role.学校党委 | Role.系统管理员 | Role.超级管理员
+            };
+            context.Modules.Add(module);
             #endregion
         }
 

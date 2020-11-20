@@ -49,6 +49,12 @@ namespace PartyMemberManager.Dal.Entities
         /// 民族
         /// </summary>
         [DisplayName("民族")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public Guid NationId { get; set; }
+        /// <summary>
+        /// 民族
+        /// </summary>
+        [DisplayName("民族")]
         public Nation Nation { get; set; }
         /// <summary>
         /// 民族
