@@ -148,6 +148,6 @@
     <Folder Include="PdfProvider\Created\" />
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="http://json.schemastore.org/apibuilder.json" /></VisualStudio></ProjectExtensions>
 
 </Project>

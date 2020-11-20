@@ -155,7 +155,7 @@
             <div class="form-group">
                 <div class="row">
                     <div class="@LabelDivDefaultClass">
-                        <label asp-for="TrainClass.Batch" asp-required="true" class="control-label"></label>
+                        <label asp-for="TrainClass.Batch" asp-required="false" class="control-label"></label>
                     </div>
                     <div class="@InputDivDefaultClass">
                         <select asp-for="TrainClass.Batch" asp-items="@Html.GetEnumSelectList(typeof(BatchType))" class="form-control" id="Batch">

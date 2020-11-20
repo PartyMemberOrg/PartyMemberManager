@@ -155,12 +155,12 @@ namespace PartyMemberManager.Framework.Controllers
                 }
                 if (CurrentUser.Roles > Role.学院党委)
                 {
-                    var data = await _context.Set<TrainClass>()
-                        .Where(filter).Include(d => d.YearTerm).Where(d => d.YearTerm.Enabled == true)
-                        .OrderByDescending(d => d.Ordinal).ToListAsync();
-                    if (data == null)
-                        throw new PartyMemberException("未找到数据");
-                    jsonResult.Datas = data;
+                        var data = await _context.Set<TrainClass>()
+                            .Where(filter).Include(d => d.YearTerm).Where(d => d.YearTerm.Enabled == true).Include(d=>d.Department)
+                            .OrderByDescending(d => d.Ordinal).ToListAsync();
+                        if (data == null)
+                            throw new PartyMemberException("未找到数据");
+                        jsonResult.Datas = data;
                 }
                 else
                 {

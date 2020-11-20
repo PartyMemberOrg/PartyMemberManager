@@ -86,6 +86,7 @@
             var yearTermId = $("#YearTermId").val();
             var departmentId = $("#DepartmentId").val();
             var batch = $("#Batch").val();
+            var trainClassId = $("#TrainClassId").val();
             var where = { trainClassTypeId: trainClassTypeId, yearTermId: yearTermId, departmentId: departmentId,batch:batch};
             $.ajax({
                 url: url,
