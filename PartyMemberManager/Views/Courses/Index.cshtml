@@ -6,13 +6,15 @@
 <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
     <div style="display:inline-block">
         <div class="layui-input-inline" style="width:80px">
-            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',500,500)" class="layui-btn layui-btn-primary">+添加</a>
+            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,750)" class="layui-btn layui-btn-primary">+添加</a>
         </div>
     </div>
     <div style="display:inline-block">
-        <label class="layui-form-label" style="padding:5px;width:60px">年份:</label>
-        <div class="layui-input-inline" style="width:80px">
-            <input name="year" type="text" class="layui-input" id="year" readonly />
+        <label class="layui-form-label" style="padding:5px;width:80px">授课类型:</label>
+        <div class="layui-input-inline" style="width:200px">
+            <select name="CourseType" asp-items="@Html.GetEnumSelectList(typeof(CourseType))" class="layui-input" id="CourseType">
+                <option value="">-请选择授课类型-</option>
+            </select>
         </div>
     </div>
     <div style="display:inline-block">
@@ -29,13 +31,6 @@
     </div>
 </div>
 <table class="layui-hide" id="datatable"></table>
-@*<div style="margin-top: 10px">
-        <div class="layui-input-inline" style="width:80px">
-            <a class="layui-btn layui-btn-primary" href="javascript:;" onclick="statisticsTotal()" data-type="statisticsTotal">
-                <i class="layui-icon layui-icon-table" style="font-size: 14px; color: #FFFFFF;"></i>统计人数
-            </a>
-        </div>
-    </div>*@
 @Html.AntiForgeryToken()
 <link href="~/lib/contentmenu/css/style.css" rel="stylesheet" />
 @section Scripts{
@@ -102,13 +97,23 @@
                         //,
                         { field: 'courseTypeDisplay', title: '授课类型', align: 'center' },
                         { field: 'name', title: '姓名', align: 'center' },
-                        { field: 'Organization', title: '工作单位', align: 'center' },
-                        { field: 'Rank', title: '职称', align: 'center' },
-                        { field: 'NationDisplay', title: '民族', align: 'center' },
-                        { field: 'Phone', title: '电话', align: 'center' },
-                        { field: 'StartTime', title: '授课时间', align: 'center' },
-                        { field: 'CourseName', title: '课程名称', align: 'center' },
-                        { field: 'CourseHour', title: '授课学时', align: 'center' },
+                        { field: 'organization', title: '工作单位', align: 'center' },
+                        { field: 'rank', title: '职称', align: 'center' },
+                        { field: 'nationDisplay', title: '民族', align: 'center', templet: '#optNationNameTpl' },
+                        { field: 'phone', title: '电话', align: 'center' },
+                        { field: 'startTime', title: '授课时间', align: 'center' },
+                        { field: 'courseName', title: '课程名称', align: 'center' },
+                        { field: 'courseHour', title: '授课学时', align: 'center' },
+                        {
+                            field: 'Attachment_1', title: '课件', align: 'center', templet: function (d) {
+                                return d.attachment_1 == null?"": '<a href="' + d.attachment_1 + '">下载</a>'
+                            }
+                        },
+                        {
+                            field: 'Attachment_2', title: '讲义', align: 'center', templet: function (d) {
+                                return d.attachment_2 == null ? "" :'<a href="' + d.attachment_2 + '">下载</a>'
+                            }
+                        },
                         { field: 'id', title: '操作', width: '80', align: 'center', templet: '#optTpl' }
                     ]]
                     , done: function (res, curr, count) {
@@ -125,7 +130,7 @@
                 table.reload(tableId, {
                     url: '@Url.Action("GetDatasWithFilter")'
                     , where: {
-                        year: $("#year").val(),
+                        courseType: $("#CourseType").val(),
                         keyword: $("#keyword").val()
                     }
                     , done: function (res, curr, count) {
@@ -160,7 +165,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 500, 500);
+                showEdit('@Url.Action("Edit")'+'/' + id, '@Url.Action("Save")', '编辑', 600, 750);
             })
             contextMenu.addMenuItem("删除", function () {
                 Delete(id);
@@ -179,14 +184,7 @@
             <img src="~/images/gridmenu1x.png" />
         </a>
     </script>
-    <script type="text/javascript">
-        layui.use('laydate', function () {
-            var laydate = layui.laydate;
-            laydate.render({
-                elem: '#year',
-                type: 'year'
-                , trigger: 'click'
-            });
-        });
+    <script type="text/html" id="optNationNameTpl">
+        {{d.nationDisplay}}
     </script>
 }

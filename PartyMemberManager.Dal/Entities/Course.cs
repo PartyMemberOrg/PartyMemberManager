@@ -102,5 +102,17 @@ namespace PartyMemberManager.Dal.Entities
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
 
         public int CourseHour { get; set; }
+
+        /// <summary>
+        /// 附件1
+        /// </summary>
+        [DisplayName("课件")]
+        public string Attachment_1 { get; set; }
+
+        /// <summary>
+        /// 附件2
+        /// </summary>
+        [DisplayName("讲义")]
+        public string Attachment_2 { get; set; }
     }
 }

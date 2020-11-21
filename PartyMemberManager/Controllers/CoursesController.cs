@@ -35,7 +35,42 @@ namespace PartyMemberManager.Controllers
         // GET: Courses
         public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.Courses.OrderBy(s => s.Ordinal).GetPagedDataAsync(page));
+            return View(await _context.Courses.Include(d => d.Nation).OrderBy(s => s.Ordinal).GetPagedDataAsync(page));
+        }
+        /// <summary>
+        /// 重载获取数据函数，主要史需要Include
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="limit"></param>
+        /// <returns></returns>
+        public override async Task<IActionResult> GetDatas(int page = 1, int limit = 10)
+        {
+            JsonResultDatasModel<Course> jsonResult = new JsonResultDatasModel<Course>
+            {
+                Code = 0,
+                Msg = ""
+            };
+
+            try
+            {
+                var data = await _context.Set<Course>().Include(d => d.Nation).Where(DataFilter).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                if (data == null)
+                    throw new PartyMemberException("未找到数据");
+                jsonResult.Count = _context.Set<Course>().Where(DataFilter).Count();
+                jsonResult.Data = data.Data;
+            }
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Msg = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Msg = "发生系统错误";
+            }
+            return Json(jsonResult);
         }
         /// <summary>
         /// 获取数据（通过ajax调用)
@@ -43,81 +78,48 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        //public async Task<IActionResult> GetDatasWithFilter(Guid? yearTermId, Guid? departmentId, Guid? trainClassId, string partyMemberType,BatchType batch, string keyword, int page = 1, int limit = 10)
-        //{
-        //    JsonResultDatasModel<PartyActivist> jsonResult = new JsonResultDatasModel<PartyActivist>
-        //    {
-        //        Code = 0,
-        //        Msg = ""
-        //    };
+        public async Task<IActionResult> GetDatasWithFilter(CourseType courseType, string keyword, int page = 1, int limit = 10)
+        {
+            JsonResultDatasModel<Course> jsonResult = new JsonResultDatasModel<Course>
+            {
+                Code = 0,
+                Msg = ""
+            };
 
-        //    try
-        //    {
-        //        var filter = PredicateBuilder.True<PartyActivist>();
-        //        if (yearTermId != null)
-        //        {
-        //            filter = filter.And(d => d.YearTermId == yearTermId);
-        //        }
-        //        if (departmentId != null)
-        //        {
-        //            filter = filter.And(d => d.DepartmentId == departmentId);
-        //        }
-        //        if (trainClassId != null)
-        //        {
-        //            filter = filter.And(d => d.TrainClassId == trainClassId);
-        //        }
-        //        if (keyword != null)
-        //        {
-        //            filter = filter.And(d => d.Name.Contains(keyword) || d.JobNo.Contains(keyword));
-        //        }
-        //        if ((int)batch >0)
-        //        {
-        //            filter = filter.And(d => d.TrainClass.Batch ==batch);
-        //        }
-        //        if (partyMemberType != null)
-        //        {
-        //            filter = filter.And(d => d.PartyMemberType == (PartyMemberType)Enum.Parse(typeof(PartyMemberType), partyMemberType));
-        //        }
-        //        if (CurrentUser.Roles > Role.学院党委)
-        //        {
-        //            var data = await _context.Set<PartyActivist>().Include(d => d.Department).Include(d => d.Nation).Include(d => d.TrainClass).Include(t => t.YearTerm)
-        //                .Where(filter)
-        //                //.Where(d => d.YearTerm.Enabled == true)
-        //                .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
-        //            if (data == null)
-        //                throw new PartyMemberException("未找到数据");
-        //            jsonResult.Count = _context.Set<PartyActivist>().Where(filter).Count();
-        //            jsonResult.Data = data.Data;
-        //        }
-        //        else
-        //        {
-        //            if (CurrentUser.DepartmentId == null)
-        //                throw new PartyMemberException("该用户不合法，请设置该用户所属部门");
-        //            var data = await _context.Set<PartyActivist>().Where(filter).Include(d => d.Department).Include(d => d.Nation).Include(d => d.TrainClass).Include(t => t.TrainClass).Include(d => d.YearTerm)
-        //                .Where(filter).Where(d => d.YearTerm.Enabled == true)
-        //                .Where(d => d.DepartmentId == CurrentUser.DepartmentId)
-        //                .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
-        //            if (data == null)
-        //                throw new PartyMemberException("未找到数据");
-        //            jsonResult.Count = _context.Set<PartyActivist>().Where(filter).Count();
-        //            jsonResult.Data = data.Data;
-        //        }
-        //    }
+            try
+            {
+                var filter = PredicateBuilder.True<Course>();
+                if (keyword != null)
+                {
+                    filter = filter.And(d => d.Name.Contains(keyword));
+                }
+                if ((int)courseType > 0)
+                {
+                    filter = filter.And(d => d.CourseType == courseType);
+                }
+                var data = await _context.Set<Course>()
+                    .Where(filter)
+                    .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
+                if (data == null)
+                    throw new PartyMemberException("未找到数据");
+                jsonResult.Count = _context.Set<Course>().Where(filter).Count();
+                jsonResult.Data = data.Data;
+            }
 
-        //    catch (PartyMemberException ex)
-        //    {
-        //        jsonResult.Code = -1;
-        //        jsonResult.Msg = ex.Message;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, ex.Message);
-        //        jsonResult.Code = -1;
-        //        jsonResult.Msg = "发生系统错误";
-        //    }
-        //    return Json(jsonResult);
-        //}
-        // GET: Courses/Details/5
+            catch (PartyMemberException ex)
+            {
+                jsonResult.Code = -1;
+                jsonResult.Msg = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                jsonResult.Code = -1;
+                jsonResult.Msg = "发生系统错误";
+            }
+            return Json(jsonResult);
+        }
+        //GET: Courses/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -139,6 +141,7 @@ namespace PartyMemberManager.Controllers
         public IActionResult Create()
         {
             Course course = new Course();
+            ViewBag.NationId = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(course);
         }
 
@@ -156,6 +159,7 @@ namespace PartyMemberManager.Controllers
             {
                 return NotFoundData();
             }
+            ViewBag.NationId = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(course);
         }
         /// <summary>
@@ -198,7 +202,7 @@ namespace PartyMemberManager.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("YearTermId,TrainClassId,ApplicationTime,ActiveApplicationTime,Duty,Name,JobNo,IdNumber,Sex,PartyMemberType,BirthDate,NationId,Phone,DepartmentId,Class,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] Course course)
+        public async Task<IActionResult> Save([Bind("CourseType,Name,Organization,Rank,NationId,Phone,StartTime,Place,CourseName,CourseHour,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] Course course,IFormFile filePPT,IFormFile fileWord)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -211,6 +215,24 @@ namespace PartyMemberManager.Controllers
                     throw new PartyMemberException("请选择授课类型");
                 if (course.NationId == Guid.Empty || course.NationId == null)
                     throw new PartyMemberException("请选择民族");
+                if (filePPT != null)
+                {
+                    Stream stream = filePPT.OpenReadStream();
+                    var filePath = Path.GetTempFileName();
+                    var fileStream = System.IO.File.Create(filePath);
+                    await filePPT.CopyToAsync(fileStream);
+                    await fileStream.FlushAsync();
+                    fileStream.Close();
+                }
+                if (fileWord!= null)
+                {
+                    Stream stream = fileWord.OpenReadStream();
+                    var filePath = Path.GetTempFileName();
+                    var fileStream = System.IO.File.Create(filePath);
+                    await fileWord.CopyToAsync(fileStream);
+                    await fileStream.FlushAsync();
+                    fileStream.Close();
+                }
                 if (ModelState.IsValid)
                 {
                     Course courseInDb = await _context.Courses.FindAsync(course.Id);
