@@ -110,9 +110,21 @@ namespace PartyMemberManager.Dal.Entities
         public string Attachment_1 { get; set; }
 
         /// <summary>
+        /// 附件1类型
+        /// </summary>
+        [DisplayName("附件1类型")]
+        public string Attachment_1_Type { get; set; }
+
+        /// <summary>
         /// 附件2
         /// </summary>
         [DisplayName("讲义")]
         public string Attachment_2 { get; set; }
+
+        /// <summary>
+        /// 附件2类型
+        /// </summary>
+        [DisplayName("附件2类型")]
+        public string Attachment_2_Type { get; set; }
     }
 }

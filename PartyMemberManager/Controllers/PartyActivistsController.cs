@@ -898,6 +898,7 @@ namespace PartyMemberManager.Controllers
                 }
                 DataTable table = new DataTable();
                 table.Columns.Add("学年学期", typeof(string));
+                table.Columns.Add("批次", typeof(string));
                 table.Columns.Add("培训班", typeof(string));
                 table.Columns.Add("类型", typeof(string));
                 table.Columns.Add("学号", typeof(string));
@@ -923,6 +924,7 @@ namespace PartyMemberManager.Controllers
                     ActivistTrainResult activistTrainResult = await _context.ActivistTrainResults.FirstOrDefaultAsync(a => a.PartyActivistId == partyActivist.Id);
                     DataRow row = table.NewRow();
                     row["学年学期"] = partyActivist.YearTermDisplay;
+                    row["批次"] = partyActivist.BatchDisplay;
                     row["培训班"] = partyActivist.TrainClassDisplay;
                     row["类型"] = partyActivist.PartyMemberTypeDisplay;
                     row["学号"] = partyActivist.JobNo;

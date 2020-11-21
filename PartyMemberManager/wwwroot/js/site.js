@@ -578,7 +578,7 @@ function showImport(url, postUrl, title, width = 600, height = 400, callBack) {
                                     });
                             }
                         },
-                        error: function () {
+                        error: function (response) {
                             showError("导入数据时发生错误");
                         }
                     });
@@ -588,7 +588,85 @@ function showImport(url, postUrl, title, width = 600, height = 400, callBack) {
         });
     });
 }
-
+/**
+ * 显示编辑对话框
+ * @param {String} url - 编辑页面的url
+ * @param {String} postUrl - 数据保存Action的url，通过ajax提交保存
+ * @param {String} title - 编辑窗体标题
+ * @param {Integer} width - 编辑窗口宽度
+ * @param {Integer} height - 编辑窗口高度
+ * @param {Function} callBack - 编辑结束并保存后的回调函数
+ */
+function showUpFile(url, postUrl, title, width = 600, height = 400, callBack) {
+    top.layui.use('layer', function () {
+        var layer = top.layui.layer;
+        layer.ready(function () {
+            var index = layer.load(2);
+            layer.open({
+                title: title
+                , area: [width.toString() + 'px', height.toString() + 'px']
+                , type: 2
+                , content: [url, 'no']//第二个参数no，表示不显示iframe滚动条
+                , btnAlign: 'c'
+                , btn: ['导入']
+                , yes: function (index, layero) {
+                    var body = layer.getChildFrame('body', index);
+                    var valid = $(body).find('form').valid();
+                    if (!valid) {
+                        showError("数据验证错误，请检查数据后再提交");
+                        return;
+                    }
+                    var data = new FormData($(body).find('form')[0]);
+                    $.ajax({
+                        url: postUrl,
+                        data: data,
+                        type: "post",
+                        contentType: false,
+                        processData: false,
+                        success: function (response) {
+                            if (response.code == 0) {
+                                clearError($(body).find('form'));
+                                layer.close(index);
+                                showMessage("数据上传成功");
+                                //如果有回调函数，则执行回调函数,否则直接刷新页面
+                                if (callBack != null)
+                                    callBack(data);
+                                else
+                                    location.reload();
+                            }
+                            else if (response.code == -2) {
+                                //部分导入成功
+                                window.open(response.errorDataFile, "_blank")
+                                clearError($(body).find('form'));
+                                layer.close(index);
+                                showMessage("成功上传" + response.successCount + "条，失败" + response.failCount + "条");
+                                //如果有回调函数，则执行回调函数,否则直接刷新页面
+                                if (callBack != null)
+                                    callBack(data);
+                                else
+                                    location.reload();
+                            }
+                            else {
+                                displayErrorMessage($(body).find('form'), response);
+                                layer.msg(response.message, {
+                                    icon: 2,
+                                    time: 2000
+                                },
+                                    function () {
+                                        //保存时发生错误
+                                    });
+                            }
+                        },
+                        error: function (response) {
+                            showError("上传数据时发生错误");
+                        }
+                    });
+                }
+            });
+            layer.close(index);
+        });
+    });
+}
 
 /**
  * 显示编辑对话框，并返回数据

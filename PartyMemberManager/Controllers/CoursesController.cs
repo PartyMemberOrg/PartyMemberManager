@@ -201,8 +201,8 @@ namespace PartyMemberManager.Controllers
             return Json(jsonResult);
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Save([Bind("CourseType,Name,Organization,Rank,NationId,Phone,StartTime,Place,CourseName,CourseHour,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] Course course,IFormFile filePPT,IFormFile fileWord)
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveCourse([Bind("CourseType,Name,Organization,Rank,NationId,Phone,StartTime,Place,CourseName,CourseHour,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] Course course, IFormFile filePPT, IFormFile fileWord)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -215,27 +215,57 @@ namespace PartyMemberManager.Controllers
                     throw new PartyMemberException("请选择授课类型");
                 if (course.NationId == Guid.Empty || course.NationId == null)
                     throw new PartyMemberException("请选择民族");
-                if (filePPT != null)
-                {
-                    Stream stream = filePPT.OpenReadStream();
-                    var filePath = Path.GetTempFileName();
-                    var fileStream = System.IO.File.Create(filePath);
-                    await filePPT.CopyToAsync(fileStream);
-                    await fileStream.FlushAsync();
-                    fileStream.Close();
-                }
-                if (fileWord!= null)
-                {
-                    Stream stream = fileWord.OpenReadStream();
-                    var filePath = Path.GetTempFileName();
-                    var fileStream = System.IO.File.Create(filePath);
-                    await fileWord.CopyToAsync(fileStream);
-                    await fileStream.FlushAsync();
-                    fileStream.Close();
-                }
                 if (ModelState.IsValid)
                 {
                     Course courseInDb = await _context.Courses.FindAsync(course.Id);
+                    if (filePPT == null)
+                    {
+                        if (courseInDb != null)
+                        {
+                            course.Attachment_1 = courseInDb.Attachment_1;
+                            course.Attachment_1_Type = courseInDb.Attachment_1_Type;
+                        }
+                    }
+                    else
+                    {
+                        var fileName =course.Id+"#"+filePPT.FileName;
+                        var contentType = filePPT.ContentType;
+                        string fileDir = System.IO.Path.Combine(AppContext.BaseDirectory, "Upload");
+                        if (!Directory.Exists(fileDir))
+                        {
+                            Directory.CreateDirectory(fileDir);
+                        }
+                        var fileStream = System.IO.File.Create(System.IO.Path.Combine(fileDir,fileName));
+                        await filePPT.CopyToAsync(fileStream);
+                        await fileStream.FlushAsync();
+                        fileStream.Close();
+                        course.Attachment_1= System.IO.Path.Combine("Upload", fileName);
+                        course.Attachment_1_Type = contentType;
+                    }
+                    if (fileWord == null)
+                    {
+                        if (courseInDb != null)
+                        {
+                            course.Attachment_2 = courseInDb.Attachment_2;
+                            course.Attachment_2_Type = courseInDb.Attachment_2_Type;
+                        }
+                    }
+                    else
+                    {
+                        var fileName = course.Id + "#" + fileWord.FileName;
+                        var contentType = fileWord.ContentType;
+                        string fileDir = System.IO.Path.Combine(AppContext.BaseDirectory, "Upload");
+                        if (!Directory.Exists(fileDir))
+                        {
+                            Directory.CreateDirectory(fileDir);
+                        }
+                        var fileStream = System.IO.File.Create(System.IO.Path.Combine(fileDir, fileName));
+                        await filePPT.CopyToAsync(fileStream);
+                        await fileStream.FlushAsync();
+                        fileStream.Close();
+                        course.Attachment_2 = System.IO.Path.Combine("Upload", fileName);
+                        course.Attachment_2_Type = contentType;
+                    }
                     if (courseInDb != null)
                     {
                         courseInDb.CourseType = course.CourseType;
@@ -248,6 +278,10 @@ namespace PartyMemberManager.Controllers
                         courseInDb.Place = course.Place;
                         courseInDb.CourseName = course.CourseName;
                         courseInDb.CourseHour = course.CourseHour;
+                        courseInDb.Attachment_1 = course.Attachment_1;
+                        courseInDb.Attachment_1_Type = course.Attachment_1_Type;
+                        courseInDb.Attachment_2 = course.Attachment_2;
+                        courseInDb.Attachment_2_Type = course.Attachment_2_Type;
                         _context.Update(courseInDb);
                     }
                     else
@@ -293,7 +327,24 @@ namespace PartyMemberManager.Controllers
             }
             return Json(jsonResult);
         }
-
+        public IActionResult DownCoursePPT(Guid id)
+        {
+            var course = _context.Courses.SingleOrDefault(d => d.Id == id);
+            if (course == null)
+                return null;
+            string file = System.IO.Path.Combine(AppContext.BaseDirectory, course.Attachment_1);
+            System.IO.FileStream fileStream = new System.IO.FileStream(file, System.IO.FileMode.Open);
+            return File(fileStream, course.Attachment_1_Type, course.Attachment_1.Substring(course.Attachment_1.IndexOf("#")+1));
+        }
+        public IActionResult DownCourseWord(Guid id)
+        {
+            var course = _context.Courses.SingleOrDefault(d => d.Id == id);
+            if (course == null)
+                return null;
+            string file = System.IO.Path.Combine(AppContext.BaseDirectory, course.Attachment_2);
+            System.IO.FileStream fileStream = new System.IO.FileStream(file, System.IO.FileMode.Open);
+            return File(fileStream, course.Attachment_2_Type, course.Attachment_2.Substring(course.Attachment_1.IndexOf("#")+1));
+        }
         private bool CourseExists(Guid id)
         {
             return _context.Courses.Any(e => e.Id == id);

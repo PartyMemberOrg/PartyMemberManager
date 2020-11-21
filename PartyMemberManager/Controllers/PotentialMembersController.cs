@@ -650,6 +650,7 @@ namespace PartyMemberManager.Controllers
                 }
                 DataTable table = new DataTable();
                 table.Columns.Add("学年学期", typeof(string));
+                table.Columns.Add("批次", typeof(string));
                 table.Columns.Add("培训班", typeof(string));
                 table.Columns.Add("类型", typeof(string));
                 table.Columns.Add("学号", typeof(string));
@@ -674,6 +675,7 @@ namespace PartyMemberManager.Controllers
                     PotentialTrainResult potentialTrainResult = await _context.PotentialTrainResults.FirstOrDefaultAsync(a => a.PotentialMemberId == potentialMember.Id);
                     DataRow row = table.NewRow();
                     row["学年学期"] = potentialMember.YearTermDisplay;
+                    row["批次"] = potentialMember.BatchDisplay;
                     row["培训班"] = potentialMember.TrainClassDisplay;
                     row["类型"] = potentialMember.PartyMemberTypeDisplay;
                     row["学号"] = potentialMember.JobNo;

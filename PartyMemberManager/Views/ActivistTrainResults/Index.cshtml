@@ -62,7 +62,7 @@
     <div style="display:inline-block">
         <label class="layui-form-label" style="padding:5px;width:60px">批次:</label>
         <div class="layui-input-inline" style="width:200px">
-            <select name="batch" asp-items="@Html.GetEnumSelectList(typeof(BatchType))" class="layui-input" id="batch">
+            <select name="batch" asp-items="@Html.GetEnumSelectList(typeof(BatchType))" class="layui-input" id="Batch">
                 <option value="">-请选择批次-</option>
             </select>
         </div>
@@ -181,6 +181,9 @@
                 filterTrainClass();
             });
             $("#DepartmentId").change(function () {
+                filterTrainClass();
+            });
+            $("#Batch").change(function () {
                 filterTrainClass();
             });
             filterTrainClass();
@@ -326,7 +329,7 @@
                         isPrint: $("#isPrint").val(),
                         keyword: $("#keyword").val(),
                         isBcGrade: $("#isBcGrade").val(),
-                        batch: $("#batch").val()
+                        batch: $("#Batch").val()
                     }
                     , done: function (res, curr, count) {
                         //fillPatientList(res, curr, count);
@@ -577,7 +580,8 @@
             var yearTermId = $("#YearTermId").val();
             var trainClassTypeId = $("#TrainClassTypeId").val();
             var departmentId = $("#DepartmentId").val();
-            var where = { trainClassTypeId:trainClassTypeId,yearTermId: yearTermId, departmentId: departmentId };
+            var batch = $("#Batch").val();
+            var where = { trainClassTypeId: trainClassTypeId, yearTermId: yearTermId, departmentId: departmentId,batch:batch };
             $.ajax({
                 url: url,
                 data: where,

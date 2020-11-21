@@ -296,7 +296,7 @@ namespace PartyMemberManager.Controllers
                             columnErrorMessage = tableErrorData.Columns["错误提示"];
                         int rowIndex = 0;
                         int successCount = 0;
-                        string fieldsStudent = "姓名,培训班名称,组织单位,培训单位,年度,培训时间,结束时间,培训学时,培训地点,备注";
+                        string fieldsStudent = "姓名,职级,培训班名称,组织单位,培训单位,年度,培训时间,结束时间,培训学时,培训地点,备注";
                         string[] fieldList = fieldsStudent.Split(',');
                         foreach (string field in fieldList)
                         {
@@ -316,6 +316,7 @@ namespace PartyMemberManager.Controllers
                                     OperatorId = CurrentUser.Id
                                 };
                                 string nameField = "姓名";
+                                string schoolCadreTrainTypeField = "职级";
                                 string trainClassNameField = "培训班名称";
                                 string organizerField = "组织单位";
                                 string trainOrganizationalField = "培训单位";
@@ -327,6 +328,7 @@ namespace PartyMemberManager.Controllers
                                 string remarkField = "备注";
 
                                 string name = row[nameField].ToString();
+                                string schoolCadreTrainType = row[schoolCadreTrainTypeField].ToString();
                                 string trainClassName = row[trainClassNameField].ToString();
                                 string organizer = row[organizerField].ToString();
                                 string trainOrganizational = row[trainOrganizationalField].ToString();
@@ -339,6 +341,8 @@ namespace PartyMemberManager.Controllers
                                 year = year.Replace("年", "").Trim();
                                 if (!string.IsNullOrEmpty(name))
                                     name = name.Trim();
+                                if (!string.IsNullOrEmpty(schoolCadreTrainType))
+                                    schoolCadreTrainType = schoolCadreTrainType.Trim();
                                 if (!string.IsNullOrEmpty(trainClassName))
                                     trainClassName = trainClassName.Trim();
                                 else
@@ -352,7 +356,7 @@ namespace PartyMemberManager.Controllers
                                 //跳过姓名为空的记录
                                 if (string.IsNullOrEmpty(name)) continue;
                                 schoolCadreTrain.Name = name;
-                                //schoolCadreTrain.ClassHour = 0;
+                                schoolCadreTrain.SchoolCadreTrainType= SchoolCadreTrainType.Parse<SchoolCadreTrainType>(schoolCadreTrainType);
                                 schoolCadreTrain.Organizer = organizer;
                                 schoolCadreTrain.TrainAddress = trainAddress;
                                 schoolCadreTrain.TrainClassName = trainClassName;
@@ -520,6 +524,7 @@ namespace PartyMemberManager.Controllers
                 //string fieldsStudent = "序号,姓名,,组织单位,培训单位,年度,培训时间,结束时间,培训地点,备注";
                 table.Columns.Add("年度", typeof(string));
                 table.Columns.Add("姓名", typeof(string));
+                table.Columns.Add("职级", typeof(string));
                 table.Columns.Add("培训班名称", typeof(string));
                 table.Columns.Add("组织单位", typeof(string));
                 table.Columns.Add("培训单位", typeof(string));
@@ -534,6 +539,7 @@ namespace PartyMemberManager.Controllers
                     DataRow row = table.NewRow();
                     row["年度"] = schoolCadreTrain.Year;
                     row["姓名"] = schoolCadreTrain.Name;
+                    row["职级"] = schoolCadreTrain.SchoolCadreTrainTypeDisplay;
                     row["培训班名称"] = schoolCadreTrain.TrainClassName;
                     row["组织单位"] = schoolCadreTrain.Organizer;
                     row["培训单位"] = schoolCadreTrain.TrainOrganizational;

@@ -35,6 +35,13 @@ namespace PartyMemberManager.Models
         public Guid? DepartmentId { get; set; }
 
         /// <summary>
+        /// 批次
+        /// </summary>
+        [DisplayName("批次")]
+        [Required]
+        public BatchType Batch { get; set; }
+
+        /// <summary>
         /// 所属培训班
         /// </summary>
         [DisplayName("培训班")]

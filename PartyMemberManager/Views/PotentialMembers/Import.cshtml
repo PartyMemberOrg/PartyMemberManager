@@ -53,6 +53,19 @@
     <div class="form-group">
         <div class="row">
             <div class="@LabelDivDefaultClass">
+                <label asp-for="Batch" asp-required="true" class="control-label"></label>
+            </div>
+            <div class="@InputDivDefaultClass">
+                <select asp-for="Batch" asp-items="@Html.GetEnumSelectList(typeof(BatchType))" class="form-control">
+                    <option>-请选择批次-</option>
+                </select>
+                @*<span asp-validation-for="Sex" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="@LabelDivDefaultClass">
                 <label asp-for="TrainClassId" asp-required="true" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">
@@ -109,6 +122,9 @@
             $("#DepartmentId").change(function () {
                 filterTrainClass();
             });
+            $("#Batch").change(function () {
+                filterTrainClass();
+            });
             filterTrainClass();
         });
         /**过滤培训班 */
@@ -117,7 +133,8 @@
             var trainClassTypeId = '@trainClassTypeId';
             var yearTermId = $("#YearTermId").val();
             var departmentId = $("#DepartmentId").val();
-            var where = { trainClassTypeId: trainClassTypeId, yearTermId: yearTermId, departmentId: departmentId };
+            var batch = $("#Batch").val();
+            var where = { trainClassTypeId: trainClassTypeId, yearTermId: yearTermId, departmentId: departmentId, batch: batch };
             $.ajax({
                 url: url,
                 data: where,
