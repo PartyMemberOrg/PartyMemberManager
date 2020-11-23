@@ -151,6 +151,11 @@ namespace PartyMemberManager.Dal
                 .WithMany()
                 .HasForeignKey(p => p.NationId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Course>()
+                .HasOne(p => p.YearTerm)
+                .WithMany()
+                .HasForeignKey(p => p.YearTermId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

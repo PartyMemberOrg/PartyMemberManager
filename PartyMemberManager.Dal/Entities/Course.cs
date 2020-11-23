@@ -11,6 +11,32 @@ namespace PartyMemberManager.Dal.Entities
     public class Course : EntityBase
     {
         /// <summary>
+        /// 年度学期
+        /// </summary>
+        [DisplayName("学年/学期")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public Guid? YearTermId { get; set; }
+        /// <summary>
+        /// 年度学期
+        /// </summary>
+        [DisplayName("学年/学期")]
+        public YearTerm YearTerm { get; set; }
+
+        /// <summary>
+        /// 学期
+        /// </summary>
+        [DisplayName("学期")]
+        [NotMapped]
+        public string TermDisplay { get => YearTerm == null ? "" : YearTerm.Name; }
+
+        /// <summary>
+        /// 培训班名称
+        /// </summary>
+        [DisplayName("培训班名称")]
+        [StringLength(50, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public string TrainClassName { get; set; }
+        /// <summary>
         /// 授课类型
         /// </summary>
         [DisplayName("授课类型")]

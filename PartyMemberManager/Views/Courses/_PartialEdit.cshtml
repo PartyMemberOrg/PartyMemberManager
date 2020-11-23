@@ -1,138 +1,174 @@
 ﻿@model PartyMemberManager.Dal.Entities.Course
-<form action="@Url.Action("Save")" method="post" enctype="multipart/form-data" style="margin-top:20px;">
+<form action="@Url.Action("Save")" method="post" enctype="multipart/form-data">
     <input asp-for="Id" type="hidden" />
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="form-group">
-        <div class="row">
-            <div class="@LabelDivDefaultClass">
-                <label asp-for="CourseType" asp-required="true" class="control-label"></label>
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li class="layui-this">课程信息</li>
+            <li>课程附件</li>
+        </ul>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="@LabelDivDefaultClass">
+                            <label asp-for="YearTermId" asp-required="true" class="control-label"></label>
+                        </div>
+                        <div class="@InputDivDefaultClass">
+                            <select asp-for="YearTermId" asp-items="@ViewBag.YearTermId" class="form-control">
+                                <option value="">-请选择学年/学期-</option>
+                            </select>
+                            @*<span asp-validation-for="YearTermId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="@LabelDivDefaultClass">
+                            <label asp-for="TrainClassName" asp-required="true" class="control-label"></label>
+                        </div>
+                        <div class="@InputDivDefaultClass">
+                            <input asp-for="TrainClassName" class="form-control" value="@Model.TrainClassName" />
+                            <span asp-validation-for="TrainClassName" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="@LabelDivDefaultClass">
+                            <label asp-for="CourseType" asp-required="true" class="control-label"></label>
+                        </div>
+                        <div class="@InputDivDefaultClass">
+                            <select asp-for="CourseType" asp-items="@Html.GetEnumSelectList(typeof(CourseType))" class="form-control">
+                                <option>-请选择授课类型-</option>
+                            </select>
+                            @*<span asp-validation-for="Sex" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="@LabelDivDefaultClass">
+                            <label asp-for="Name" asp-required="true" class="control-label"></label>
+                        </div>
+                        <div class="@InputDivDefaultClass">
+                            <input asp-for="Name" class="form-control" value="@Model.Name" />
+                            <span asp-validation-for="Name" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="@LabelDivDefaultClass">
+                            <label asp-for="Organization" asp-required="true" class="control-label"></label>
+                        </div>
+                        <div class="@InputDivDefaultClass">
+                            <input asp-for="Organization" class="form-control" />
+                            <span asp-validation-for="Organization" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="@LabelDivDefaultClass">
+                            <label asp-for="Rank" asp-required="true" class="control-label"></label>
+                        </div>
+                        <div class="@InputDivDefaultClass">
+                            <input asp-for="Rank" class="form-control" />
+                            <span asp-validation-for="Rank" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="@LabelDivDefaultClass">
+                            <label asp-for="NationId" asp-required="true" class="control-label"></label>
+                        </div>
+                        <div class="@InputDivDefaultClass">
+                            <select asp-for="NationId" class="form-control" asp-items="@ViewBag.NationId">
+                                <option>-请选择民族-</option>
+                            </select>
+                            @*<span asp-validation-for="NationId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="@LabelDivDefaultClass">
+                            <label asp-for="Phone" asp-required="true" class="control-label"></label>
+                        </div>
+                        <div class="@InputDivDefaultClass">
+                            <input asp-for="Phone" class="form-control" />
+                            <span asp-validation-for="Phone" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="@LabelDivDefaultClass">
+                            <label asp-for="StartTime" asp-required="true" class="control-label"></label>
+                        </div>
+                        <div class="@InputDivDefaultClass">
+                            <input asp-for="StartTime" class="form-control" />
+                            <span asp-validation-for="StartTime" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="@LabelDivDefaultClass">
+                            <label asp-for="Place" asp-required="true" class="control-label"></label>
+                        </div>
+                        <div class="@InputDivDefaultClass">
+                            <input asp-for="Place" class="form-control" />
+                            <span asp-validation-for="Place" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="@LabelDivDefaultClass">
+                            <label asp-for="CourseName" asp-required="true" class="control-label"></label>
+                        </div>
+                        <div class="@InputDivDefaultClass">
+                            <input asp-for="CourseName" class="form-control" />
+                            <span asp-validation-for="CourseName" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="@LabelDivDefaultClass">
+                            <label asp-for="CourseHour" asp-required="true" class="control-label"></label>
+                        </div>
+                        <div class="@InputDivDefaultClass">
+                            <input asp-for="CourseHour" class="form-control" />
+                            <span asp-validation-for="CourseHour" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="@InputDivDefaultClass">
-                <select asp-for="CourseType" asp-items="@Html.GetEnumSelectList(typeof(CourseType))" class="form-control">
-                    <option>-请选择授课类型-</option>
-                </select>
-                @*<span asp-validation-for="Sex" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="@LabelDivDefaultClass">
-                <label asp-for="Name" asp-required="true" class="control-label"></label>
-            </div>
-            <div class="@InputDivDefaultClass">
-                <input asp-for="Name" class="form-control" value="@Model.Name" />
-                <span asp-validation-for="Name" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="@LabelDivDefaultClass">
-                <label asp-for="Organization" asp-required="true" class="control-label"></label>
-            </div>
-            <div class="@InputDivDefaultClass">
-                <input asp-for="Organization" class="form-control" />
-                <span asp-validation-for="Organization" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="@LabelDivDefaultClass">
-                <label asp-for="Rank" asp-required="true" class="control-label"></label>
-            </div>
-            <div class="@InputDivDefaultClass">
-                <input asp-for="Rank" class="form-control" />
-                <span asp-validation-for="Rank" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="@LabelDivDefaultClass">
-                <label asp-for="NationId" asp-required="true" class="control-label"></label>
-            </div>
-            <div class="@InputDivDefaultClass">
-                <select asp-for="NationId" class="form-control" asp-items="@ViewBag.NationId">
-                    <option>-请选择民族-</option>
-                </select>
-                @*<span asp-validation-for="NationId" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="@LabelDivDefaultClass">
-                <label asp-for="Phone" asp-required="true" class="control-label"></label>
-            </div>
-            <div class="@InputDivDefaultClass">
-                <input asp-for="Phone" class="form-control" />
-                <span asp-validation-for="Phone" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="@LabelDivDefaultClass">
-                <label asp-for="StartTime" asp-required="true" class="control-label"></label>
-            </div>
-            <div class="@InputDivDefaultClass">
-                <input asp-for="StartTime" class="form-control" />
-                <span asp-validation-for="StartTime" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="@LabelDivDefaultClass">
-                <label asp-for="Place" asp-required="true" class="control-label"></label>
-            </div>
-            <div class="@InputDivDefaultClass">
-                <input asp-for="Place" class="form-control" />
-                <span asp-validation-for="Place" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="@LabelDivDefaultClass">
-                <label asp-for="CourseName" asp-required="true" class="control-label"></label>
-            </div>
-            <div class="@InputDivDefaultClass">
-                <input asp-for="CourseName" class="form-control" />
-                <span asp-validation-for="CourseName" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="@LabelDivDefaultClass">
-                <label asp-for="CourseHour" asp-required="true" class="control-label"></label>
-            </div>
-            <div class="@InputDivDefaultClass">
-                <input asp-for="CourseHour" class="form-control" />
-                <span asp-validation-for="CourseHour" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="@LabelDivDefaultClass">
-                <label asp-for="Attachment_1" asp-required="false" class="control-label"></label>
-            </div>
-            <div class="@InputDivDefaultClass">
-                <input name="filePPT" type="file" class="form-control" />
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="@LabelDivDefaultClass">
-                <label asp-for="Attachment_2" asp-required="false" class="control-label"></label>
-            </div>
-            <div class="@InputDivDefaultClass">
-                <input name="fileWord" type="file" class="form-control" />
+            <div class="layui-tab-item">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="@LabelDivDefaultClass">
+                            <label asp-for="Attachment_1" asp-required="false" class="control-label"></label>
+                        </div>
+                        <div class="@InputDivDefaultClass">
+                            <input name="filePPT" type="file" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="@LabelDivDefaultClass">
+                            <label asp-for="Attachment_2" asp-required="false" class="control-label"></label>
+                        </div>
+                        <div class="@InputDivDefaultClass">
+                            <input name="fileWord" type="file" class="form-control" />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

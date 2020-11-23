@@ -35,7 +35,8 @@ namespace PartyMemberManager.Controllers
         // GET: Courses
         public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.Courses.Include(d => d.Nation).OrderBy(s => s.Ordinal).GetPagedDataAsync(page));
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
+            return View(await _context.Courses.Include(d => d.Nation).Include(d=>d.YearTerm).OrderBy(s => s.YearTermId).GetPagedDataAsync(page));
         }
         /// <summary>
         /// 重载获取数据函数，主要史需要Include
@@ -53,7 +54,8 @@ namespace PartyMemberManager.Controllers
 
             try
             {
-                var data = await _context.Set<Course>().Include(d => d.Nation).Where(DataFilter).OrderBy(o => o.Ordinal).GetPagedDataAsync(page, limit);
+                var data = await _context.Set<Course>().Include(d => d.Nation).Include(d=>d.YearTerm).Where(DataFilter)
+                    .OrderBy(o => o.YearTermId).GetPagedDataAsync(page, limit);
                 if (data == null)
                     throw new PartyMemberException("未找到数据");
                 jsonResult.Count = _context.Set<Course>().Where(DataFilter).Count();
@@ -78,7 +80,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(CourseType courseType, string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(Guid? yearTermId,CourseType courseType, string keyword, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<Course> jsonResult = new JsonResultDatasModel<Course>
             {
@@ -91,15 +93,20 @@ namespace PartyMemberManager.Controllers
                 var filter = PredicateBuilder.True<Course>();
                 if (keyword != null)
                 {
-                    filter = filter.And(d => d.Name.Contains(keyword));
+                    filter = filter.And(d => d.Name.Contains(keyword)|| d.TrainClassName.Contains(keyword) || d.CourseName.Contains(keyword));
+                }
+                if (yearTermId != null)
+                {
+                    filter = filter.And(d => d.YearTermId== yearTermId);
                 }
                 if ((int)courseType > 0)
                 {
                     filter = filter.And(d => d.CourseType == courseType);
                 }
                 var data = await _context.Set<Course>()
+                    .Include(d => d.Nation).Include(d => d.YearTerm)
                     .Where(filter)
-                    .OrderByDescending(d => d.Ordinal).GetPagedDataAsync(page, limit);
+                    .OrderByDescending(d => d.YearTermId).GetPagedDataAsync(page, limit);
                 if (data == null)
                     throw new PartyMemberException("未找到数据");
                 jsonResult.Count = _context.Set<Course>().Where(filter).Count();
@@ -141,6 +148,7 @@ namespace PartyMemberManager.Controllers
         public IActionResult Create()
         {
             Course course = new Course();
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
             ViewBag.NationId = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(course);
         }
@@ -159,6 +167,7 @@ namespace PartyMemberManager.Controllers
             {
                 return NotFoundData();
             }
+            ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
             ViewBag.NationId = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(course);
         }
@@ -215,7 +224,7 @@ namespace PartyMemberManager.Controllers
         }
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveCourse([Bind("CourseType,Name,Organization,Rank,NationId,Phone,StartTime,Place,CourseName,CourseHour,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] Course course, IFormFile filePPT, IFormFile fileWord)
+        public async Task<IActionResult> SaveCourse([Bind("YearTermId,TrainClassName,CourseType,Name,Organization,Rank,NationId,Phone,StartTime,Place,CourseName,CourseHour,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] Course course, IFormFile filePPT, IFormFile fileWord)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -321,7 +330,7 @@ namespace PartyMemberManager.Controllers
                     {
                         course.CreateTime = DateTime.Now;
                         course.OperatorId = CurrentUser.Id;
-                        course.Ordinal = _context.Courses.Count() + 1;
+                        //course.Ordinal = _context.Courses.Count() + 1;
                         _context.Add(course);
                     }
                     await _context.SaveChangesAsync();

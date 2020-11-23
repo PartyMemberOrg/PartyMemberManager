@@ -27,10 +27,10 @@ namespace PartyMemberManager.Dal.Entities
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public Guid YearTermId { get; set; }
         /// <summary>
-        /// 批次
+        /// 年度学期
         /// </summary>
-        [DisplayName("批次")]
-        public BatchType Batch { get; set; }
+        [DisplayName("学年/学期")]
+        public YearTerm YearTerm { get; set; }
 
         /// <summary>
         /// 批次
@@ -38,16 +38,17 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("批次")]
         [NotMapped]
         public string BatchDisplay { get => Batch.ToString(); }
+
         /// <summary>
-        /// 年度学期
+        /// 批次
         /// </summary>
-        [DisplayName("学年/学期")]
-        public YearTerm YearTerm { get; set; }
+        [DisplayName("批次")]
+        public BatchType Batch { get; set; }
         /// <summary>
         /// 培训班名称
         /// </summary>
         [DisplayName("培训班名称")]
-        [StringLength(50, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [StringLength(200, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Name { get; set; }
 
