@@ -260,7 +260,7 @@ namespace PartyMemberManager.Controllers
                             Directory.CreateDirectory(fileDir);
                         }
                         var fileStream = System.IO.File.Create(System.IO.Path.Combine(fileDir, fileName));
-                        await filePPT.CopyToAsync(fileStream);
+                        await fileWord.CopyToAsync(fileStream);
                         await fileStream.FlushAsync();
                         fileStream.Close();
                         course.Attachment_2 = System.IO.Path.Combine("Upload", fileName);
@@ -343,7 +343,7 @@ namespace PartyMemberManager.Controllers
                 return null;
             string file = System.IO.Path.Combine(AppContext.BaseDirectory, course.Attachment_2);
             System.IO.FileStream fileStream = new System.IO.FileStream(file, System.IO.FileMode.Open);
-            return File(fileStream, course.Attachment_2_Type, course.Attachment_2.Substring(course.Attachment_1.IndexOf("#")+1));
+            return File(fileStream, course.Attachment_2_Type, course.Attachment_2.Substring(course.Attachment_2.IndexOf("#")+1));
         }
         private bool CourseExists(Guid id)
         {
