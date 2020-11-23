@@ -608,7 +608,7 @@ function showUpFile(url, postUrl, title, width = 600, height = 400, callBack) {
                 , type: 2
                 , content: [url, 'no']//第二个参数no，表示不显示iframe滚动条
                 , btnAlign: 'c'
-                , btn: ['导入']
+                , btn: ['保存']
                 , yes: function (index, layero) {
                     var body = layer.getChildFrame('body', index);
                     var valid = $(body).find('form').valid();

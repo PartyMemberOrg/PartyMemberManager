@@ -184,6 +184,19 @@ namespace PartyMemberManager.Controllers
                 var data = await _context.Set<Course>().SingleOrDefaultAsync(m => m.Id == id);
                 if (data == null)
                     throw new PartyMemberException("未找到要删除的数据");
+                //删除原来的
+                if (data.Attachment_1 != null)
+                {
+                    string oldFile = System.IO.Path.Combine(AppContext.BaseDirectory, data.Attachment_1);
+                    if (System.IO.File.Exists(oldFile))
+                        System.IO.File.Delete(oldFile);
+                }
+                if (data.Attachment_2 != null)
+                {
+                    string oldFile = System.IO.Path.Combine(AppContext.BaseDirectory, data.Attachment_2);
+                    if (System.IO.File.Exists(oldFile))
+                        System.IO.File.Delete(oldFile);
+                }
                 _context.Set<Course>().Remove(data);
                 await _context.SaveChangesAsync();
             }
@@ -228,18 +241,28 @@ namespace PartyMemberManager.Controllers
                     }
                     else
                     {
-                        var fileName =course.Id+"#"+filePPT.FileName;
+                        if (courseInDb != null)
+                        {
+                            //删除原来的
+                            if (courseInDb.Attachment_1 != null)
+                            {
+                                string oldFile = System.IO.Path.Combine(AppContext.BaseDirectory, courseInDb.Attachment_1);
+                                if (System.IO.File.Exists(oldFile))
+                                    System.IO.File.Delete(oldFile);
+                            }
+                        }
+                        var fileName = course.Id + "#" + filePPT.FileName;
                         var contentType = filePPT.ContentType;
                         string fileDir = System.IO.Path.Combine(AppContext.BaseDirectory, "Upload");
                         if (!Directory.Exists(fileDir))
                         {
                             Directory.CreateDirectory(fileDir);
                         }
-                        var fileStream = System.IO.File.Create(System.IO.Path.Combine(fileDir,fileName));
+                        var fileStream = System.IO.File.Create(System.IO.Path.Combine(fileDir, fileName));
                         await filePPT.CopyToAsync(fileStream);
                         await fileStream.FlushAsync();
                         fileStream.Close();
-                        course.Attachment_1= System.IO.Path.Combine("Upload", fileName);
+                        course.Attachment_1 = System.IO.Path.Combine("Upload", fileName);
                         course.Attachment_1_Type = contentType;
                     }
                     if (fileWord == null)
@@ -252,6 +275,16 @@ namespace PartyMemberManager.Controllers
                     }
                     else
                     {
+                        //删除原来的
+                        if (courseInDb != null)
+                        {
+                            if (courseInDb.Attachment_2 != null)
+                            {
+                                string oldFile = System.IO.Path.Combine(AppContext.BaseDirectory, courseInDb.Attachment_2);
+                                if (System.IO.File.Exists(oldFile))
+                                    System.IO.File.Delete(oldFile);
+                            }
+                        }
                         var fileName = course.Id + "#" + fileWord.FileName;
                         var contentType = fileWord.ContentType;
                         string fileDir = System.IO.Path.Combine(AppContext.BaseDirectory, "Upload");
@@ -334,7 +367,7 @@ namespace PartyMemberManager.Controllers
                 return null;
             string file = System.IO.Path.Combine(AppContext.BaseDirectory, course.Attachment_1);
             System.IO.FileStream fileStream = new System.IO.FileStream(file, System.IO.FileMode.Open);
-            return File(fileStream, course.Attachment_1_Type, course.Attachment_1.Substring(course.Attachment_1.IndexOf("#")+1));
+            return File(fileStream, course.Attachment_1_Type, course.Attachment_1.Substring(course.Attachment_1.IndexOf("#") + 1));
         }
         public IActionResult DownCourseWord(Guid id)
         {
@@ -343,7 +376,7 @@ namespace PartyMemberManager.Controllers
                 return null;
             string file = System.IO.Path.Combine(AppContext.BaseDirectory, course.Attachment_2);
             System.IO.FileStream fileStream = new System.IO.FileStream(file, System.IO.FileMode.Open);
-            return File(fileStream, course.Attachment_2_Type, course.Attachment_2.Substring(course.Attachment_2.IndexOf("#")+1));
+            return File(fileStream, course.Attachment_2_Type, course.Attachment_2.Substring(course.Attachment_2.IndexOf("#") + 1));
         }
         private bool CourseExists(Guid id)
         {
