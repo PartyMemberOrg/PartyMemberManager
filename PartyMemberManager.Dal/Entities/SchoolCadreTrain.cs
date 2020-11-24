@@ -97,7 +97,7 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("学时")]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
-        [Range(0, 500, ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [Range(0, 50000, ErrorMessageResourceName = "RangeErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public int ClassHour { get; set; }
 
 
