@@ -42,7 +42,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(string year, string keyword, SchoolCadreTrainType schoolCadreTrainType, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(string year, string keyword, SchoolCadreTrainType schoolCadreTrainType,Sex sex, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<SchoolCadreTrain> jsonResult = new JsonResultDatasModel<SchoolCadreTrain>
             {
@@ -64,6 +64,10 @@ namespace PartyMemberManager.Controllers
                 if (schoolCadreTrainType.ToString() != "0")
                 {
                     filter = filter.And(d => d.SchoolCadreTrainType==schoolCadreTrainType);
+                }
+                if (sex.ToString() != "0")
+                {
+                    filter = filter.And(d => d.Sex == sex);
                 }
                 var data = await _context.Set<SchoolCadreTrain>()
                     .Where(filter)
@@ -176,7 +180,7 @@ namespace PartyMemberManager.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("Year,Name,SchoolCadreTrainType,TrainClassName,Organizer,TrainOrganizational,TrainTime,EndTrainTime,TrainAddress,ClassHour,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] SchoolCadreTrain schoolCadreTrain)
+        public override async Task<IActionResult> Save([Bind("Year,Name,Sex,SchoolCadreTrainType,TrainClassName,Organizer,TrainOrganizational,TrainTime,EndTrainTime,TrainAddress,ClassHour,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] SchoolCadreTrain schoolCadreTrain)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -185,7 +189,9 @@ namespace PartyMemberManager.Controllers
             };
             try
             {
-                if(schoolCadreTrain.SchoolCadreTrainType.ToString()=="0")
+                if (schoolCadreTrain.Sex.ToString() == "0")
+                    throw new PartyMemberException("请选择性别");
+                if (schoolCadreTrain.SchoolCadreTrainType.ToString()=="0")
                     throw new PartyMemberException("请选择职级");
                 if (ModelState.IsValid)
                 {
@@ -194,6 +200,7 @@ namespace PartyMemberManager.Controllers
                     {
                         schoolCadreTrainInDb.Year = schoolCadreTrain.Year;
                         schoolCadreTrainInDb.Name = schoolCadreTrain.Name;
+                        schoolCadreTrainInDb.Sex = schoolCadreTrain.Sex;
                         schoolCadreTrainInDb.TrainClassName = schoolCadreTrain.TrainClassName;
                         schoolCadreTrainInDb.Organizer = schoolCadreTrain.Organizer;
                         schoolCadreTrainInDb.TrainOrganizational = schoolCadreTrain.TrainOrganizational;
@@ -296,7 +303,7 @@ namespace PartyMemberManager.Controllers
                             columnErrorMessage = tableErrorData.Columns["错误提示"];
                         int rowIndex = 0;
                         int successCount = 0;
-                        string fieldsStudent = "姓名,职级,培训班名称,组织单位,培训单位,年度,培训时间,结束时间,培训学时,培训地点,备注";
+                        string fieldsStudent = "姓名,性别,职级,培训班名称,组织单位,培训单位,年度,培训时间,结束时间,培训学时,培训地点,备注";
                         string[] fieldList = fieldsStudent.Split(',');
                         foreach (string field in fieldList)
                         {
@@ -316,6 +323,7 @@ namespace PartyMemberManager.Controllers
                                     OperatorId = CurrentUser.Id
                                 };
                                 string nameField = "姓名";
+                                string sexField = "姓名";
                                 string schoolCadreTrainTypeField = "职级";
                                 string trainClassNameField = "培训班名称";
                                 string organizerField = "组织单位";
@@ -328,6 +336,7 @@ namespace PartyMemberManager.Controllers
                                 string remarkField = "备注";
 
                                 string name = row[nameField].ToString();
+                                string sex = row[sexField].ToString();
                                 string schoolCadreTrainType = row[schoolCadreTrainTypeField].ToString();
                                 string trainClassName = row[trainClassNameField].ToString();
                                 string organizer = row[organizerField].ToString();
@@ -356,6 +365,7 @@ namespace PartyMemberManager.Controllers
                                 //跳过姓名为空的记录
                                 if (string.IsNullOrEmpty(name)) continue;
                                 schoolCadreTrain.Name = name;
+                                schoolCadreTrain.Sex = Sex.Parse<Sex>(sex);
                                 schoolCadreTrain.SchoolCadreTrainType= SchoolCadreTrainType.Parse<SchoolCadreTrainType>(schoolCadreTrainType);
                                 schoolCadreTrain.Organizer = organizer;
                                 schoolCadreTrain.TrainAddress = trainAddress;

@@ -31,6 +31,19 @@
     <div class="form-group">
         <div class="row">
             <div class="@LabelDivDefaultClass">
+                <label asp-for="Sex" asp-required="true" class="control-label"></label>
+            </div>
+            <div class="@InputDivDefaultClass">
+                <select asp-for="Sex" asp-items="@Html.GetEnumSelectList(typeof(Sex))" class="form-control">
+                    <option>-请选择性别-</option>
+                </select>
+                @*<span asp-validation-for="Sex" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="@LabelDivDefaultClass">
                 <label asp-for="SchoolCadreTrainType" asp-required="true" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">

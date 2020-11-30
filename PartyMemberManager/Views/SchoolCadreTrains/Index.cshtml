@@ -24,6 +24,14 @@
         </div>
     </div>
     <div style="display:inline-block">
+        <label class="layui-form-label" style="padding:5px;width:60px">性别:</label>
+        <div class="layui-input-inline" style="width:200px">
+            <select name="Sex" asp-items="@Html.GetEnumSelectList(typeof(Sex))" class="layui-input" id="Sex">
+                <option value="">-请选择性别-</option>
+            </select>
+        </div>
+    </div>
+    <div style="display:inline-block">
         <div class="layui-input-inline" style="width:200px">
             <input name="keyword" type="text" class="layui-input" placeholder="请输入关键词" id="keyword" />
         </div>
@@ -124,6 +132,7 @@
                         ,
             { field: 'year', title: '年份', align: 'center' },
                         { field: 'name', title: '姓名', align: 'center' },
+                        { field: 'sexDisplay', title: '性别', align: 'center'},
                         { field: 'schoolCadreTrainTypeDisplay', title: '职级', align: 'center' },
             { field: 'trainClassName', title: '培训班名称', align: 'center' },
             { field: 'organizer', title: '组织机构', align: 'center' },
@@ -152,7 +161,8 @@
                     , where: {
                         year: $("#year").val(),
                         keyword: $("#keyword").val(),
-                        schoolCadreTrainType: $("#SchoolCadreTrainType").val()
+                        schoolCadreTrainType: $("#SchoolCadreTrainType").val(),
+                        sex: $("#Sex").val() 
                     }
                     , done: function (res, curr, count) {
                         showHideScrollBars(res.data.length);

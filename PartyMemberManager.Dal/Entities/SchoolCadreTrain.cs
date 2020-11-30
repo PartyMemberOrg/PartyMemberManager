@@ -26,6 +26,19 @@ namespace PartyMemberManager.Dal.Entities
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string Name { get; set; }
 
+
+        /// <summary>
+        /// 性别
+        /// </summary>
+        [DisplayName("性别")]
+        [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        public Sex Sex { get; set; } 
+        /// <summary>
+        /// 性别
+        /// </summary>
+        [DisplayName("性别")]
+        [NotMapped]
+        public string SexDisplay { get => Sex.ToString(); }
         /// <summary>
         /// 职级
         /// </summary>
