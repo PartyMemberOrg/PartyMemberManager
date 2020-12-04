@@ -20,6 +20,24 @@
         });
     </script>
     <script>
+        $(document).ready(function () {
+            $("#CourseType").change(function () {
+                var courseType = $("#CourseType").val();
+                switch (courseType) {
+                    case "@((int)CourseType.省级干部培训)":
+                        $("#ClassGroup").hide();
+                        break;
+                    case "@((int)CourseType.发展对象培训)":
+                        $("#ClassGroup").show();
+                        break;
+                     case "@((int)CourseType.入党积极分子培训)":
+                        $("#ClassGroup").show();
+                        break;
+                }
+            });
+        });
+    </script>
+    <script>
         //注意：选项卡 依赖 element 模块，否则无法进行功能性操作
         layui.use('element', function () {
             var element = layui.element;

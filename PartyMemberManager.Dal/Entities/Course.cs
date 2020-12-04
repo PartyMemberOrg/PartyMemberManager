@@ -152,5 +152,33 @@ namespace PartyMemberManager.Dal.Entities
         /// </summary>
         [DisplayName("附件2类型")]
         public string Attachment_2_Type { get; set; }
+
+        /// <summary>
+        /// 所属部门
+        /// </summary>
+        [DisplayName("所属部门")]
+        public Guid? DepartmentId { get; set; }
+        /// <summary>
+        /// 所属部门
+        /// </summary>
+        [DisplayName("所属部门")]
+        public Department Department { get; set; }
+        /// <summary>
+        /// 所属部门
+        /// </summary>
+        [DisplayName("所属部门")]
+        public string DepartmentDisplay { get => Department == null ? "" : Department.Name; }
+
+        /// <summary>
+        /// 批次
+        /// </summary>
+        [DisplayName("批次")]
+        public BatchType? Batch { get; set; }
+        /// <summary>
+        /// 批次
+        /// </summary>
+        [DisplayName("批次")]
+        [NotMapped]
+        public string BatchDisplay { get => Batch==0?"":Batch.ToString(); }
     }
 }

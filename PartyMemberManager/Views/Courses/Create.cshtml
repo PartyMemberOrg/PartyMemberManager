@@ -14,6 +14,24 @@
     <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
     <script src="~/lib/layui/layui.js"></script>
     <script>
+        $(document).ready(function () {
+            $("#CourseType").change(function () {
+                var courseType = $("#CourseType").val();
+                switch (courseType) {
+                    case "@((int)CourseType.省级干部培训)":
+                        $("#ClassGroup").hide();
+                        break;
+                    case "@((int)CourseType.发展对象培训)":
+                        $("#ClassGroup").show();
+                        break;
+                     case "@((int)CourseType.入党积极分子培训)":
+                        $("#ClassGroup").show();
+                        break;
+                }
+            });
+        });
+    </script>
+    <script>
         layui.use('form', function () {
             var form = layui.form;
         });

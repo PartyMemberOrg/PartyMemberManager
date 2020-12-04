@@ -86,6 +86,15 @@
                 </dl>
             }
         </li>
+        if (Model.Any(m => m.Controller == "Courses"))
+        {
+            <li class="layui-nav-item">
+                <a class="" href="javascript:openLink('@Url.Action("Index", "Courses")')">
+                    <img src="~/images/PreoperativeSel.png" data-icon="/images/PreoperativeSel.png" data-icon-sel="/images/PreoperativeSel.png" width="16" height="16" />
+                    <span>培训课程</span>
+                </a>
+            </li>
+        }
         @if (CurrentUser.Roles >= Role.学校党委)
         {
             <li class="layui-nav-item">
@@ -120,15 +129,6 @@
                     <a class="" href="javascript:openLink('@Url.Action("Index", "SchoolCadreTrains")')">
                         <img src="~/images/NutritionSupport.png" data-icon="/images/NutritionSupport.png" data-icon-sel="/images/NutritionSupportSel.png" width="16" height="16" />
                         <span>学校干部培训</span>
-                    </a>
-                </li>
-            }
-            if (Model.Any(m => m.Controller == "Courses"))
-            {
-                <li class="layui-nav-item">
-                    <a class="" href="javascript:openLink('@Url.Action("Index", "Courses")')">
-                        <img src="~/images/PreoperativeSel.png" data-icon="/images/PreoperativeSel.png" data-icon-sel="/images/PreoperativeSel.png" width="16" height="16" />
-                        <span>培训课程</span>
                     </a>
                 </li>
             }

@@ -4,8 +4,8 @@
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="layui-tab">
         <ul class="layui-tab-title">
-            <li class="layui-this">课程信息</li>
-            <li>课程附件</li>
+            <li class="layui-this">教师信息</li>
+            <li>课程信息</li>
         </ul>
         <div class="layui-tab-content">
             <div class="layui-tab-item layui-show">
@@ -33,6 +33,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="form-group">
                     <div class="row">
                         <div class="@LabelDivDefaultClass">
@@ -46,6 +47,70 @@
                         </div>
                     </div>
                 </div>
+                @if (Model.CourseType == 0 || Model.CourseType == CourseType.省级干部培训)
+                {
+                    <div id="ClassGroup" style="display:none">
+                        @if (CurrentUser.Roles > Role.学院党委)
+                        {
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="@LabelDivDefaultClass">
+                                        <label class="control-label">部门:</label>
+                                    </div>
+                                    <div class="@InputDivDefaultClass">
+                                        <select name="DepartmentId" asp-items="@ViewBag.DepartmentId" class="form-control" id="DepartmentId">
+                                            <option value="">-请选择部门-</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="@LabelDivDefaultClass">
+                                    <label asp-for="Batch" asp-required="false" class="control-label"></label>
+                                </div>
+                                <div class="@InputDivDefaultClass">
+                                    <select asp-for="Batch" asp-items="@Html.GetEnumSelectList(typeof(BatchType))" class="form-control" id="Batch">
+                                        <option value="">-请选择批次-</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div id="ClassGroup">
+                        @if (CurrentUser.Roles > Role.学院党委)
+                        {
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="@LabelDivDefaultClass">
+                                        <label class="control-label">部门:</label>
+                                    </div>
+                                    <div class="@InputDivDefaultClass">
+                                        <select name="DepartmentId" asp-items="@ViewBag.DepartmentId" class="form-control" id="DepartmentId">
+                                            <option value="">-请选择部门-</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="@LabelDivDefaultClass">
+                                    <label asp-for="Batch" asp-required="false" class="control-label"></label>
+                                </div>
+                                <div class="@InputDivDefaultClass">
+                                    <select asp-for="Batch" asp-items="@Html.GetEnumSelectList(typeof(BatchType))" class="form-control" id="Batch">
+                                        <option value="">-请选择批次-</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
                 <div class="form-group">
                     <div class="row">
                         <div class="@LabelDivDefaultClass">
@@ -103,6 +168,8 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="layui-tab-item">
                 <div class="form-group">
                     <div class="row">
                         <div class="@LabelDivDefaultClass">
@@ -147,8 +214,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="layui-tab-item">
                 <div class="form-group">
                     <div class="row">
                         <div class="@LabelDivDefaultClass">

@@ -85,7 +85,6 @@ namespace PartyMemberManager.Core.Enums
         第三期 = 3,
         第四期 = 4
     }
-
     /// <summary>
     /// 授课类型
     /// </summary>
@@ -93,7 +92,7 @@ namespace PartyMemberManager.Core.Enums
     {
         入党积极分子培训 = 1,
         发展对象培训 = 2,
-        省级干部培训 = 3,
+        省级干部培训 = 3
     }
     /// <summary>
     /// 授权类型
