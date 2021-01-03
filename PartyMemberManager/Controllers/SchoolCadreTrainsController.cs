@@ -323,7 +323,7 @@ namespace PartyMemberManager.Controllers
                                     OperatorId = CurrentUser.Id
                                 };
                                 string nameField = "姓名";
-                                string sexField = "姓名";
+                                string sexField = "性别";
                                 string schoolCadreTrainTypeField = "职级";
                                 string trainClassNameField = "培训班名称";
                                 string organizerField = "组织单位";
