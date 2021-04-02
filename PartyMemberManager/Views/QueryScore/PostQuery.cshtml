@@ -1,0 +1,147 @@
+﻿@model PartyMemberManager.Models.QueryScoreViewModel
+
+@{
+    Layout = "_LayoutEmpty";
+    ViewData["Title"] = "Query";
+}
+<style type="text/css">
+    body {
+        text-align: center;
+        background: rgba(179,196,236,1);
+    }
+
+    .input-group {
+        border: 1px solid rgba(255,0,0,1);
+        width: 330px;
+        height: 44px;
+        line-height: 44px;
+        border-radius: 22px;
+        background: rgba(247,247,247,1);
+    }
+
+    .input-text {
+        border: none;
+        font-size: 14px;
+        width: 100%;
+        background: transparent;
+    }
+
+    a.button {
+        color: white;
+        font-size: 16px;
+        text-align: center;
+        vertical-align: middle;
+        padding-top: 14px;
+        line-height: 16px;
+    }
+
+    a.buton:hover {
+        color: #f8f7d2;
+    }
+
+    .title-bar {
+        width: 420px;
+        height: 68px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        background: linear-gradient(270deg,rgba(255,0,0,1) 0%,rgba(255,0,0,1) 100%);
+        text-align: center;
+        vertical-align: central;
+        font-size: 20px;
+        color: #FFFFFF;
+        padding: 20px;
+    }
+
+    .login-body {
+        width: 420px;
+        height: 300px;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        background-color: #FFFFFF;
+    }
+
+    .login-button {
+        width: 300px;
+        height: 44px;
+        background: linear-gradient(270deg,rgba(255,0,0,1) 0%,rgba(255,0,0,1) 100%);
+        box-shadow: 0px 2px 4px 0px rgba(179,196,236,1);
+        border-radius: 22px;
+    }
+</style>
+<div id="logincontainer" class="" style="background-image: url('/images/loginback.png');width:440px;height:420px;padding:10px;margin:0 auto;margin-top:124px">
+    <div class="title-bar">
+        <span style="font-weight:bold">查询结果</span>
+    </div>
+    <div class="login-body">
+        @if (Model.IsPrint)
+        {
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass ">
+                        <label asp-for="TrainClassTypeId" asp-required="true" class="control-label" style="margin-top:20px;"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass" style="margin-top:20px;">
+                        @Model.TrainClassTypeDisplay
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="Name" asp-required="true" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        @Model.Name
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="JobNo" asp-required="true" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        @Model.JobNo
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="IdNumber" asp-required="true" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        @Model.IdNumber
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="TotalGrade" asp-required="true" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        @Model.TotalGrade
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div style="margin-top:30px;font-size:20px">
+                @Model.Message
+            </div>
+        }
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/lib/layui/layui.js"></script>
+    <script>
+        layui.use('form', function () {
+            var form = layui.form;
+        });
+                            //通过ajax登录
+    </script>
+}

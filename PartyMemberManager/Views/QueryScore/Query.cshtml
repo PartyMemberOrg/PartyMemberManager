@@ -1,0 +1,137 @@
+﻿@model PartyMemberManager.Models.QueryScoreViewModel
+
+@{
+    Layout = "_LayoutEmpty";
+    ViewData["Title"] = "Query";
+}
+<style type="text/css">
+    body {
+        text-align: center;
+        background: rgba(179,196,236,1);
+    }
+
+    .input-group {
+        border: 1px solid rgba(255,0,0,1);
+        width: 330px;
+        height: 44px;
+        line-height: 44px;
+        border-radius: 22px;
+        background: rgba(247,247,247,1);
+    }
+
+    .input-text {
+        border: none;
+        font-size: 14px;
+        width: 100%;
+        background: transparent;
+    }
+
+    a.button {
+        color: white;
+        font-size: 16px;
+        text-align: center;
+        vertical-align: middle;
+        padding-top: 14px;
+        line-height: 16px;
+    }
+
+    a.buton:hover {
+        color: #f8f7d2;
+    }
+
+    .title-bar {
+        width: 420px;
+        height: 68px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        background: linear-gradient(270deg,rgba(255,0,0,1) 0%,rgba(255,0,0,1) 100%);
+        text-align: center;
+        vertical-align: central;
+        font-size: 20px;
+        color: #FFFFFF;
+        padding: 20px;
+    }
+
+    .login-body {
+        width: 420px;
+        height: 300px;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        background-color: #FFFFFF;
+    }
+
+    .login-button {
+        width: 300px;
+        height: 44px;
+        background: linear-gradient(270deg,rgba(255,0,0,1) 0%,rgba(255,0,0,1) 100%);
+        box-shadow: 0px 2px 4px 0px rgba(179,196,236,1);
+        border-radius: 22px;
+    }
+</style>
+<div id="logincontainer" class="" style="background-image: url('/images/loginback.png');width:440px;height:420px;padding:10px;margin:0 auto;margin-top:124px">
+    <div class="title-bar">
+        <span style="font-weight:bold">兰州财经大学入党培训成绩查询系统</span>
+    </div>
+    <div class="login-body">
+        <form action="/QueryScore/PostQuery" method="post">
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass ">
+                        <label asp-for="TrainClassTypeId" asp-required="true" class="control-label" style="margin-top:20px;"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <select asp-for="TrainClassTypeId" class="form-control" style="width:100%;margin-top:20px;" asp-items="@ViewBag.TrainClassTypeId"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="Name" asp-required="true" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="Name" class="form-control" style="width:100%;" />
+                        <span asp-validation-for="Name" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="JobNo" asp-required="true" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="JobNo" class="form-control" style="width:100%;" />
+                        <span asp-validation-for="JobNo" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="IdNumber" asp-required="true" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input asp-for="IdNumber" class="form-control" style="width:100%;" />
+                        <span asp-validation-for="IdNumber" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="查询" class="btn btn-danger" />
+                <input type="reset" value="重置" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/lib/layui/layui.js"></script>
+    <script>
+        layui.use('form', function () {
+            var form = layui.form;
+        });
+                //通过ajax登录
+    </script>
+}
