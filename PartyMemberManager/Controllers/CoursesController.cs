@@ -203,7 +203,7 @@ namespace PartyMemberManager.Controllers
             {
                 return NotFoundData();
             }
-            ViewBag.DepartmentId = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name",course.DepartmentId.HasValue?course.DepartmentId.Value:Guid.Empty);
+            ViewBag.DepartmentId = new SelectList(_context.Departments.OrderBy(d => d.Ordinal), "Id", "Name", course.DepartmentId.HasValue ? course.DepartmentId.Value : Guid.Empty);
             ViewBag.YearTermId = new SelectList(_context.YearTerms.OrderByDescending(d => d.StartYear).ThenByDescending(d => d.Term).Where(d => d.Enabled == true), "Id", "Name");
             ViewBag.NationId = new SelectList(_context.Nations.OrderBy(d => d.Ordinal), "Id", "Name");
             return View(course);
@@ -261,7 +261,7 @@ namespace PartyMemberManager.Controllers
         }
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveCourse([Bind("YearTermId,TrainClassName,Batch,CourseType,CourseTypeAdmin,Name,Organization,Rank,NationId,Phone,StartTime,Place,CourseName,CourseHour,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] Course course, IFormFile filePPT, IFormFile fileWord,Guid? DepartmentId)
+        public async Task<IActionResult> SaveCourse([Bind("YearTermId,TrainClassName,Batch,CourseType,CourseTypeAdmin,Name,Organization,Rank,NationId,Phone,StartTime,Place,CourseName,CourseHour,DepartmentId,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] Course course, IFormFile filePPT, IFormFile fileWord)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -274,16 +274,22 @@ namespace PartyMemberManager.Controllers
                     throw new PartyMemberException("请选择学年/学期");
                 if (course.CourseType.ToString() == "0")
                     throw new PartyMemberException("请选择授课类型");
-                if ((int)course.CourseType == (int)CourseType.省级干部培训 && CurrentUser.Roles==Role.学院党委)
+                if ((int)course.CourseType == (int)CourseType.省级干部培训 && CurrentUser.Roles == Role.学院党委)
                     throw new PartyMemberException("你没有权限添加省级干部培训班，请联系管理员");
                 else
                 {
-                    if ((int)course.CourseType != (int)CourseType.省级干部培训)
+                    if ((int)course.CourseType != (int)CourseType.省级干部培训 && CurrentUser.Roles != Role.学院党委)
                     {
-                        if (DepartmentId == Guid.Empty || DepartmentId == null)
+                        if (course.DepartmentId == Guid.Empty || course.DepartmentId == null)
                             throw new PartyMemberException("请选择所属部门");
                         if (course.Batch == null || course.Batch.ToString() == "0")
                             throw new PartyMemberException("请选择批次");
+                    }
+                    else if ((int)course.CourseType != (int)CourseType.省级干部培训 && CurrentUser.Roles == Role.学院党委)
+                    {
+                        if (course.Batch == null || course.Batch.ToString() == "0")
+                            throw new PartyMemberException("请选择批次");
+                        course.DepartmentId = CurrentUser.DepartmentId;
                     }
                     else
                     {
@@ -292,10 +298,6 @@ namespace PartyMemberManager.Controllers
                 }
                 if (course.NationId == Guid.Empty || course.NationId == null)
                     throw new PartyMemberException("请选择民族");
-                if (CurrentUser.Roles == Role.学院党委)
-                {
-                    course.DepartmentId = CurrentUser.DepartmentId;
-                }
                 if (ModelState.IsValid)
                 {
                     Course courseInDb = await _context.Courses.FindAsync(course.Id);
@@ -383,14 +385,12 @@ namespace PartyMemberManager.Controllers
                         courseInDb.Attachment_1_Type = course.Attachment_1_Type;
                         courseInDb.Attachment_2 = course.Attachment_2;
                         courseInDb.Attachment_2_Type = course.Attachment_2_Type;
-                        courseInDb.DepartmentId = DepartmentId.HasValue?DepartmentId.Value:Guid.Empty;
+                        courseInDb.DepartmentId = course.DepartmentId;
                         courseInDb.Batch = course.Batch;
                         _context.Update(courseInDb);
                     }
                     else
                     {
-                        course.CourseType = course.CourseType;
-                        course.DepartmentId = DepartmentId.HasValue ? DepartmentId.Value : Guid.Empty;
                         course.CreateTime = DateTime.Now;
                         course.OperatorId = CurrentUser.Id;
                         //course.Ordinal = _context.Courses.Count() + 1;
