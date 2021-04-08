@@ -58,5 +58,33 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("是否启用")]
         [NotMapped]
         public string EnabledDisplay { get => Enabled ? "是" : "否"; }
+
+        /// <summary>
+        /// 开始时间
+        /// </summary>
+        [DisplayName("查询开始时间")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date)]
+        public Nullable<DateTime> StartTime { get; set; }
+
+        /// <summary>
+        /// 结束时间
+        /// </summary>
+        [DisplayName("查询结束时间")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date)]
+        public Nullable<DateTime> EndTime { get; set; }
+
+        /// <summary>
+        /// 是否可查询
+        /// </summary>
+        [DisplayName("是否可查询")]
+        public bool EnabledQuery { get; set; }
+        /// <summary>
+        /// 是否启用
+        /// </summary>
+        [DisplayName("是否可查询")]
+        [NotMapped]
+        public string EnabledQueryDisplay { get => EnabledQuery ? "是" : "否"; }
     }
 }

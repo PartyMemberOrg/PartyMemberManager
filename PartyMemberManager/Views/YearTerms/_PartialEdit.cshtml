@@ -1,5 +1,8 @@
 ﻿@model PartyMemberManager.Dal.Entities.YearTerm
-
+@{ 
+    var startTime = Model.StartTime.HasValue ? string.Format("{0:yyyy-MM-dd}", Model.StartTime.Value.Date) : null;
+    var endTime = Model.EndTime.HasValue ? string.Format("{0:yyyy-MM-dd}", Model.EndTime.Value.Date) : null;
+}
 <div class="row form-padding-top">
     <div class="col-md-12">
         <form asp-action="Edit">
@@ -43,6 +46,42 @@
                                 <input type="checkbox" name="Enabled" lay-skin="primary" value="true" title="" @(Model.Enabled ? "checked" : "")>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="EnabledQuery" asp-required="false" class="control-label"></label>
+                    </div>
+                    <div class="form-check @InputDivDefaultClass" style="padding-left: 0px;">
+                        <div class="layui-form">
+                            <div class="layui-form-item" style="margin-bottom:0px;margin-top:-4px">
+                                <input type="checkbox" name="EnabledQuery" lay-skin="primary" value="true" title="" @(Model.EnabledQuery ? "checked" : "")>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="StartTime" asp-required="false" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input id="StartTime" name="StartTime" class="form-control" placeholder="yyyy-MM-dd" readonly value="@startTime" />
+                        @*<span asp-validation-for="BirthDate" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="@LabelDivDefaultClass">
+                        <label asp-for="EndTime" asp-required="false" class="control-label"></label>
+                    </div>
+                    <div class="@InputDivDefaultClass">
+                        <input id="EndTime" name="EndTime" class="form-control" placeholder="yyyy-MM-dd" readonly value="@endTime" />
+                        @*<span asp-validation-for="BirthDate" class="text-danger validate-message-offset @ValidateSpanDefaultClass"></span>*@
                     </div>
                 </div>
             </div>

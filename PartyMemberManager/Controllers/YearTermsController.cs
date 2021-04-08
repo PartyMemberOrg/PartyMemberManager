@@ -83,7 +83,7 @@ namespace PartyMemberManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("StartYear,Term,Enabled,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] YearTerm yearTerm)
+        public override async Task<IActionResult> Save([Bind("StartYear,Term,Enabled,Id,CreateTime,OperatorId,Ordinal,IsDeleted,EndTime,StartTime,EnabledQuery")] YearTerm yearTerm)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -95,11 +95,21 @@ namespace PartyMemberManager.Controllers
                 if (ModelState.IsValid)
                 {
                     YearTerm yearTermInDb = await _context.YearTerms.FindAsync(yearTerm.Id);
+                    if (yearTerm.EnabledQuery == true)
+                    {
+                        if(!yearTerm.StartTime.HasValue || !yearTerm.EndTime.HasValue)
+                            throw new PartyMemberException($"请输入查询开始日期和结束日期");
+                        else if(yearTerm.StartTime.Value>yearTerm.EndTime.Value)
+                            throw new PartyMemberException($"查询开始日期不能晚于结束日期");
+                    }
                     if (yearTermInDb != null)
                     {
                         yearTermInDb.StartYear = yearTerm.StartYear;
                         yearTermInDb.Term = yearTerm.Term;
                         yearTermInDb.Enabled = yearTerm.Enabled;
+                        yearTermInDb.EnabledQuery = yearTerm.EnabledQuery;
+                        yearTermInDb.StartTime = yearTerm.StartTime;
+                        yearTermInDb.EndTime = yearTerm.EndTime;
                         _context.Update(yearTermInDb);
                     }
                     else

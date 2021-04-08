@@ -21,4 +21,19 @@
             });
         });
     </script>
+    <script type="text/javascript">
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#StartTime'
+                , trigger: 'click'
+
+            });
+            laydate.render({
+                elem: '#EndTime'
+                , trigger: 'click'
+
+            });
+        });
+    </script>
 }

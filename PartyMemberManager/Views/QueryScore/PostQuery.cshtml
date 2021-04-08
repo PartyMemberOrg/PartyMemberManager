@@ -73,7 +73,7 @@
         <span style="font-weight:bold">查询结果</span>
     </div>
     <div class="login-body">
-        @if (Model.IsPrint)
+        @if (Model.IsQuery)
         {
             <div class="form-group">
                 <div class="row">
@@ -121,7 +121,7 @@
                         <label asp-for="TotalGrade" asp-required="true" class="control-label"></label>
                     </div>
                     <div class="@InputDivDefaultClass">
-                        @Model.TotalGrade
+                       @string.Format("{0:N2}",Model.TotalGrade)
                     </div>
                 </div>
             </div>

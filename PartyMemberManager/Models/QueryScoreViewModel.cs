@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -32,12 +33,14 @@ namespace PartyMemberManager.Models
         /// 姓名
         /// </summary>
         [DisplayName("姓名")]
+        [Required(ErrorMessage ="请输入姓名")]
         public string Name { get; set; }
 
         /// <summary>
         /// 学号/工号
         /// </summary>
         [DisplayName("学号/工号")]
+        [Required(ErrorMessage = "请输入学号/工号")]
         public string JobNo { get; set; }
 
 
@@ -45,6 +48,7 @@ namespace PartyMemberManager.Models
         /// 身份证号
         /// </summary>
         [DisplayName("身份证号")]
+        [Required(ErrorMessage = "请输入身份证号")]
         public string IdNumber { get; set; }
         /// <summary>
         /// 总评成绩
@@ -53,10 +57,10 @@ namespace PartyMemberManager.Models
         public decimal? TotalGrade { get; set; }
 
         /// <summary>
-        /// 是否已打印
+        /// 是否可查询
         /// </summary>
-        [DisplayName("是否已打印")]
-        public bool IsPrint { get; set; }
+        [DisplayName("是否可查询")]
+        public bool IsQuery { get; set; }
 
         public string Message { get; set; }
     }
