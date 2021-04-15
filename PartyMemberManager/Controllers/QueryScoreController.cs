@@ -111,7 +111,7 @@ namespace PartyMemberManager.Controllers
                 }
             }
             model.IsQuery = false;
-            model.Message = "未查询到改学员的信息，请核对";
+            model.Message = "未查询到该学员的信息，请核对";
             return View(model);
         }
     }
