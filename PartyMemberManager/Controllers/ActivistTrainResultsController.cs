@@ -398,7 +398,7 @@ namespace PartyMemberManager.Controllers
                             if (csGrade > 100 || csGrade < 0)
                                 throw new PartyMemberException($"【{partyActivist.JobNo}-{partyActivist.Name}】的考试成绩非法");
                             activistTrainResult.TotalGrade = Math.Round(psProp * psGrade / 100 + sjProp * sjGrade / 100 + csProp * csGrade / 100, 2);
-                            if (activistTrainResult.TotalGrade >= 60)
+                            if (activistTrainResult.TotalGrade >= 60 && activistTrainResult.CsGrade>=55)
                                 activistTrainResult.IsPass = true;
                             else
                                 activistTrainResult.IsPass = false;

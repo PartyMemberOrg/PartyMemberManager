@@ -85,7 +85,7 @@ namespace PartyMemberManager.Dal.Entities
         /// 所在单位
         /// </summary>
         [DisplayName("所在单位")]
-        [StringLength(20, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
+        [StringLength(200, MinimumLength = 1, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         [Required(ErrorMessageResourceName = "RequiredErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string  Department { get; set; }
 
