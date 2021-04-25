@@ -43,7 +43,7 @@ namespace PartyMemberManager.Controllers
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetDatasWithFilter(string year, Guid? provinceTrainClassId, string keyword, int page = 1, int limit = 10)
+        public async Task<IActionResult> GetDatasWithFilter(string year, Guid? provinceTrainClassId, string keyword,AlumnaType? alumna, int page = 1, int limit = 10)
         {
             JsonResultDatasModel<ProvinceCadreTrain> jsonResult = new JsonResultDatasModel<ProvinceCadreTrain>
             {
@@ -65,6 +65,10 @@ namespace PartyMemberManager.Controllers
                 if (keyword != null)
                 {
                     filter = filter.And(d => d.Name.Contains(keyword) || d.Department.Contains(keyword) || d.Post.Contains(keyword));
+                }
+                if (alumna.HasValue  && alumna.Value==AlumnaType.是)
+                {
+                    filter = filter.And(d => d.IsAlumna==true);
                 }
                 var data = await _context.Set<ProvinceCadreTrain>().Include(d => d.ProvinceTrainClass).Include(d => d.Nation)
                     .Where(filter)
@@ -229,7 +233,7 @@ namespace PartyMemberManager.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public override async Task<IActionResult> Save([Bind("ProvinceTrainClassId,Name,IdNumber,Sex,NationId,Department,Post,Phone,Demand1,Demand2,OtherDemand,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ProvinceCadreTrain provinceCadreTrain)
+        public override async Task<IActionResult> Save([Bind("ProvinceTrainClassId,Name,IdNumber,Sex,NationId,Department,Post,Phone,Demand1,Demand2,IsAlumna,OtherDemand,Id,CreateTime,OperatorId,Ordinal,IsDeleted")] ProvinceCadreTrain provinceCadreTrain)
         {
             JsonResultNoData jsonResult = new JsonResultNoData
             {
@@ -262,6 +266,7 @@ namespace PartyMemberManager.Controllers
                         provinceCadreTrainInDb.Demand1 = provinceCadreTrain.Demand1;
                         provinceCadreTrainInDb.Demand2 = provinceCadreTrain.Demand2;
                         provinceCadreTrainInDb.OtherDemand = provinceCadreTrain.OtherDemand;
+                        provinceCadreTrainInDb.IsAlumna = provinceCadreTrain.IsAlumna;
                         //provinceCadreTrainInDb.CreateTime = DateTime.Now;
                         //provinceCadreTrainInDb.OperatorId = CurrentUser.Id;
                         //provinceCadreTrainInDb.Ordinal = _context.ProvinceCadreTrains.Count() + 1;

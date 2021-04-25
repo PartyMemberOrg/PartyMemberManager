@@ -123,5 +123,17 @@ namespace PartyMemberManager.Dal.Entities
         [DisplayName("其他需求")]
         [StringLength(255, ErrorMessageResourceName = "StringLengthErrorMessage", ErrorMessageResourceType = typeof(Properties.Resources))]
         public string OtherDemand { get; set; }
+
+        /// <summary>
+        /// 是否校友
+        /// </summary>
+        [DisplayName("是否校友")]
+        public bool IsAlumna { get; set; }
+        /// <summary>
+        /// 是否启用
+        /// </summary>
+        [DisplayName("是否可查询")]
+        [NotMapped]
+        public string IsAlumnaDisplay { get => IsAlumna ? "是" : "否"; }
     }
 }

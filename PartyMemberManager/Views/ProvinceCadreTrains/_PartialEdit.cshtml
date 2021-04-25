@@ -95,6 +95,20 @@
     <div class="form-group">
         <div class="row">
             <div class="@LabelDivDefaultClass">
+                <label asp-for="IsAlumna" asp-required="false" class="control-label"></label>
+            </div>
+            <div class="form-check @InputDivDefaultClass" style="padding-left: 0px;">
+                <div class="layui-form">
+                    <div class="layui-form-item" style="margin-bottom:0px;margin-top:-4px">
+                        <input type="checkbox" name="IsAlumna" lay-skin="primary" value="true" title="" @(Model.IsAlumna ? "checked" : "")>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="@LabelDivDefaultClass">
                 <label asp-for="Demand1" class="control-label"></label>
             </div>
             <div class="@InputDivDefaultClass">

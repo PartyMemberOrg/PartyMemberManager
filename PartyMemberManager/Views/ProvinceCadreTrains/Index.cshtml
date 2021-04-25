@@ -7,7 +7,7 @@
 <div class="layui-form-item" style="background-color:#f8f8f8;padding:8px 5px 3px 5px;margin-bottom:10px;border-radius:2px;display:flex;justify-content:flex-start;flex-wrap: wrap;">
     <div style="display:inline-block">
         <div class="layui-input-inline" style="width:80px">
-            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,700,function(){RefreshTable();})" class="layui-btn layui-btn-primary">+添加</a>
+            <a href="javascript:showEdit('@Url.Action("Create")','@Url.Action("Save")','添加',600,750,function(){RefreshTable();})" class="layui-btn layui-btn-primary">+添加</a>
         </div>
     </div>
     <div style="display:inline-block">
@@ -21,6 +21,14 @@
         <div class="layui-input-inline" style="width:240px">
             <select name="ProvinceTrainClassId" asp-items="@ViewBag.ProvinceTrainClassId" class="layui-input" id="ProvinceTrainClassId">
                 <option value="">-请选择培训班-</option>
+            </select>
+        </div>
+    </div>
+    <div style="display:inline-block">
+        <label class="layui-form-label" style="padding:5px;width:80px">是否校友:</label>
+        <div class="layui-input-inline" style="width:100px">
+            <select name="alumna" asp-items="@Html.GetEnumSelectList(typeof(AlumnaType))" class="layui-input" id="alumna">
+                <option value="">-是否校友-</option>
             </select>
         </div>
     </div>
@@ -132,6 +140,7 @@
             { field: 'department', title: '所在单位', align: 'center' },
             { field: 'post', title: '职务', align: 'center' },
                         { field: 'phone', title: '电话', align: 'center' },
+                        { field: 'isAlumnaDisplay', title: '是否校友', align: 'center' },
                         { field: 'demand1', title: '学员需求1', align: 'center' },
                         { field: 'demand2', title: '学员需求2', align: 'center' },
                         { field: 'otherDemand', title: '其他需求', align: 'center' },
@@ -152,6 +161,7 @@
                 table.reload(tableId, {
                     url: '@Url.Action("GetDatasWithFilter")'
                     , where: {
+                        alumna: $("#alumna").val(),
                         year: $("#year").val(),
                         provinceTrainClassId: $("#ProvinceTrainClassId").val(),
                         keyword: $("#keyword").val()
@@ -176,7 +186,7 @@
         function showOperatMenu(event, id) {
             var contextMenu = new ContextMenu();
             contextMenu.addMenuItem("编辑", function () {
-                showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 600, 700, function () {
+                showEdit('@Url.Action("Edit")' + '/' + id, '@Url.Action("Save")', '编辑', 600, 750, function () {
                     RefreshTable();
                 });
             })

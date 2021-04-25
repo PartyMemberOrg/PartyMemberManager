@@ -106,6 +106,14 @@ namespace PartyMemberManager.Core.Enums
     }
 
     /// <summary>
+    /// 是否校友
+    /// </summary>
+    public enum AlumnaType
+    {
+        否 = 0,
+        是 = 1
+    }
+    /// <summary>
     /// 入党积分分子状态
     /// </summary>
     public enum ActivistTrainStatus
